@@ -71,7 +71,10 @@ export default async function Dashboard({
   return (
     <>
       <div className="greeting">
-        <h1>{greeting(now.hour)}</h1>
+        <h1>
+          {greeting(now.hour)}
+          {user.name ? `, ${user.name.split(" ")[0]}` : ""}
+        </h1>
         <p>Here’s your day.</p>
       </div>
 

@@ -60,6 +60,14 @@ export default function Menu() {
             Closed Nudges
           </Link>
           <Link
+            href="/profile"
+            className="menu-item"
+            role="menuitem"
+            onClick={close}
+          >
+            Profile
+          </Link>
+          <Link
             href="/settings"
             className="menu-item"
             role="menuitem"

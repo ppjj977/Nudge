@@ -106,6 +106,32 @@ export async function getPasswordHash(userId: string): Promise<string | null> {
   return row?.password_hash ?? null;
 }
 
+export async function updateUserName(userId: string, name: string | null): Promise<void> {
+  await ensureSchema();
+  await db.execute({
+    sql: "UPDATE users SET name = ? WHERE id = ?",
+    args: [name, userId],
+  });
+}
+
+/** True if another user already owns this email. */
+export async function emailTaken(email: string, exceptUserId: string): Promise<boolean> {
+  await ensureSchema();
+  const res = await db.execute({
+    sql: "SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1",
+    args: [email.toLowerCase().trim(), exceptUserId],
+  });
+  return res.rows.length > 0;
+}
+
+export async function updateUserEmail(userId: string, email: string): Promise<void> {
+  await ensureSchema();
+  await db.execute({
+    sql: "UPDATE users SET email = ? WHERE id = ?",
+    args: [email.toLowerCase().trim(), userId],
+  });
+}
+
 /* -------------------------------------------------------------------------- */
 /* Sessions (server-side; cookie holds a random id)                            */
 /* -------------------------------------------------------------------------- */
