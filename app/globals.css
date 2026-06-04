@@ -102,6 +102,21 @@ a {
   background: var(--bg);
 }
 
+.guide-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+.guide-item:first-of-type {
+  border-top: none;
+}
+.guide-icon {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
 .tagline-footer {
   text-align: center;
   color: var(--muted);
