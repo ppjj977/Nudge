@@ -15,10 +15,10 @@ export default async function DonePage() {
         <Link href="/" className="back">
           ← Timeline
         </Link>
-        <h1>Done</h1>
+        <h1>Closed Nudges</h1>
         <p className="note">
-          Completed and paid tasks. Marked something off by mistake? Hit Undo to
-          send it back to your timeline.
+          Completed and paid tasks. Closed something by mistake? Hit Undo to send
+          it back to your timeline.
         </p>
       </div>
 
