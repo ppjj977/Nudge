@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 import { ingestAndExtract } from "@/lib/pipeline";
 import { imageToText } from "@/lib/normalize";
 
@@ -27,7 +27,8 @@ export async function POST(req: Request) {
 
   const ocr = await imageToText(buffer, mime);
 
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const result = await ingestAndExtract(user, {
     source: "image",
     // Store a pointer/description rather than the raw bytes in the text column.

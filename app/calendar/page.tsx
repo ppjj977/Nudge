@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import Link from "next/link";
-import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
+import { getUserLifeAreas } from "@/lib/users";
+import { requireUser } from "@/lib/auth";
 import { getActiveTasks } from "@/lib/tasks";
 import { ACTION_CATEGORIES } from "@/lib/categories";
 import CalendarMonth, { type CalDay } from "../CalendarMonth";
@@ -13,7 +14,7 @@ export default async function CalendarPage({
 }: {
   searchParams: Promise<{ m?: string }>;
 }) {
-  const user = await getOrCreateDefaultUser();
+  const user = await requireUser();
   const tz = user.timezone;
   const now = DateTime.now().setZone(tz);
   const { m } = await searchParams;

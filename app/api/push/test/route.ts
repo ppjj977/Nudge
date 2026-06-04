@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 import { sendPushToUser, pushEnabled } from "@/lib/push";
 import { sendEmail } from "@/lib/email";
 import { config } from "@/lib/config";
@@ -11,7 +11,8 @@ export const runtime = "nodejs";
  * can verify push and email independently. Reports what each channel did.
  */
 export async function POST() {
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let delivered = 0;
   if (pushEnabled()) {

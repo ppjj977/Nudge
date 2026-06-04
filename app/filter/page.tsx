@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
+import { getUserLifeAreas } from "@/lib/users";
+import { requireUser } from "@/lib/auth";
 import { getActiveTasks } from "@/lib/tasks";
 import FilterView from "../FilterView";
 import type { TaskView } from "../TaskCard";
@@ -7,7 +8,7 @@ import type { TaskView } from "../TaskCard";
 export const dynamic = "force-dynamic";
 
 export default async function FilterPage() {
-  const user = await getOrCreateDefaultUser();
+  const user = await requireUser();
   const tasks = await getActiveTasks(user.id);
   const lifeAreas = getUserLifeAreas(user);
 

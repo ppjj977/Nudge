@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
+import { getUserLifeAreas } from "@/lib/users";
+import { requireUser } from "@/lib/auth";
 import { getCompletedTasks, type Task } from "@/lib/tasks";
 import TaskCard, { type TaskView } from "../TaskCard";
 
 export const dynamic = "force-dynamic";
 
 export default async function DonePage() {
-  const user = await getOrCreateDefaultUser();
+  const user = await requireUser();
   const tasks = await getCompletedTasks(user.id);
   const lifeAreas = getUserLifeAreas(user);
 

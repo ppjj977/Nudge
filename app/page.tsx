@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
-import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
+import { getUserLifeAreas } from "@/lib/users";
+import { requireUser } from "@/lib/auth";
 import { getTimeline, type Task } from "@/lib/tasks";
 import CaptureBox from "./CaptureBox";
 import ManualAdd from "./ManualAdd";
@@ -60,7 +61,7 @@ export default async function Dashboard({
 }: {
   searchParams: Promise<{ shared?: string }>;
 }) {
-  const user = await getOrCreateDefaultUser();
+  const user = await requireUser();
   const timeline = await getTimeline(user.id, user.timezone);
   const lifeAreas = getUserLifeAreas(user);
   const now = DateTime.now().setZone(user.timezone);

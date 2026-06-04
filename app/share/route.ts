@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 import { ingestAndExtract } from "@/lib/pipeline";
 import { imageToText } from "@/lib/normalize";
 import { config } from "@/lib/config";
@@ -16,8 +16,12 @@ export const maxDuration = 60;
  * Configured in public/manifest.webmanifest under "share_target".
  */
 export async function POST(req: Request) {
+  const base = (config.appBaseUrl ?? "").replace(/\/$/, "") || new URL(req.url).origin;
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.redirect(`${base}/login`, 303);
+  }
   const form = await req.formData().catch(() => null);
-  const user = await getOrCreateDefaultUser();
 
   let outcome: "added" | "nothing" | "failed" | "empty" = "empty";
 
@@ -56,7 +60,8 @@ export async function POST(req: Request) {
   // internal host (localhost:10000), which the browser can't reach. Use the
   // configured public base if set, otherwise a relative path (which the browser
   // resolves against the public URL it actually requested).
-  const base = config.appBaseUrl?.replace(/\/$/, "");
-  const location = base ? `${base}/?shared=${outcome}` : `/?shared=${outcome}`;
+  const location = config.appBaseUrl
+    ? `${base}/?shared=${outcome}`
+    : `/?shared=${outcome}`;
   return new NextResponse(null, { status: 303, headers: { Location: location } });
 }

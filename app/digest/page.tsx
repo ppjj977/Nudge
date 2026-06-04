@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import Link from "next/link";
-import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
+import { getUserLifeAreas } from "@/lib/users";
+import { requireUser } from "@/lib/auth";
 import { getTimeline, type Task } from "@/lib/tasks";
 import TaskCard, { type TaskView } from "../TaskCard";
 
@@ -33,7 +34,7 @@ function DigestSection({
 }
 
 export default async function DigestPage() {
-  const user = await getOrCreateDefaultUser();
+  const user = await requireUser();
   const timeline = await getTimeline(user.id, user.timezone);
   const lifeAreas = getUserLifeAreas(user);
   const now = DateTime.now().setZone(user.timezone);

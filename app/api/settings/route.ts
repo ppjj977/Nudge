@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
-import {
-  getOrCreateDefaultUser,
-  updateUserSettings,
-  getUserLifeAreas,
-} from "@/lib/users";
+import { updateUserSettings, getUserLifeAreas } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 import { DEFAULT_LIFE_AREAS } from "@/lib/categories";
 import {
   parseUserSettings,
@@ -19,7 +16,8 @@ export const runtime = "nodejs";
 
 /** GET /api/settings — resolved reminder rules + channels + digest hour. */
 export async function GET() {
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { rules, channels } = parseUserSettings(user);
   return NextResponse.json({
     reminderRules: rules,
@@ -48,7 +46,8 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   // Sanitize rules: keep only known categories and well-formed rules.
   const reminderRules: Partial<Record<Category, ReminderRule[]>> = {};

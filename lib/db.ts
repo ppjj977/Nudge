@@ -61,7 +61,12 @@ async function applySchema(): Promise<void> {
  * Each entry is safe to run repeatedly — a duplicate-column error is ignored.
  */
 async function applyAdditiveMigrations(): Promise<void> {
-  const additions = ["ALTER TABLE tasks ADD COLUMN checklist TEXT"];
+  const additions = [
+    "ALTER TABLE tasks ADD COLUMN checklist TEXT",
+    "ALTER TABLE users ADD COLUMN name TEXT",
+    "ALTER TABLE users ADD COLUMN image TEXT",
+    "ALTER TABLE users ADD COLUMN password_hash TEXT",
+  ];
   for (const stmt of additions) {
     try {
       await db.execute(stmt);

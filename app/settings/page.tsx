@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
+import { getUserLifeAreas } from "@/lib/users";
+import { requireUser } from "@/lib/auth";
 import { parseUserSettings, DEFAULT_REMINDER_RULES } from "@/lib/reminders";
 import { DEFAULT_LIFE_AREAS } from "@/lib/categories";
 import { pushEnabled } from "@/lib/push";
@@ -8,7 +9,7 @@ import SettingsForm from "../SettingsForm";
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
-  const user = await getOrCreateDefaultUser();
+  const user = await requireUser();
   const { rules, channels } = parseUserSettings(user);
 
   return (

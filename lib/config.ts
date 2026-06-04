@@ -49,6 +49,10 @@ export const config = {
   cron: {
     secret: env("CRON_SECRET"),
   },
+  google: {
+    clientId: env("GOOGLE_CLIENT_ID"),
+    clientSecret: env("GOOGLE_CLIENT_SECRET"),
+  },
   appBaseUrl: env("APP_BASE_URL"),
   /**
    * Phase 1 convenience. Magic-link auth (SPEC §10a) is a later phase; until

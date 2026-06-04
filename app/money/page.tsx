@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import Link from "next/link";
-import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
+import { getUserLifeAreas } from "@/lib/users";
+import { requireUser } from "@/lib/auth";
 import { getActiveTasks, bucketFor, type Task } from "@/lib/tasks";
 import TaskCard, { type TaskView } from "../TaskCard";
 
@@ -30,7 +31,7 @@ function totalLabel(tasks: Task[]): string {
 }
 
 export default async function MoneyPage() {
-  const user = await getOrCreateDefaultUser();
+  const user = await requireUser();
   const lifeAreas = getUserLifeAreas(user);
   const now = DateTime.now().setZone(user.timezone);
 
