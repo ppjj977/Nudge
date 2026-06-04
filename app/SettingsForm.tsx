@@ -148,12 +148,20 @@ export default function SettingsForm({
   async function testPush() {
     setPushMsg(null);
     const res = await fetch("/api/push/test", { method: "POST" });
-    const data = await res.json().catch(() => ({}));
-    setPushMsg(
-      res.ok
-        ? `Sent to ${data.delivered ?? 0} device(s).`
-        : `Test failed: ${data.error ?? res.status}`,
-    );
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setPushMsg(`Test failed: ${d.error ?? res.status}`);
+      return;
+    }
+    const pushPart = d.push?.configured
+      ? `Push: accepted by ${d.push.delivered} device(s)`
+      : "Push: not configured on server";
+    const emailPart = d.email?.configured
+      ? d.email.sent
+        ? `Email: sent to ${d.to}`
+        : "Email: send failed (check Resend key/sender)"
+      : "Email: not configured on server";
+    setPushMsg(`${pushPart} · ${emailPart}`);
   }
 
   return (
@@ -180,9 +188,7 @@ export default function SettingsForm({
           <button onClick={enablePush} disabled={!pushAvailable}>
             Enable on this device
           </button>
-          <button onClick={testPush} disabled={!pushAvailable}>
-            Send test
-          </button>
+          <button onClick={testPush}>Send test (email + push)</button>
           {!pushAvailable && (
             <span className="note">Push not configured on the server yet.</span>
           )}
