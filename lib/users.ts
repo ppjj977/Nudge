@@ -1,4 +1,4 @@
-import { db } from "./db";
+import { db, ensureSchema } from "./db";
 import { newId } from "./ids";
 import { config } from "./config";
 
@@ -18,6 +18,9 @@ export interface User {
  * an email sender. Idempotent.
  */
 export async function getOrCreateDefaultUser(): Promise<User> {
+  // Every runtime path (page + API routes) calls this first, so it is the
+  // natural place to guarantee the schema exists (see ensureSchema rationale).
+  await ensureSchema();
   const email = config.defaultUser.email;
   const existing = await db.execute({
     sql: "SELECT * FROM users WHERE email = ? LIMIT 1",
