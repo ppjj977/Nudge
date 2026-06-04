@@ -43,11 +43,19 @@ export default function RootLayout({
             <LogoMark size={28} />
             <span className="wordmark">{APP_NAME}</span>
           </Link>
-          <Link href="/settings" className="nav-link" aria-label="Settings">
-            Settings
-          </Link>
+          <nav className="nav">
+            <Link href="/done" className="nav-link">
+              Done
+            </Link>
+            <Link href="/settings" className="nav-link">
+              Settings
+            </Link>
+          </nav>
         </header>
         <main className="container">{children}</main>
+        <footer className="tagline-footer">
+          a gentle nudge for everything that matters
+        </footer>
       </body>
     </html>
   );

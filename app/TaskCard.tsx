@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 export interface ChecklistItem {
@@ -67,16 +67,21 @@ function amountLabel(t: TaskView): string | null {
   }
 }
 
-/** A single task row with category-aware actions (SPEC §10 PATCH/confirm/delete). */
+type Mode = "active" | "review" | "done";
+
 export default function TaskCard({
   task,
   review = false,
+  done = false,
 }: {
   task: TaskView;
   review?: boolean;
+  done?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [editing, setEditing] = useState(false);
+  const mode: Mode = done ? "done" : review ? "review" : "active";
 
   async function call(url: string, method: string, body?: object) {
     await fetch(url, {
@@ -93,9 +98,8 @@ export default function TaskCard({
     });
   const dismiss = () => call(`/api/tasks/${task.id}`, "DELETE");
   const confirm = () => call(`/api/tasks/${task.id}/confirm`, "POST");
+  const undo = () => call(`/api/tasks/${task.id}`, "PATCH", { status: "active" });
 
-  // Toggle one checklist item. Progress-only: the task stays active until the
-  // user presses Done, even when every item is ticked.
   const toggleItem = (index: number) => {
     if (!task.checklist) return;
     const next = task.checklist.map((it, i) =>
@@ -103,6 +107,19 @@ export default function TaskCard({
     );
     call(`/api/tasks/${task.id}`, "PATCH", { checklist: next });
   };
+
+  if (editing) {
+    return (
+      <EditForm
+        task={task}
+        onCancel={() => setEditing(false)}
+        onSaved={() => {
+          setEditing(false);
+          startTransition(() => router.refresh());
+        }}
+      />
+    );
+  }
 
   const meta = [
     dueLabel(task),
@@ -116,7 +133,7 @@ export default function TaskCard({
   const isFyi = task.category === "fyi";
 
   return (
-    <div className={`task ${isFyi ? "fyi" : ""}`}>
+    <div className={`task ${isFyi ? "fyi" : ""} ${done ? "is-done" : ""}`}>
       <div className="body">
         <div>
           <span className="task-emoji" aria-hidden="true">
@@ -138,7 +155,7 @@ export default function TaskCard({
                   <input
                     type="checkbox"
                     checked={item.done}
-                    disabled={pending || review}
+                    disabled={pending || mode !== "active"}
                     onChange={() => toggleItem(i)}
                   />
                   <span>{item.text}</span>
@@ -151,23 +168,150 @@ export default function TaskCard({
           <div className="excerpt">“{task.source_excerpt}”</div>
         )}
       </div>
-      {!isFyi && (
-        <div className="actions">
-          {review && (
-            <button className="primary" onClick={confirm} disabled={pending}>
-              Confirm
+
+      <div className="actions">
+        {mode === "done" ? (
+          <>
+            <button className="primary" onClick={undo} disabled={pending}>
+              Undo
             </button>
-          )}
-          {!review && (
-            <button onClick={complete} disabled={pending}>
-              {task.category === "pay" ? "Paid" : "Done"}
+            <button onClick={dismiss} disabled={pending}>
+              Delete
             </button>
-          )}
-          <button onClick={dismiss} disabled={pending}>
-            Dismiss
+          </>
+        ) : (
+          <>
+            {mode === "review" && (
+              <button className="primary" onClick={confirm} disabled={pending}>
+                Confirm
+              </button>
+            )}
+            {mode === "active" && !isFyi && (
+              <button onClick={complete} disabled={pending}>
+                {task.category === "pay" ? "Paid" : "Done"}
+              </button>
+            )}
+            <button onClick={() => setEditing(true)} disabled={pending}>
+              Edit
+            </button>
+            <button onClick={dismiss} disabled={pending}>
+              Dismiss
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ---- inline edit form ---- */
+
+function EditForm({
+  task,
+  onCancel,
+  onSaved,
+}: {
+  task: TaskView;
+  onCancel: () => void;
+  onSaved: () => void;
+}) {
+  const initialDate =
+    task.due_at && task.due_type !== "none" ? task.due_at.slice(0, 10) : "";
+  const initialTime =
+    task.due_type === "datetime" && task.due_at
+      ? task.due_at.slice(11, 16)
+      : "";
+
+  const [title, setTitle] = useState(task.title);
+  const [detail, setDetail] = useState(task.detail ?? "");
+  const [date, setDate] = useState(initialDate);
+  const [time, setTime] = useState(initialTime);
+  const [amount, setAmount] = useState(task.amount?.toString() ?? "");
+  const [location, setLocation] = useState(task.location ?? "");
+  const [saving, setSaving] = useState(false);
+
+  async function save() {
+    setSaving(true);
+    const patch: Record<string, unknown> = {
+      title: title.trim(),
+      detail: detail.trim() || null,
+      location: location.trim() || null,
+    };
+    if (task.category === "pay") {
+      patch.amount = amount.trim() === "" ? null : Number(amount);
+      patch.currency = task.currency || "GBP";
+    }
+    if (!date) {
+      patch.due_type = "none";
+      patch.due_at = null;
+    } else if (!time) {
+      patch.due_type = "date";
+      patch.due_at = date;
+    } else {
+      patch.due_type = "datetime";
+      patch.due_at = `${date}T${time}:00`;
+    }
+    await fetch(`/api/tasks/${task.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(patch),
+    });
+    setSaving(false);
+    onSaved();
+  }
+
+  return (
+    <div className="task editing">
+      <div className="body edit-form">
+        <label className="field">
+          <span>Title</span>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} />
+        </label>
+        <label className="field">
+          <span>Detail</span>
+          <input value={detail} onChange={(e) => setDetail(e.target.value)} />
+        </label>
+        <div className="field-row">
+          <label className="field">
+            <span>Due date</span>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          </label>
+          <label className="field">
+            <span>Time (optional)</span>
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              disabled={!date}
+            />
+          </label>
+        </div>
+        {task.category === "pay" && (
+          <label className="field">
+            <span>Amount ({task.currency || "GBP"})</span>
+            <input
+              type="number"
+              step="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </label>
+        )}
+        {(task.category === "attend" || task.category === "book") && (
+          <label className="field">
+            <span>Location</span>
+            <input value={location} onChange={(e) => setLocation(e.target.value)} />
+          </label>
+        )}
+        <div className="capture-row">
+          <button className="primary" onClick={save} disabled={saving || !title.trim()}>
+            {saving ? "Saving…" : "Save"}
+          </button>
+          <button onClick={onCancel} disabled={saving}>
+            Cancel
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

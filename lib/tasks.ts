@@ -206,6 +206,21 @@ export async function getTaskByIdAny(id: string): Promise<Task | null> {
     : null;
 }
 
+/** Completed tasks (done/paid), most recently finished first — for the Done view. */
+export async function getCompletedTasks(
+  userId: string,
+  limit = 100,
+): Promise<Task[]> {
+  const res = await db.execute({
+    sql: `SELECT * FROM tasks
+          WHERE user_id = ? AND status IN ('done','paid')
+          ORDER BY completed_at DESC, updated_at DESC
+          LIMIT ?`,
+    args: [userId, limit],
+  });
+  return res.rows.map((r) => mapTaskRow(r as Record<string, unknown>));
+}
+
 export async function getTask(
   userId: string,
   id: string,
@@ -262,6 +277,10 @@ export async function updateTask(
   if (patch.status === "done" || patch.status === "paid") {
     sets.push("completed_at = ?");
     args.push(now);
+  } else if (typeof patch.status === "string") {
+    // Un-completing (e.g. undo done -> active) clears the completion time.
+    sets.push("completed_at = ?");
+    args.push(null);
   }
   sets.push("updated_at = ?");
   args.push(now);
