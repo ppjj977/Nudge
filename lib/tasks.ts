@@ -208,6 +208,17 @@ export async function getTaskByIdAny(id: string): Promise<Task | null> {
     : null;
 }
 
+/** All active tasks (for the Money, Calendar, and Filter views). */
+export async function getActiveTasks(userId: string): Promise<Task[]> {
+  const res = await db.execute({
+    sql: `SELECT * FROM tasks
+          WHERE user_id = ? AND status = 'active'
+          ORDER BY (due_at IS NULL), due_at ASC, created_at DESC`,
+    args: [userId],
+  });
+  return res.rows.map((r) => mapTaskRow(r as Record<string, unknown>));
+}
+
 /** Completed tasks (done/paid), most recently finished first — for the Done view. */
 export async function getCompletedTasks(
   userId: string,
