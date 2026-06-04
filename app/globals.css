@@ -55,8 +55,12 @@ a {
   letter-spacing: -0.5px;
   color: var(--navy);
 }
-.nav-link {
+.nav {
   margin-left: auto;
+  display: flex;
+  gap: 16px;
+}
+.nav-link {
   color: var(--muted);
   text-decoration: none;
   font-size: 14px;
@@ -64,6 +68,49 @@ a {
 }
 .nav-link:hover {
   color: var(--navy);
+}
+
+.tagline-footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 28px 16px 36px;
+}
+
+/* ---- inline edit form ---- */
+.task.editing {
+  display: block;
+}
+.edit-form .field {
+  display: block;
+  margin-bottom: 10px;
+}
+.edit-form .field > span {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.edit-form input {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+}
+.edit-form .field-row {
+  display: flex;
+  gap: 10px;
+}
+.edit-form .field-row .field {
+  flex: 1;
+}
+.task.is-done .title {
+  text-decoration: line-through;
+  color: var(--muted);
 }
 
 .container {
