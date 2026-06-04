@@ -160,10 +160,12 @@ export function bucketFor(
   const due = DateTime.fromISO(task.due_at, { zone: now.zone });
   if (!due.isValid) return "later";
 
-  const startOfToday = now.startOf("day");
   const endOfToday = now.endOf("day");
+  // "This week" means the rest of the current calendar week, ending Sunday.
+  // Luxon weeks are ISO (Mon-Sun), so endOf('week') is this Sunday 23:59.
+  const endOfWeek = now.endOf("week");
   if (due <= endOfToday) return "today"; // due today or overdue
-  if (due <= startOfToday.plus({ days: 7 })) return "week";
+  if (due <= endOfWeek) return "week";
   return "later";
 }
 
