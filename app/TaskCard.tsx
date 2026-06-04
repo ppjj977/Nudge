@@ -73,10 +73,12 @@ export default function TaskCard({
   task,
   review = false,
   done = false,
+  lifeAreas = [],
 }: {
   task: TaskView;
   review?: boolean;
   done?: boolean;
+  lifeAreas?: string[];
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -112,6 +114,7 @@ export default function TaskCard({
     return (
       <EditForm
         task={task}
+        lifeAreas={lifeAreas}
         onCancel={() => setEditing(false)}
         onSaved={() => {
           setEditing(false);
@@ -208,10 +211,12 @@ export default function TaskCard({
 
 function EditForm({
   task,
+  lifeAreas,
   onCancel,
   onSaved,
 }: {
   task: TaskView;
+  lifeAreas: string[];
   onCancel: () => void;
   onSaved: () => void;
 }) {
@@ -228,7 +233,24 @@ function EditForm({
   const [time, setTime] = useState(initialTime);
   const [amount, setAmount] = useState(task.amount?.toString() ?? "");
   const [location, setLocation] = useState(task.location ?? "");
+  const [lifeArea, setLifeArea] = useState(task.life_area ?? "");
+  const [items, setItems] = useState<ChecklistItem[]>(
+    task.checklist ? task.checklist.map((c) => ({ ...c })) : [],
+  );
   const [saving, setSaving] = useState(false);
+
+  // Keep the task's current area selectable even if it's no longer in the list.
+  const areaOptions =
+    task.life_area && !lifeAreas.includes(task.life_area)
+      ? [task.life_area, ...lifeAreas]
+      : lifeAreas;
+
+  const setItemText = (i: number, text: string) =>
+    setItems((prev) => prev.map((it, j) => (j === i ? { ...it, text } : it)));
+  const removeItem = (i: number) =>
+    setItems((prev) => prev.filter((_, j) => j !== i));
+  const addItem = () =>
+    setItems((prev) => [...prev, { text: "", done: false }]);
 
   async function save() {
     setSaving(true);
@@ -236,7 +258,12 @@ function EditForm({
       title: title.trim(),
       detail: detail.trim() || null,
       location: location.trim() || null,
+      life_area: lifeArea || null,
     };
+    const cleanedItems = items
+      .map((it) => ({ text: it.text.trim(), done: it.done }))
+      .filter((it) => it.text.length > 0);
+    patch.checklist = cleanedItems.length > 0 ? cleanedItems : null;
     if (task.category === "pay") {
       patch.amount = amount.trim() === "" ? null : Number(amount);
       patch.currency = task.currency || "GBP";
@@ -303,6 +330,38 @@ function EditForm({
             <input value={location} onChange={(e) => setLocation(e.target.value)} />
           </label>
         )}
+        <label className="field">
+          <span>Life area</span>
+          <select
+            value={lifeArea}
+            onChange={(e) => setLifeArea(e.target.value)}
+          >
+            <option value="">— none —</option>
+            {areaOptions.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="field">
+          <span>Checklist</span>
+          {items.map((it, i) => (
+            <div key={i} className="rule-row">
+              <input
+                value={it.text}
+                placeholder="e.g. Bring PE kit"
+                onChange={(e) => setItemText(i, e.target.value)}
+              />
+              <button className="link" type="button" onClick={() => removeItem(i)}>
+                remove
+              </button>
+            </div>
+          ))}
+          <button className="link" type="button" onClick={addItem}>
+            + add item
+          </button>
+        </div>
         <div className="capture-row">
           <button className="primary" onClick={save} disabled={saving || !title.trim()}>
             {saving ? "Saving…" : "Save"}

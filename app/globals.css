@@ -139,7 +139,8 @@ a {
   color: var(--muted);
   margin-bottom: 4px;
 }
-.edit-form input {
+.edit-form input,
+.edit-form select {
   width: 100%;
   background: var(--bg);
   color: var(--text);
@@ -147,6 +148,9 @@ a {
   border-radius: 8px;
   padding: 8px 10px;
   font: inherit;
+}
+.edit-form select {
+  text-transform: capitalize;
 }
 .edit-form .field-row {
   display: flex;
@@ -163,7 +167,7 @@ a {
 .container {
   max-width: 720px;
   margin: 0 auto;
-  padding: 20px 18px 96px;
+  padding: 20px 18px 48px;
 }
 
 /* ---- greeting ---- */
