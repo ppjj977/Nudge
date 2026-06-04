@@ -55,6 +55,14 @@ export default function Menu() {
           >
             Settings
           </Link>
+          <Link
+            href="/help"
+            className="menu-item"
+            role="menuitem"
+            onClick={close}
+          >
+            ? Categories &amp; help
+          </Link>
         </div>
       )}
     </div>
