@@ -359,6 +359,22 @@ button.link {
   padding: 4px 2px;
 }
 
+.caught-up {
+  text-align: center;
+  padding: 40px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.caught-up-emoji {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+.caught-up strong {
+  font-size: 18px;
+}
+
 .review-banner {
   background: rgba(255, 200, 87, 0.16);
   border: 1px solid var(--amber);
