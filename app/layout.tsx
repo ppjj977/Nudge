@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 
 // Brand name. Overridable via APP_NAME; defaults to the product name "nudge".
@@ -18,8 +19,13 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <header className="topbar">
-          <span className="wordmark">{APP_NAME}</span>
+          <Link href="/" className="wordmark">
+            {APP_NAME}
+          </Link>
           <span className="tagline">life admin, captured</span>
+          <Link href="/settings" className="nav-link">
+            Settings
+          </Link>
         </header>
         <main className="container">{children}</main>
       </body>

@@ -69,8 +69,20 @@ CREATE TABLE IF NOT EXISTS digest_log (
   sent_at   TEXT NOT NULL
 );
 
+-- Web push subscriptions (app notifications). One row per browser/device.
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+  id         TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id),
+  endpoint   TEXT UNIQUE NOT NULL,
+  p256dh     TEXT NOT NULL,
+  auth       TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_tasks_user_status   ON tasks(user_id, status);
 CREATE INDEX IF NOT EXISTS idx_tasks_user_due       ON tasks(user_id, due_at);
 CREATE INDEX IF NOT EXISTS idx_captures_user        ON captures(user_id, received_at);
 CREATE INDEX IF NOT EXISTS idx_reminders_dispatch   ON reminders(status, fire_at);
+CREATE INDEX IF NOT EXISTS idx_reminders_task        ON reminders(task_id, status);
+CREATE INDEX IF NOT EXISTS idx_push_user             ON push_subscriptions(user_id);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_digest_per_day ON digest_log(user_id, sent_for);
