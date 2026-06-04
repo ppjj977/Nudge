@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getOrCreateDefaultUser } from "@/lib/users";
 import { ingestAndExtract } from "@/lib/pipeline";
 import { imageToText } from "@/lib/normalize";
+import { config } from "@/lib/config";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -51,5 +52,11 @@ export async function POST(req: Request) {
   }
 
   // Redirect (303) so the browser lands on the timeline with a GET.
-  return NextResponse.redirect(new URL(`/?shared=${outcome}`, req.url), 303);
+  // Do NOT build this from req.url — behind Render's proxy the server sees its
+  // internal host (localhost:10000), which the browser can't reach. Use the
+  // configured public base if set, otherwise a relative path (which the browser
+  // resolves against the public URL it actually requested).
+  const base = config.appBaseUrl?.replace(/\/$/, "");
+  const location = base ? `${base}/?shared=${outcome}` : `/?shared=${outcome}`;
+  return new NextResponse(null, { status: 303, headers: { Location: location } });
 }
