@@ -41,6 +41,13 @@ export const config = {
     resendApiKey: env("RESEND_API_KEY"),
     from: env("MAIL_FROM") ?? "nudge@example.com",
   },
+  /** Email-in (SPEC §3): inbound capture via Resend's receiving webhook. */
+  inbound: {
+    /** Domain new per-user addresses are shown on, e.g. "in.nudgelive.co.uk". */
+    domain: env("INBOUND_DOMAIN"),
+    /** Resend (Svix) webhook signing secret, "whsec_…". */
+    webhookSecret: env("INBOUND_WEBHOOK_SECRET"),
+  },
   push: {
     publicKey: env("VAPID_PUBLIC_KEY"),
     privateKey: env("VAPID_PRIVATE_KEY"),
