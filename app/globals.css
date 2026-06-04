@@ -270,6 +270,45 @@ button.link {
   color: var(--muted);
   font-size: 13px;
 }
+
+button.recording {
+  background: #fdecec;
+  border-color: var(--danger);
+  color: var(--danger);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.add-toggle {
+  margin-top: 12px;
+  width: 100%;
+  background: var(--panel);
+  border: 1px dashed var(--border);
+  color: var(--muted);
+}
+.add-toggle:hover {
+  color: var(--navy);
+  border-color: var(--teal);
+}
+.manual-add {
+  margin-top: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+.manual-add select {
+  text-transform: capitalize;
+}
 .error {
   color: #d1453b;
 }

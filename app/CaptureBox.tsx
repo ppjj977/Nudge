@@ -16,6 +16,9 @@ export default function CaptureBox() {
   const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [, startTransition] = useTransition();
+  const [recording, setRecording] = useState(false);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   function report(result: {
     nothingActionable: boolean;
@@ -79,6 +82,55 @@ export default function CaptureBox() {
     }
   }
 
+  async function startRecording() {
+    setMessage(null);
+    setIsError(false);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const rec = new MediaRecorder(stream);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+      rec.onstop = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunksRef.current, {
+          type: rec.mimeType || "audio/webm",
+        });
+        submitAudio(blob);
+      };
+      recorderRef.current = rec;
+      rec.start();
+      setRecording(true);
+    } catch (e) {
+      setIsError(true);
+      setMessage(`Couldn't access the mic: ${(e as Error).message}`);
+    }
+  }
+
+  function stopRecording() {
+    recorderRef.current?.stop();
+    setRecording(false);
+    setBusy(true);
+    setMessage("Transcribing your note…");
+  }
+
+  async function submitAudio(blob: Blob) {
+    try {
+      const ext = (blob.type.split("/")[1] || "webm").split(";")[0];
+      const fd = new FormData();
+      fd.append("file", blob, `voice-note.${ext}`);
+      const res = await fetch("/api/ingest/audio", { method: "POST", body: fd });
+      const data = await res.json();
+      report(data);
+    } catch (e) {
+      setIsError(true);
+      setMessage(`Network error: ${(e as Error).message}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="capture">
       <textarea
@@ -98,6 +150,15 @@ export default function CaptureBox() {
         <button onClick={() => fileRef.current?.click()} disabled={busy}>
           Upload image
         </button>
+        {recording ? (
+          <button className="recording" onClick={stopRecording}>
+            ⏹ Stop
+          </button>
+        ) : (
+          <button onClick={startRecording} disabled={busy}>
+            🎤 Voice note
+          </button>
+        )}
         <input
           ref={fileRef}
           type="file"

@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
 import { getTimeline, type Task } from "@/lib/tasks";
 import CaptureBox from "./CaptureBox";
+import ManualAdd from "./ManualAdd";
 import TaskCard, { type TaskView } from "./TaskCard";
 
 // Always read fresh state; the dashboard reflects live captures.
@@ -75,6 +76,7 @@ export default async function Dashboard({
 
       <CaptureBox />
       {sharedMsg && <div className="toast">{sharedMsg}</div>}
+      <ManualAdd />
 
       <Section title="Today" tasks={timeline.today} lifeAreas={lifeAreas} />
       <Section title="This week" tasks={timeline.week} lifeAreas={lifeAreas} />

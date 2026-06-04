@@ -138,6 +138,26 @@ async function groqVisionOcr(buffer: Buffer, mimeType: string): Promise<string> 
   return completion.choices[0]?.message?.content ?? "";
 }
 
+/* -------------------------------------------------------------------------- */
+/* Audio -> text (voice notes)                                                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Transcribe a voice note with Groq Whisper. The transcript then runs through
+ * the normal extraction path, so one note can yield several tasks (SPEC §6).
+ */
+export async function transcribeAudio(file: File | Blob): Promise<string> {
+  if (!config.groq.apiKey) {
+    throw new Error("GROQ_API_KEY is not set; cannot transcribe audio.");
+  }
+  const client = new Groq({ apiKey: config.groq.apiKey });
+  const res = await client.audio.transcriptions.create({
+    file: file as File,
+    model: config.groq.whisperModel,
+  });
+  return (res.text ?? "").trim();
+}
+
 async function tesseractOcr(
   buffer: Buffer,
 ): Promise<{ text: string; confidence: number }> {
