@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { db, ensureSchema } from "./db";
 import { newId } from "./ids";
 import { config } from "./config";
@@ -52,6 +53,42 @@ export async function getAllUsers(): Promise<User[]> {
   await ensureSchema();
   const res = await db.execute("SELECT * FROM users");
   return res.rows as unknown as User[];
+}
+
+/** Resolve the per-user email-in token (the local part) to a user. */
+export async function findUserByInboundLocalPart(
+  localPart: string,
+): Promise<User | null> {
+  await ensureSchema();
+  const res = await db.execute({
+    sql: "SELECT * FROM users WHERE inbound_address = ? LIMIT 1",
+    args: [localPart.toLowerCase().trim()],
+  });
+  return res.rows.length ? (res.rows[0] as unknown as User) : null;
+}
+
+/** Full email-in address for a user, e.g. nudge-ab12@in.nudgelive.co.uk. */
+export function inboundAddressFor(user: Pick<User, "inbound_address">): string | null {
+  if (!user.inbound_address || !config.inbound.domain) return null;
+  return `${user.inbound_address}@${config.inbound.domain}`;
+}
+
+/**
+ * Guarantee a user has an inbound token (older/seeded rows predate it), then
+ * return the full address if an inbound domain is configured.
+ */
+export async function ensureInboundAddress(
+  user: Pick<User, "id" | "inbound_address">,
+): Promise<string | null> {
+  let token = user.inbound_address;
+  if (!token) {
+    token = `nudge-${randomBytes(5).toString("hex")}`;
+    await db.execute({
+      sql: "UPDATE users SET inbound_address = ? WHERE id = ?",
+      args: [token, user.id],
+    });
+  }
+  return config.inbound.domain ? `${token}@${config.inbound.domain}` : null;
 }
 
 /** Persist a user's settings JSON (reminder rules + channels). */
