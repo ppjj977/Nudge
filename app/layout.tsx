@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-// Branding deliberately deferred (SPEC top matter) — codename only.
-const APP_NAME = process.env.APP_NAME ?? "relay";
+// Brand name. Overridable via APP_NAME; defaults to the product name "nudge".
+const APP_NAME = process.env.APP_NAME ?? "nudge";
 
 export const metadata: Metadata = {
   title: APP_NAME,

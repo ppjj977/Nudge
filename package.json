@@ -1,8 +1,8 @@
 {
-  "name": "relay",
+  "name": "nudge",
   "version": "0.1.0",
   "private": true,
-  "description": "Capture-first life admin assistant (codename: relay). See SPEC.md.",
+  "description": "Capture-first life admin assistant. See SPEC.md.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
