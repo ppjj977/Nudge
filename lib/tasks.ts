@@ -4,7 +4,7 @@ import { newId } from "./ids";
 import { config } from "./config";
 import { generateRemindersForTask } from "./reminders";
 import type { ExtractionResult } from "./extract";
-import type { Category, DueType, LifeArea, TaskStatus } from "./categories";
+import type { Category, DueType, TaskStatus } from "./categories";
 
 export interface ChecklistItem {
   text: string;
@@ -23,7 +23,7 @@ export interface Task {
   amount: number | null;
   currency: string | null;
   location: string | null;
-  life_area: LifeArea | null;
+  life_area: string | null;
   checklist: ChecklistItem[] | null;
   status: TaskStatus;
   confidence: number;

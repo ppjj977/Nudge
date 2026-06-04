@@ -50,17 +50,22 @@ export default function SettingsForm({
   defaults,
   initialChannels,
   initialDigestHour,
+  initialLifeAreas,
+  defaultLifeAreas,
   pushAvailable,
 }: {
   initialRules: Rules;
   defaults: Rules;
   initialChannels: Channels;
   initialDigestHour: number;
+  initialLifeAreas: string[];
+  defaultLifeAreas: string[];
   pushAvailable: boolean;
 }) {
   const [rules, setRules] = useState<Rules>(structuredClone(initialRules));
   const [channels, setChannels] = useState<Channels>(initialChannels);
   const [digestHour, setDigestHour] = useState(initialDigestHour);
+  const [lifeAreas, setLifeAreas] = useState<string[]>([...initialLifeAreas]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [pushMsg, setPushMsg] = useState<string | null>(null);
@@ -92,14 +97,32 @@ export default function SettingsForm({
     setRules((prev) => ({ ...prev, [cat]: structuredClone(defaults[cat] ?? []) }));
   }
 
+  function updateArea(i: number, value: string) {
+    setLifeAreas((prev) => prev.map((a, j) => (j === i ? value : a)));
+  }
+  function addArea() {
+    setLifeAreas((prev) => [...prev, ""]);
+  }
+  function removeArea(i: number) {
+    setLifeAreas((prev) => prev.filter((_, j) => j !== i));
+  }
+
   async function save() {
     setSaving(true);
     setMsg(null);
     try {
+      const cleanedAreas = Array.from(
+        new Set(lifeAreas.map((a) => a.trim().toLowerCase()).filter(Boolean)),
+      );
       const res = await fetch("/api/settings", {
         method: "PUT",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ reminderRules: rules, channels, digestHour }),
+        body: JSON.stringify({
+          reminderRules: rules,
+          channels,
+          digestHour,
+          lifeAreas: cleanedAreas,
+        }),
       });
       setMsg(res.ok ? "Saved. Reminders updated." : "Save failed.");
     } catch (e) {
@@ -212,6 +235,34 @@ export default function SettingsForm({
           </select>
           <span className="note">your local time</span>
         </label>
+      </section>
+
+      <section className="panel">
+        <h2>Life areas</h2>
+        <p className="note">
+          The tags nudge uses to group tasks by area of life. Add or rename them
+          to fit you — the extractor will only use the areas in this list.
+        </p>
+        {lifeAreas.map((area, i) => (
+          <div key={i} className="rule-row">
+            <input
+              value={area}
+              placeholder="e.g. school"
+              onChange={(e) => updateArea(i, e.target.value)}
+            />
+            <button className="link" onClick={() => removeArea(i)}>
+              remove
+            </button>
+          </div>
+        ))}
+        <div className="capture-row">
+          <button className="link" onClick={addArea}>
+            + add area
+          </button>
+          <button className="link" onClick={() => setLifeAreas([...defaultLifeAreas])}>
+            reset to defaults
+          </button>
+        </div>
       </section>
 
       <section className="panel">

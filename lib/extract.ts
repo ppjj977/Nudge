@@ -7,7 +7,7 @@ import {
   ACTION_CATEGORIES,
   CATEGORIES,
   DUE_TYPES,
-  LIFE_AREAS,
+  DEFAULT_LIFE_AREAS,
 } from "./categories";
 import { requireGroq } from "./config";
 
@@ -38,10 +38,14 @@ export const ExtractedItemSchema = z
     amount: nullableNumber.optional().default(null),
     currency: nullableString.optional().default(null),
     location: nullableString.optional().default(null),
+    // Free text now (life areas are user-defined). Lowercased; coerced against
+    // the user's set in extract(). Null when none applies.
     life_area: z
-      .union([z.enum(LIFE_AREAS), z.null()])
+      .union([z.string(), z.null()])
       .optional()
-      .transform((v) => v ?? "other"),
+      .transform((v) =>
+        typeof v === "string" && v.trim() ? v.trim().toLowerCase() : null,
+      ),
     confidence: z
       .union([z.number(), z.string()])
       .transform((v) => (typeof v === "number" ? v : Number(v)))
@@ -178,16 +182,20 @@ function promptTemplate(): string {
 export interface ExtractionContext {
   /** IANA timezone, e.g. Europe/London. */
   timezone: string;
+  /** The user's life areas (the model must pick from these). */
+  lifeAreas?: string[];
   /** Override "now" for deterministic tests; defaults to current time. */
   now?: DateTime;
 }
 
 export function buildSystemPrompt(ctx: ExtractionContext): string {
   const now = (ctx.now ?? DateTime.now()).setZone(ctx.timezone);
+  const areas = ctx.lifeAreas?.length ? ctx.lifeAreas : DEFAULT_LIFE_AREAS;
   return promptTemplate()
     .replaceAll("{{TODAY}}", now.toFormat("yyyy-LL-dd"))
     .replaceAll("{{WEEKDAY}}", now.toFormat("cccc"))
-    .replaceAll("{{TIMEZONE}}", ctx.timezone);
+    .replaceAll("{{TIMEZONE}}", ctx.timezone)
+    .replaceAll("{{LIFE_AREAS}}", areas.join(", "));
 }
 
 /* -------------------------------------------------------------------------- */
@@ -217,7 +225,22 @@ export async function extract(
   });
 
   const raw = completion.choices[0]?.message?.content ?? "";
-  return parseExtraction(raw);
+  return coerceLifeAreas(parseExtraction(raw), ctx.lifeAreas ?? DEFAULT_LIFE_AREAS);
+}
+
+/** Keep only life areas the user actually has; unknowns become null. */
+export function coerceLifeAreas(
+  result: ExtractionResult,
+  allowed: string[],
+): ExtractionResult {
+  const set = new Set(allowed.map((a) => a.toLowerCase()));
+  return {
+    ...result,
+    items: result.items.map((i) => ({
+      ...i,
+      life_area: i.life_area && set.has(i.life_area) ? i.life_area : null,
+    })),
+  };
 }
 
 export { ACTION_CATEGORIES };
