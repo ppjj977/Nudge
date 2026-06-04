@@ -12,7 +12,7 @@ import { getUserLifeAreas, type User } from "./users";
  * is a single place where extraction failures are handled and logged.
  */
 export interface IngestInput {
-  source: "email" | "text" | "image";
+  source: "email" | "text" | "image" | "audio";
   /** Original payload kept for audit (purged per retention). */
   rawContent: string;
   /** Plain text fed to the extractor. */

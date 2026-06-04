@@ -27,6 +27,8 @@ export const config = {
     model: env("GROQ_MODEL"),
     /** Optional vision model for image-to-text; falls back to Tesseract OCR. */
     visionModel: env("GROQ_VISION_MODEL"),
+    /** Speech-to-text model for voice notes. */
+    whisperModel: env("GROQ_WHISPER_MODEL") ?? "whisper-large-v3",
   },
   extraction: {
     /** Items below this land in the review tray (SPEC §7 rule 2). */
