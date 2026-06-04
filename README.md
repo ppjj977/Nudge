@@ -87,6 +87,8 @@ API keys.
 
 ## Deployment
 
-Render is the intended host (one web service + Cron Jobs for phase 2). Render
-and Cloudflare are not on this environment's allowlist, so deployment is a
-manual step — see `SPEC.md §3`.
+Render is the intended host (one web service + Cron Jobs for phase 2). A
+[`render.yaml`](./render.yaml) blueprint is included; see [`DEPLOY.md`](./DEPLOY.md)
+for the step-by-step setup (provision a remote Turso db, set the env vars,
+deploy via Render → New → Blueprint). Render/Cloudflare are not reachable from
+the build environment, so the deploy itself is a manual step (`SPEC.md §3`).

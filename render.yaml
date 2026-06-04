@@ -1,0 +1,65 @@
+# Render Blueprint for relay (codename). Deploy via Render → New → Blueprint,
+# connect this repo, and fill in the secret env vars (marked sync:false) in the
+# dashboard. See DEPLOY.md for the full walkthrough.
+#
+# IMPORTANT: use a remote Turso database (libsql://…), NOT a file: URL. Render's
+# filesystem is ephemeral and not shared between the web service and cron jobs,
+# so a SQLite file would not persist or be visible across services.
+
+services:
+  - type: web
+    name: relay-web
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    # Run migrations after build, before the new version goes live. Idempotent
+    # (CREATE TABLE IF NOT EXISTS), so it is safe to run on every deploy.
+    preDeployCommand: npm run db:migrate
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # --- secrets: set these in the Render dashboard ---
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      # Pick a current model from Groq's catalogue at deploy time (SPEC §13).
+      - key: GROQ_MODEL
+        sync: false
+      # Optional: a Groq vision model for image OCR; falls back to Tesseract.
+      - key: GROQ_VISION_MODEL
+        sync: false
+      - key: DEFAULT_USER_EMAIL
+        sync: false
+      # --- tunables with sensible defaults ---
+      - key: CONFIDENCE_THRESHOLD
+        value: "0.6"
+      - key: RAW_RETENTION_DAYS
+        value: "30"
+      - key: DEFAULT_USER_TIMEZONE
+        value: Europe/London
+
+# ---------------------------------------------------------------------------
+# Phase 2 (reminders + digest) cron jobs. Uncomment once scripts/dispatch.ts
+# and scripts/digest-run.ts exist (SPEC §4, §8, §9). They share the web
+# service's Turso env, so duplicate the secret env vars onto them too.
+# ---------------------------------------------------------------------------
+# cronJobs:
+#   - type: cron
+#     name: relay-reminder-dispatch
+#     runtime: node
+#     plan: free
+#     schedule: "*/15 * * * *"      # every 15 minutes (SPEC §4)
+#     buildCommand: npm ci
+#     startCommand: npm run dispatch
+#   - type: cron
+#     name: relay-daily-digest
+#     runtime: node
+#     plan: free
+#     schedule: "0 * * * *"          # hourly; job picks users at their digest_hour
+#     buildCommand: npm ci
+#     startCommand: npm run digest:run
