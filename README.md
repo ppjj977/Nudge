@@ -48,6 +48,17 @@ Implemented:
 Deferred to later phases (per `SPEC.md §11`): magic-link auth (`§10a`),
 inbound email forwarding (`§6.1`, phase 3), retention purge + `.ics` (phase 4).
 
+**Capture from anywhere (PWA share target).** nudge is an installable PWA with a
+Web Share Target: install it to your home screen, then **Share → nudge** from
+Photos, a browser, a messaging app, etc. drops the screenshot/text/link straight
+into the extraction pipeline (`app/share/route.ts`, `public/manifest.webmanifest`).
+Android only — iOS Safari doesn't support share targets.
+
+**Branding.** Palette + Manrope type + the "N + forward path + dot" mark live in
+`app/globals.css`, `app/LogoMark.tsx`, and `assets/*.svg`. App icons are
+generated from the SVGs via `npx tsx scripts/gen-icons.ts` (outputs committed to
+`public/`, so production needs no rasterizer).
+
 The app runs as a **single seeded user** (`DEFAULT_USER_EMAIL`) until auth lands.
 
 ## Setup

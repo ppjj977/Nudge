@@ -1,4 +1,8 @@
-/* nudge service worker — web push (app notifications). */
+/* nudge service worker — web push (app notifications) + installability. */
+
+// A no-op fetch handler so the app meets PWA installability criteria
+// (required for the share target to appear in the system share sheet).
+self.addEventListener("fetch", () => {});
 
 self.addEventListener("push", (event) => {
   let data = {};
