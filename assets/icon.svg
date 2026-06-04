@@ -1,0 +1,12 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="112" fill="#0D1B2A"/>
+  <!-- soft forward path -->
+  <path d="M150 312 C 214 372 296 212 372 270" stroke="#A7E2CF" stroke-width="12"
+        stroke-linecap="round" stroke-dasharray="2 26" opacity="0.7"/>
+  <!-- the N monoline -->
+  <path d="M150 364 L150 158 L356 364 L356 158" stroke="#F7F7F5" stroke-width="40"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- the nudge: glowing dot -->
+  <circle cx="392" cy="150" r="56" fill="#22C1A2" opacity="0.22"/>
+  <circle cx="392" cy="150" r="30" fill="#22C1A2"/>
+</svg>

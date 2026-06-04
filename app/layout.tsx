@@ -1,13 +1,32 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Manrope } from "next/font/google";
 import Link from "next/link";
+import LogoMark from "./LogoMark";
+import SWRegister from "./SWRegister";
 import "./globals.css";
+
+const manrope = Manrope({ subsets: ["latin"], display: "swap" });
 
 // Brand name. Overridable via APP_NAME; defaults to the product name "nudge".
 const APP_NAME = process.env.APP_NAME ?? "nudge";
 
 export const metadata: Metadata = {
   title: APP_NAME,
-  description: "Capture-first life admin. Forward it, we'll find the to-dos.",
+  description: "A gentle nudge for everything that matters.",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/favicon-32.png",
+    apple: "/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: APP_NAME,
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0D1B2A",
 };
 
 export default function RootLayout({
@@ -16,14 +35,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={manrope.className}>
       <body>
+        <SWRegister />
         <header className="topbar">
-          <Link href="/" className="wordmark">
-            {APP_NAME}
+          <Link href="/" className="brand">
+            <LogoMark size={28} />
+            <span className="wordmark">{APP_NAME}</span>
           </Link>
-          <span className="tagline">life admin, captured</span>
-          <Link href="/settings" className="nav-link">
+          <Link href="/settings" className="nav-link" aria-label="Settings">
             Settings
           </Link>
         </header>

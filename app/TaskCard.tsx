@@ -25,6 +25,17 @@ export interface TaskView {
   source_excerpt: string | null;
 }
 
+const CATEGORY_ICON: Record<string, string> = {
+  pay: "💷",
+  book: "📅",
+  attend: "📍",
+  prepare: "🎒",
+  send: "✉️",
+  renew: "🔁",
+  reminder: "⏰",
+  fyi: "📄",
+};
+
 function dueLabel(t: TaskView): string | null {
   if (!t.due_at || t.due_type === "none") return null;
   const d = new Date(t.due_at);
@@ -108,9 +119,14 @@ export default function TaskCard({
     <div className={`task ${isFyi ? "fyi" : ""}`}>
       <div className="body">
         <div>
+          <span className="task-emoji" aria-hidden="true">
+            {CATEGORY_ICON[task.category] ?? "•"}
+          </span>
+          <span className="title">{task.title}</span>
+        </div>
+        <div className="chips">
           <span className="chip cat">{task.category}</span>
           {task.life_area && <span className="chip">{task.life_area}</span>}
-          <span className="title">{task.title}</span>
         </div>
         {task.detail && <div className="meta">{task.detail}</div>}
         {meta && <div className="meta">{meta}</div>}
