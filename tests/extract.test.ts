@@ -140,6 +140,47 @@ describe("parseExtraction", () => {
     expect(item.source_excerpt).toBeNull();
   });
 
+  it("keeps a grouped event task's checklist (trimming blanks)", () => {
+    const raw = JSON.stringify({
+      items: [
+        {
+          category: "attend",
+          title: "Sports Day",
+          due_type: "date",
+          due_at: "2026-06-05",
+          confidence: 0.9,
+          checklist: ["Wear PE kit", "  ", "Bring water bottle", null],
+        },
+      ],
+    });
+    const item = parseExtraction(raw).items[0];
+    expect(item.checklist).toEqual(["Wear PE kit", "Bring water bottle"]);
+  });
+
+  it("leaves checklist null for ordinary tasks", () => {
+    const raw = JSON.stringify({
+      items: [
+        { category: "pay", title: "Pay bill", due_type: "none", confidence: 0.9 },
+      ],
+    });
+    expect(parseExtraction(raw).items[0].checklist).toBeNull();
+  });
+
+  it("nulls an empty checklist array", () => {
+    const raw = JSON.stringify({
+      items: [
+        {
+          category: "attend",
+          title: "Thing",
+          due_type: "none",
+          confidence: 0.9,
+          checklist: [],
+        },
+      ],
+    });
+    expect(parseExtraction(raw).items[0].checklist).toBeNull();
+  });
+
   it("throws ExtractionParseError on non-JSON", () => {
     expect(() => parseExtraction("not json at all")).toThrow(
       ExtractionParseError,

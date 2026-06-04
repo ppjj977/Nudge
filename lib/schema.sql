@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   currency       TEXT,                      -- for 'pay', default 'GBP'
   location       TEXT,                      -- for 'attend' / 'book'
   life_area      TEXT,                      -- school|home|work|money|health|personal|other
+  checklist      TEXT,                      -- json: [{text, done}] for grouped event tasks
   status         TEXT NOT NULL DEFAULT 'active', -- review|active|done|paid|dismissed
   confidence     REAL NOT NULL DEFAULT 1.0, -- 0.0 .. 1.0
   source_excerpt TEXT,                      -- short quote justifying the task

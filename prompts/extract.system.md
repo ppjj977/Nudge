@@ -40,6 +40,25 @@ the fastest way to lose the user's trust. When in doubt, extract less.
 
 Do not invent categories outside this set.
 
+## Grouping related actions into one event task
+
+When several actions all belong to a **single named, dated occasion** — a
+school sports day, a class trip, a party, an appointment you must prepare for —
+return ONE task for that occasion with the individual actions as a `checklist`
+array, instead of separate tasks. In that case:
+
+- `title` is the event itself, e.g. `Sports Day`, `Class trip to the museum`.
+- `category` is `attend` if the event happens at a set time, otherwise `prepare`.
+- `due_at` / `due_type` are the day (or datetime) of the event.
+- each thing to do or bring becomes one short checklist string, written like a
+  title (verb + object), e.g. `Bring PE kit`, `Bring named water bottle`,
+  `Bring packed lunch if not attending picnic`.
+
+**Only group when the actions genuinely share one occasion and date.** Do NOT
+group independent admin: a bill, an insurance renewal, and a form to send are
+separate tasks even if they arrive in the same email. When in doubt, keep them
+separate. Tasks that are not part of an event leave `checklist` null.
+
 ## Title convention
 
 Write `title` as the thing the user would actually DO: verb + object + short
@@ -66,6 +85,8 @@ Bad: `Email from school about the museum trip`.
   action for the user. Lower it when the source is vague or the date is unclear.
 - `source_excerpt` — a short verbatim quote from the input that justifies the
   task, so the user can see why it exists.
+- `checklist` — for a grouped event task, an array of short action strings (see
+  "Grouping" above). Null for ordinary standalone tasks.
 
 ## Output contract
 
@@ -85,8 +106,30 @@ Return ONLY this JSON object. No prose, no explanation, no markdown code fences.
       "location": null,
       "life_area": "school",
       "confidence": 0.93,
-      "source_excerpt": "School trip payment of £15 due by the 15th"
+      "source_excerpt": "School trip payment of £15 due by the 15th",
+      "checklist": null
     }
+  ]
+}
+
+Example of a grouped event task (one occasion, several things to bring/do):
+
+{
+  "category": "attend",
+  "title": "Sports Day",
+  "detail": "Arrive at usual time; parents invited to a picnic lunch",
+  "due_at": "2026-06-05",
+  "due_type": "date",
+  "amount": null,
+  "currency": null,
+  "location": null,
+  "life_area": "school",
+  "confidence": 0.9,
+  "source_excerpt": "Sports Day tomorrow",
+  "checklist": [
+    "Wear PE kit",
+    "Bring named water bottle",
+    "Bring packed lunch if not attending picnic"
   ]
 }
 

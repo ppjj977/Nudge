@@ -49,6 +49,18 @@ export const ExtractedItemSchema = z
       // clamp into range; never trust the model's bounds
       .transform((n) => Math.min(1, Math.max(0, Number.isFinite(n) ? n : 0))),
     source_excerpt: nullableString.optional().default(null),
+    // Grouped event tasks (e.g. "Sports Day") carry the individual things to
+    // do/bring as a checklist; independent tasks leave this null.
+    checklist: z
+      .union([z.array(z.union([z.string(), z.null()])), z.null()])
+      .optional()
+      .transform((arr) => {
+        if (!arr) return null;
+        const items = arr
+          .map((s) => (typeof s === "string" ? s.trim() : ""))
+          .filter((s) => s.length > 0);
+        return items.length > 0 ? items : null;
+      }),
   })
   .transform((item) => {
     // Hard rule (SPEC §7.4): due_at must be null when due_type is none.
