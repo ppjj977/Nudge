@@ -47,6 +47,15 @@ export default function Menu() {
           <Link href="/digest" className="menu-item" role="menuitem" onClick={close}>
             Digest
           </Link>
+          <Link href="/calendar" className="menu-item" role="menuitem" onClick={close}>
+            Calendar
+          </Link>
+          <Link href="/money" className="menu-item" role="menuitem" onClick={close}>
+            Money
+          </Link>
+          <Link href="/filter" className="menu-item" role="menuitem" onClick={close}>
+            Filter
+          </Link>
           <Link href="/done" className="menu-item" role="menuitem" onClick={close}>
             Closed Nudges
           </Link>
