@@ -30,12 +30,25 @@ Implemented:
 - Turso/libSQL schema and migrations (`lib/schema.sql`, `scripts/migrate.ts`).
 - Sample inputs and an offline extraction harness for tuning prompt quality.
 
-Deferred to later phases (per `SPEC.md §11`), with the data model already in
-place: magic-link auth (`§10a`), reminders + digest (`§8`, `§9`, phase 2),
+**Phase 2 (reminders + digest) is also implemented** (`SPEC.md §8`, `§9`):
+
+- **User-configurable reminder rules** per category — each rule fires N days
+  before the due date at a chosen local time (e.g. "9pm the day before", "10am
+  the morning of", "1 week before"). SPEC defaults ship pre-filled and are
+  editable in **Settings**. See `lib/reminders.ts`.
+- **Channels: email (Resend) and/or web-push app notifications**, toggled in
+  Settings; push is per-device (`lib/push.ts`, `public/sw.js`).
+- **Daily digest** at the user's chosen hour (`lib/digest.ts`).
+- Reminders auto-(re)generate on capture/confirm/reschedule and cancel on
+  complete/dismiss; editing the schedule regenerates active tasks.
+- Driven for free by a scheduled **GitHub Actions** workflow
+  (`.github/workflows/cron.yml`) pinging secured cron endpoints
+  (`/api/cron/dispatch`, `/api/cron/digest`).
+
+Deferred to later phases (per `SPEC.md §11`): magic-link auth (`§10a`),
 inbound email forwarding (`§6.1`, phase 3), retention purge + `.ics` (phase 4).
 
-Phase 1 runs as a **single seeded user** (`DEFAULT_USER_EMAIL`) so extraction
-can be proven before auth and email sending are wired up.
+The app runs as a **single seeded user** (`DEFAULT_USER_EMAIL`) until auth lands.
 
 ## Setup
 
@@ -59,6 +72,10 @@ npm run dev                 # http://localhost:3000
 | `GROQ_MODEL` | a current text model from Groq's catalogue (not hardcoded — `SPEC.md §13`) |
 | `GROQ_VISION_MODEL` | _optional_ vision model for images; falls back to Tesseract OCR |
 | `CONFIDENCE_THRESHOLD` | review-tray cutoff, default `0.6` |
+| `RESEND_API_KEY`, `MAIL_FROM` | outbound email (reminders + digest) |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | web push (`npx web-push generate-vapid-keys`) |
+| `CRON_SECRET` | shared secret guarding the cron endpoints |
+| `APP_BASE_URL` | public URL, used in email/notification links + by the cron workflow |
 
 ## Proving extraction quality
 

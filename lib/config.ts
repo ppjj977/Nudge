@@ -35,6 +35,19 @@ export const config = {
   retention: {
     rawRetentionDays: num("RAW_RETENTION_DAYS", 30),
   },
+  email: {
+    resendApiKey: env("RESEND_API_KEY"),
+    from: env("MAIL_FROM") ?? "nudge@example.com",
+  },
+  push: {
+    publicKey: env("VAPID_PUBLIC_KEY"),
+    privateKey: env("VAPID_PRIVATE_KEY"),
+    subject: env("VAPID_SUBJECT") ?? "mailto:nudge@example.com",
+  },
+  cron: {
+    secret: env("CRON_SECRET"),
+  },
+  appBaseUrl: env("APP_BASE_URL"),
   /**
    * Phase 1 convenience. Magic-link auth (SPEC §10a) is a later phase; until
    * then the app runs as a single seeded user so extraction can be proven.

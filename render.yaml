@@ -38,6 +38,24 @@ services:
         sync: false
       - key: DEFAULT_USER_EMAIL
         sync: false
+      # --- email (Resend) ---
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      # --- web push (app notifications): npx web-push generate-vapid-keys ---
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
+      # --- scheduling: shared secret for the cron endpoints, and the app's
+      #     own URL for links in emails/notifications ---
+      - key: CRON_SECRET
+        sync: false
+      - key: APP_BASE_URL
+        sync: false
       # --- tunables with sensible defaults ---
       - key: CONFIDENCE_THRESHOLD
         value: "0.6"
@@ -47,9 +65,10 @@ services:
         value: Europe/London
 
 # ---------------------------------------------------------------------------
-# Phase 2 (reminders + digest) cron jobs. Uncomment once scripts/dispatch.ts
-# and scripts/digest-run.ts exist (SPEC §4, §8, §9). They share the web
-# service's Turso env, so duplicate the secret env vars onto them too.
+# Phase 2 reminders + digest are driven for FREE by a scheduled GitHub Actions
+# workflow (.github/workflows/cron.yml) that pings the secured cron endpoints.
+# The PAID alternative is native Render Cron Jobs below — uncomment them and
+# copy the secret env vars onto each if you'd rather not depend on GitHub.
 # ---------------------------------------------------------------------------
 # cronJobs:
 #   - type: cron

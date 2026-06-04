@@ -44,14 +44,46 @@ The default user is provisioned lazily on the first request
 - Paste a sample (e.g. the contents of `samples/electricity-bill.txt`) →
   a `pay` task should appear with the amount and due date.
 
+## Phase 2: reminders, digest & notifications
+
+These are needed for nudge to actually nudge.
+
+### a. Email (Resend)
+1. Create an account at https://resend.com, add + verify a sending domain.
+2. Create an API key → set `RESEND_API_KEY`.
+3. Set `MAIL_FROM` to an address on your verified domain (e.g. `nudge@yourdomain`).
+
+### b. Web push (app notifications)
+1. Generate a VAPID keypair once:
+   ```bash
+   npx web-push generate-vapid-keys
+   ```
+2. Set `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `VAPID_SUBJECT`
+   (`mailto:you@yourdomain`).
+3. In the app's **Settings**, click **Enable on this device** and allow
+   notifications. (On iPhone, first Add to Home Screen — an Apple limitation.)
+
+### c. Scheduler (free, via GitHub Actions)
+The reminder dispatcher and digest run by pinging secured endpoints on a
+schedule. The included workflow (`.github/workflows/cron.yml`) does this free:
+
+1. Set `CRON_SECRET` (a long random string) and `APP_BASE_URL`
+   (e.g. `https://nudge-s1mn.onrender.com`) in the **app's** Render env.
+2. In **GitHub → repo → Settings → Secrets and variables → Actions**, add the
+   same two as repository secrets: `CRON_SECRET` and `APP_BASE_URL`.
+3. The workflow runs every ~15 min. Trigger it once manually from the **Actions**
+   tab to confirm it returns `{"due":...}` / `{"considered":...}`.
+
+Prefer not to use GitHub? Point any cron/uptime service at
+`POST /api/cron/dispatch` and `/api/cron/digest` with header
+`x-cron-secret: <CRON_SECRET>`, or uncomment the paid Render Cron Jobs in
+`render.yaml`.
+
 ## Notes & later phases
 
-- **Cron jobs** for reminders + the daily digest (Phase 2) are defined but
-  commented out at the bottom of `render.yaml`. Uncomment them once
-  `scripts/dispatch.ts` and `scripts/digest-run.ts` exist, and copy the Turso
-  secret env vars onto each job.
-- **Free plan** web services sleep after inactivity; fine for trialling, but
-  the reminder dispatcher cron needs a paid plan (or an external pinger) to be
-  reliable. Revisit at Phase 2.
+- **Free plan** web services sleep after inactivity, which is why scheduling is
+  done by pinging the app from outside (GitHub Actions, section c) rather than an
+  in-process timer. The ping also wakes the service. Native Render Cron Jobs
+  (paid) are available as commented entries in `render.yaml`.
 - **Custom domain / branding** is deferred (SPEC top matter); the wordmark is
   driven by the optional `APP_NAME` env var.

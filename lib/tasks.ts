@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { db } from "./db";
 import { newId } from "./ids";
 import { config } from "./config";
+import { generateRemindersForTask } from "./reminders";
 import type { ExtractionResult } from "./extract";
 import type { Category, DueType, LifeArea, TaskStatus } from "./categories";
 
@@ -101,7 +102,7 @@ export async function insertTasksFromExtraction(
         null,
       ],
     });
-    created.push({
+    const task: Task = {
       id,
       user_id: userId,
       capture_id: captureId,
@@ -121,10 +122,22 @@ export async function insertTasksFromExtraction(
       created_at: now,
       updated_at: now,
       completed_at: null,
-    });
+    };
+    created.push(task);
+    // High-confidence tasks land active -> schedule their reminders now.
+    // (Review-tray items get reminders when the user confirms them.)
+    if (status === "active") await generateRemindersForTask(task);
   }
   return created;
 }
+
+// Patching any of these means the reminder schedule must be reconciled.
+const REMINDER_RELEVANT = new Set([
+  "status",
+  "due_at",
+  "due_type",
+  "category",
+]);
 
 export type TimelineBucket = "today" | "week" | "later";
 
@@ -180,6 +193,17 @@ export async function getTimeline(
     timeline[bucketFor(t, now)].push(t);
   }
   return timeline;
+}
+
+/** Fetch a task by id without scoping to a user (for the cron dispatcher). */
+export async function getTaskByIdAny(id: string): Promise<Task | null> {
+  const res = await db.execute({
+    sql: "SELECT * FROM tasks WHERE id = ? LIMIT 1",
+    args: [id],
+  });
+  return res.rows.length
+    ? mapTaskRow(res.rows[0] as Record<string, unknown>)
+    : null;
 }
 
 export async function getTask(
@@ -249,7 +273,17 @@ export async function updateTask(
     sql: `UPDATE tasks SET ${sets.join(", ")} WHERE id = ? AND user_id = ?`,
     args: args as never[],
   });
-  return getTask(userId, id);
+
+  const updated = await getTask(userId, id);
+
+  // Reconcile reminders when a relevant field changed. generateRemindersForTask
+  // cancels pending rows first, and is a no-op (just a cancel) for non-active
+  // tasks — so this covers completion, dismissal, reschedule, and confirm.
+  if (updated && Object.keys(patch).some((k) => REMINDER_RELEVANT.has(k))) {
+    await generateRemindersForTask(updated);
+  }
+
+  return updated;
 }
 
 /** Promote a review-tray item to the live timeline (SPEC §10 confirm). */

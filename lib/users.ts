@@ -17,6 +17,40 @@ export interface User {
  * operates as a single seeded user so extraction quality can be proven without
  * an email sender. Idempotent.
  */
+export async function getUserById(id: string): Promise<User | null> {
+  await ensureSchema();
+  const res = await db.execute({
+    sql: "SELECT * FROM users WHERE id = ? LIMIT 1",
+    args: [id],
+  });
+  return res.rows.length ? (res.rows[0] as unknown as User) : null;
+}
+
+export async function getAllUsers(): Promise<User[]> {
+  await ensureSchema();
+  const res = await db.execute("SELECT * FROM users");
+  return res.rows as unknown as User[];
+}
+
+/** Persist a user's settings JSON (reminder rules + channels). */
+export async function updateUserSettings(
+  id: string,
+  settings: unknown,
+  digestHour?: number,
+): Promise<void> {
+  if (typeof digestHour === "number") {
+    await db.execute({
+      sql: "UPDATE users SET settings = ?, digest_hour = ? WHERE id = ?",
+      args: [JSON.stringify(settings), digestHour, id],
+    });
+  } else {
+    await db.execute({
+      sql: "UPDATE users SET settings = ? WHERE id = ?",
+      args: [JSON.stringify(settings), id],
+    });
+  }
+}
+
 export async function getOrCreateDefaultUser(): Promise<User> {
   // Every runtime path (page + API routes) calls this first, so it is the
   // natural place to guarantee the schema exists (see ensureSchema rationale).
