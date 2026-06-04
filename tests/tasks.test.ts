@@ -21,13 +21,26 @@ describe("bucketFor", () => {
     ).toBe("today");
   });
 
-  it("puts tasks within 7 days in 'week'", () => {
+  // now = Thursday 4 Jun 2026; the current ISO week ends Sunday 7 Jun.
+  it("puts tasks later this week (through Sunday) in 'week'", () => {
     expect(
-      bucketFor({ due_at: "2026-06-09", due_type: "date" }, now),
+      bucketFor({ due_at: "2026-06-06", due_type: "date" }, now), // Saturday
+    ).toBe("week");
+    expect(
+      bucketFor({ due_at: "2026-06-07", due_type: "date" }, now), // Sunday (boundary)
     ).toBe("week");
   });
 
-  it("puts tasks beyond 7 days in 'later'", () => {
+  it("puts next week (Monday onward) in 'later', not 'week'", () => {
+    expect(
+      bucketFor({ due_at: "2026-06-08", due_type: "date" }, now), // next Monday
+    ).toBe("later");
+    expect(
+      bucketFor({ due_at: "2026-06-09", due_type: "date" }, now),
+    ).toBe("later");
+  });
+
+  it("puts far-future tasks in 'later'", () => {
     expect(
       bucketFor({ due_at: "2026-07-15", due_type: "date" }, now),
     ).toBe("later");
