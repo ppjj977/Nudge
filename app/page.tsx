@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
 import { getTimeline, type Task } from "@/lib/tasks";
 import CaptureBox from "./CaptureBox";
 import TaskCard, { type TaskView } from "./TaskCard";
@@ -28,10 +28,12 @@ function Section({
   title,
   tasks,
   review = false,
+  lifeAreas,
 }: {
   title: string;
   tasks: Task[];
   review?: boolean;
+  lifeAreas: string[];
 }) {
   return (
     <section>
@@ -40,7 +42,12 @@ function Section({
         <div className="empty">Nothing here.</div>
       ) : (
         tasks.map((t) => (
-          <TaskCard key={t.id} task={toView(t)} review={review} />
+          <TaskCard
+            key={t.id}
+            task={toView(t)}
+            review={review}
+            lifeAreas={lifeAreas}
+          />
         ))
       )}
     </section>
@@ -54,6 +61,7 @@ export default async function Dashboard({
 }) {
   const user = await getOrCreateDefaultUser();
   const timeline = await getTimeline(user.id, user.timezone);
+  const lifeAreas = getUserLifeAreas(user);
   const now = DateTime.now().setZone(user.timezone);
   const { shared } = await searchParams;
   const sharedMsg = shared ? SHARED_MESSAGES[shared] : null;
@@ -68,9 +76,9 @@ export default async function Dashboard({
       <CaptureBox />
       {sharedMsg && <div className="toast">{sharedMsg}</div>}
 
-      <Section title="Today" tasks={timeline.today} />
-      <Section title="This week" tasks={timeline.week} />
-      <Section title="Later" tasks={timeline.later} />
+      <Section title="Today" tasks={timeline.today} lifeAreas={lifeAreas} />
+      <Section title="This week" tasks={timeline.week} lifeAreas={lifeAreas} />
+      <Section title="Later" tasks={timeline.later} lifeAreas={lifeAreas} />
 
       {timeline.review.length > 0 && (
         <>
@@ -79,7 +87,12 @@ export default async function Dashboard({
             {timeline.review.length === 1 ? "" : "s"} need a quick look — low
             confidence, so they are held out of your timeline.
           </div>
-          <Section title="Needs review" tasks={timeline.review} review />
+          <Section
+            title="Needs review"
+            tasks={timeline.review}
+            review
+            lifeAreas={lifeAreas}
+          />
         </>
       )}
     </>

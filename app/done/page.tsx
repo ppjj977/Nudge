@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
 import { getCompletedTasks, type Task } from "@/lib/tasks";
 import TaskCard, { type TaskView } from "../TaskCard";
 
@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function DonePage() {
   const user = await getOrCreateDefaultUser();
   const tasks = await getCompletedTasks(user.id);
+  const lifeAreas = getUserLifeAreas(user);
 
   return (
     <>
@@ -26,7 +27,12 @@ export default async function DonePage() {
         <div className="empty">Nothing completed yet.</div>
       ) : (
         tasks.map((t: Task) => (
-          <TaskCard key={t.id} task={t as unknown as TaskView} done />
+          <TaskCard
+            key={t.id}
+            task={t as unknown as TaskView}
+            done
+            lifeAreas={lifeAreas}
+          />
         ))
       )}
     </>
