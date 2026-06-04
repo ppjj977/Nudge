@@ -9,6 +9,7 @@ export default function LoginForm({
   googleEnabled: boolean;
   initialMessage?: string | null;
 }) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState<string | null>(initialMessage ?? null);
@@ -33,7 +34,7 @@ export default function LoginForm({
     else setMsg(d.error || "Sign in failed");
   }
   async function register() {
-    const { ok, d } = await post("/api/auth/register", { email, password });
+    const { ok, d } = await post("/api/auth/register", { name, email, password });
     if (ok) location.href = "/";
     else setMsg(d.error || "Could not create account");
   }
@@ -59,6 +60,16 @@ export default function LoginForm({
       )}
       {googleEnabled && <div className="auth-divider">or</div>}
 
+      <label className="field">
+        <span>Name (for new accounts)</span>
+        <input
+          type="text"
+          value={name}
+          autoComplete="name"
+          placeholder="Optional"
+          onChange={(e) => setName(e.target.value)}
+        />
+      </label>
       <label className="field">
         <span>Email</span>
         <input
