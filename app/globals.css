@@ -433,18 +433,45 @@ button.link {
 }
 .cal-cell {
   min-height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  width: 100%;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 4px;
   overflow: hidden;
+  cursor: pointer;
+  font-weight: 400;
 }
 .cal-cell.out {
   opacity: 0.4;
 }
 .cal-cell.today {
   border-color: var(--teal);
-  box-shadow: 0 0 0 1px var(--teal);
+}
+.cal-cell.selected {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px var(--teal);
+}
+.cal-date {
+  display: block;
+}
+.day-panel {
+  margin-top: 18px;
+}
+.day-add {
+  margin-top: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+.day-add select {
+  text-transform: capitalize;
 }
 .cal-date {
   font-size: 12px;

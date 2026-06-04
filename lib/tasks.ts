@@ -4,6 +4,7 @@ import { newId } from "./ids";
 import { config } from "./config";
 import { generateRemindersForTask } from "./reminders";
 import type { ExtractionResult } from "./extract";
+import { CATEGORIES } from "./categories";
 import type { Category, DueType, TaskStatus } from "./categories";
 
 export interface ChecklistItem {
@@ -206,6 +207,78 @@ export async function getTaskByIdAny(id: string): Promise<Task | null> {
   return res.rows.length
     ? mapTaskRow(res.rows[0] as Record<string, unknown>)
     : null;
+}
+
+export interface ManualTaskInput {
+  title: string;
+  category?: string;
+  detail?: string | null;
+  due_at?: string | null;
+  due_type?: DueType;
+  amount?: number | null;
+  currency?: string | null;
+  location?: string | null;
+  life_area?: string | null;
+}
+
+/**
+ * Create a task by hand (manual entry — the fallback path, SPEC §1). Lands
+ * active with full confidence and schedules its reminders.
+ */
+export async function createManualTask(
+  userId: string,
+  input: ManualTaskInput,
+): Promise<Task> {
+  const id = newId("tsk");
+  const now = new Date().toISOString();
+  const category = (CATEGORIES as readonly string[]).includes(input.category ?? "")
+    ? (input.category as Category)
+    : "reminder";
+  // If a date was given but no type, treat it as a date.
+  const due_at = input.due_at && input.due_at.trim() ? input.due_at : null;
+  const due_type: DueType = due_at
+    ? input.due_type && input.due_type !== "none"
+      ? input.due_type
+      : "date"
+    : "none";
+
+  const task: Task = {
+    id,
+    user_id: userId,
+    capture_id: null,
+    category,
+    title: input.title.trim(),
+    detail: input.detail?.trim() || null,
+    due_at,
+    due_type,
+    amount: category === "pay" ? (input.amount ?? null) : null,
+    currency: category === "pay" ? (input.currency || "GBP") : null,
+    location: input.location?.trim() || null,
+    life_area: input.life_area?.trim() || null,
+    checklist: null,
+    status: "active",
+    confidence: 1,
+    source_excerpt: null,
+    created_at: now,
+    updated_at: now,
+    completed_at: null,
+  };
+
+  await db.execute({
+    sql: `INSERT INTO tasks
+      (id, user_id, capture_id, category, title, detail, due_at, due_type,
+       amount, currency, location, life_area, checklist, status, confidence,
+       source_excerpt, created_at, updated_at, completed_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    args: [
+      task.id, task.user_id, task.capture_id, task.category, task.title,
+      task.detail, task.due_at, task.due_type, task.amount, task.currency,
+      task.location, task.life_area, null, task.status, task.confidence,
+      task.source_excerpt, task.created_at, task.updated_at, task.completed_at,
+    ],
+  });
+  await generateRemindersForTask(task);
+  return task;
 }
 
 /** All active tasks (for the Money, Calendar, and Filter views). */
