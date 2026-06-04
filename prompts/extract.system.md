@@ -79,8 +79,8 @@ Bad: `Email from school about the museum trip`.
 - `amount` — number for `pay`, else null.
 - `currency` — ISO currency for `pay` (default `GBP` if a £ amount with no code), else null.
 - `location` — string for `attend`/`book` where relevant, else null.
-- `life_area` — one of `school` | `home` | `work` | `money` | `health` |
-  `personal` | `other`. Best guess; use `other` if unclear.
+- `life_area` — one of: {{LIFE_AREAS}}. Pick the closest fit. If none clearly
+  applies, use null. Do not invent areas outside this list.
 - `confidence` — 0.0 to 1.0. How sure you are this is a real, correctly typed
   action for the user. Lower it when the source is vague or the date is unclear.
 - `source_excerpt` — a short verbatim quote from the input that justifies the

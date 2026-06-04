@@ -31,6 +31,9 @@ export const LIFE_AREAS = [
 ] as const;
 export type LifeArea = (typeof LIFE_AREAS)[number];
 
+/** Starting life areas for a new user; each user can customise their own set. */
+export const DEFAULT_LIFE_AREAS: string[] = [...LIFE_AREAS];
+
 export const TASK_STATUSES = [
   "review",
   "active",

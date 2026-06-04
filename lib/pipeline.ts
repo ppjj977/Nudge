@@ -4,7 +4,7 @@ import { newId } from "./ids";
 import { extract, ExtractionParseError } from "./extract";
 import { insertTasksFromExtraction, type Task } from "./tasks";
 import { tidyText } from "./normalize";
-import type { User } from "./users";
+import { getUserLifeAreas, type User } from "./users";
 
 /**
  * The one extraction path (SPEC §6): a capture's normalized text -> Groq ->
@@ -67,6 +67,7 @@ export async function ingestAndExtract(
   try {
     const result = await extract(normalized, {
       timezone: user.timezone,
+      lifeAreas: getUserLifeAreas(user),
       now: DateTime.now().setZone(user.timezone),
     });
     const tasks = await insertTasksFromExtraction(user.id, captureId, result);

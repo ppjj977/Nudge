@@ -1,6 +1,26 @@
 import { db, ensureSchema } from "./db";
 import { newId } from "./ids";
 import { config } from "./config";
+import { DEFAULT_LIFE_AREAS } from "./categories";
+
+/** A user's life areas (customisable). Falls back to the defaults. */
+export function getUserLifeAreas(user: Pick<User, "settings">): string[] {
+  if (user.settings) {
+    try {
+      const parsed = JSON.parse(user.settings);
+      const areas = parsed?.lifeAreas;
+      if (Array.isArray(areas)) {
+        const cleaned = areas
+          .filter((a): a is string => typeof a === "string" && a.trim().length > 0)
+          .map((a) => a.trim());
+        if (cleaned.length > 0) return cleaned;
+      }
+    } catch {
+      /* fall through to defaults */
+    }
+  }
+  return DEFAULT_LIFE_AREAS;
+}
 
 export interface User {
   id: string;

@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { getOrCreateDefaultUser, updateUserSettings } from "@/lib/users";
+import {
+  getOrCreateDefaultUser,
+  updateUserSettings,
+  getUserLifeAreas,
+} from "@/lib/users";
+import { DEFAULT_LIFE_AREAS } from "@/lib/categories";
 import {
   parseUserSettings,
   regenerateAllForUser,
@@ -20,7 +25,9 @@ export async function GET() {
     reminderRules: rules,
     channels,
     digestHour: user.digest_hour,
+    lifeAreas: getUserLifeAreas(user),
     defaults: DEFAULT_REMINDER_RULES,
+    defaultLifeAreas: DEFAULT_LIFE_AREAS,
     pushAvailable: pushEnabled(),
   });
 }
@@ -29,6 +36,7 @@ interface SettingsBody {
   reminderRules?: Record<string, unknown>;
   channels?: { email?: unknown; push?: unknown };
   digestHour?: unknown;
+  lifeAreas?: unknown;
 }
 
 /** PUT /api/settings — save preferences, then regenerate active reminders. */
@@ -64,9 +72,24 @@ export async function PUT(req: Request) {
     digestHour = Math.min(23, Math.max(0, Math.trunc(body.digestHour)));
   }
 
+  // Sanitize life areas: trimmed, lowercased, de-duped, non-empty. Fall back to
+  // defaults if the user cleared them all (so the extractor always has a set).
+  let lifeAreas = DEFAULT_LIFE_AREAS;
+  if (Array.isArray(body.lifeAreas)) {
+    const cleaned = Array.from(
+      new Set(
+        body.lifeAreas
+          .filter((a): a is string => typeof a === "string")
+          .map((a) => a.trim().toLowerCase())
+          .filter((a) => a.length > 0),
+      ),
+    );
+    if (cleaned.length > 0) lifeAreas = cleaned;
+  }
+
   await updateUserSettings(
     user.id,
-    { reminderRules, channels },
+    { reminderRules, channels, lifeAreas },
     digestHour,
   );
 

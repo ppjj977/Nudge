@@ -4,6 +4,7 @@ import {
   parseExtraction,
   ExtractionParseError,
   buildSystemPrompt,
+  coerceLifeAreas,
 } from "../lib/extract";
 import { DateTime } from "luxon";
 
@@ -205,5 +206,30 @@ describe("buildSystemPrompt", () => {
     expect(prompt).toContain("Thursday");
     expect(prompt).toContain("Europe/London");
     expect(prompt).not.toContain("{{TODAY}}");
+  });
+
+  it("injects the user's custom life areas", () => {
+    const prompt = buildSystemPrompt({
+      timezone: "Europe/London",
+      lifeAreas: ["kids", "side hustle", "admin"],
+    });
+    expect(prompt).toContain("kids, side hustle, admin");
+    expect(prompt).not.toContain("{{LIFE_AREAS}}");
+  });
+});
+
+describe("coerceLifeAreas", () => {
+  const result = {
+    nothing_actionable: false,
+    items: [
+      { category: "pay", title: "A", due_type: "none", life_area: "kids" } as never,
+      { category: "send", title: "B", due_type: "none", life_area: "school" } as never,
+      { category: "send", title: "C", due_type: "none", life_area: null } as never,
+    ],
+  };
+
+  it("keeps areas in the user's set and nulls the rest", () => {
+    const out = coerceLifeAreas(result, ["kids", "admin"]);
+    expect(out.items.map((i) => i.life_area)).toEqual(["kids", null, null]);
   });
 });

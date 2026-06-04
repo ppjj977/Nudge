@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getOrCreateDefaultUser, getUserLifeAreas } from "@/lib/users";
 import { parseUserSettings, DEFAULT_REMINDER_RULES } from "@/lib/reminders";
+import { DEFAULT_LIFE_AREAS } from "@/lib/categories";
 import { pushEnabled } from "@/lib/push";
 import SettingsForm from "../SettingsForm";
 
@@ -23,6 +24,8 @@ export default async function SettingsPage() {
         defaults={DEFAULT_REMINDER_RULES}
         initialChannels={channels}
         initialDigestHour={user.digest_hour}
+        initialLifeAreas={getUserLifeAreas(user)}
+        defaultLifeAreas={DEFAULT_LIFE_AREAS}
         pushAvailable={pushEnabled()}
       />
     </>
