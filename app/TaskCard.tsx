@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { CATEGORIES } from "@/lib/categories";
 
 export interface ChecklistItem {
   text: string;
@@ -233,6 +234,7 @@ function EditForm({
   const [time, setTime] = useState(initialTime);
   const [amount, setAmount] = useState(task.amount?.toString() ?? "");
   const [location, setLocation] = useState(task.location ?? "");
+  const [category, setCategory] = useState<string>(task.category);
   const [lifeArea, setLifeArea] = useState(task.life_area ?? "");
   const [items, setItems] = useState<ChecklistItem[]>(
     task.checklist ? task.checklist.map((c) => ({ ...c })) : [],
@@ -264,9 +266,13 @@ function EditForm({
       .map((it) => ({ text: it.text.trim(), done: it.done }))
       .filter((it) => it.text.length > 0);
     patch.checklist = cleanedItems.length > 0 ? cleanedItems : null;
-    if (task.category === "pay") {
+    patch.category = category;
+    if (category === "pay") {
       patch.amount = amount.trim() === "" ? null : Number(amount);
       patch.currency = task.currency || "GBP";
+    } else {
+      patch.amount = null;
+      patch.currency = null;
     }
     if (!date) {
       patch.due_type = "none";
@@ -295,6 +301,16 @@ function EditForm({
           <input value={title} onChange={(e) => setTitle(e.target.value)} />
         </label>
         <label className="field">
+          <span>Category</span>
+          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
           <span>Detail</span>
           <input value={detail} onChange={(e) => setDetail(e.target.value)} />
         </label>
@@ -313,7 +329,7 @@ function EditForm({
             />
           </label>
         </div>
-        {task.category === "pay" && (
+        {category === "pay" && (
           <label className="field">
             <span>Amount ({task.currency || "GBP"})</span>
             <input
@@ -324,7 +340,7 @@ function EditForm({
             />
           </label>
         )}
-        {(task.category === "attend" || task.category === "book") && (
+        {(category === "attend" || category === "book") && (
           <label className="field">
             <span>Location</span>
             <input value={location} onChange={(e) => setLocation(e.target.value)} />
