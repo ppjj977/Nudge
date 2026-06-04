@@ -3,6 +3,11 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
+export interface ChecklistItem {
+  text: string;
+  done: boolean;
+}
+
 export interface TaskView {
   id: string;
   category: string;
@@ -14,6 +19,7 @@ export interface TaskView {
   currency: string | null;
   location: string | null;
   life_area: string | null;
+  checklist: ChecklistItem[] | null;
   status: string;
   confidence: number;
   source_excerpt: string | null;
@@ -77,6 +83,16 @@ export default function TaskCard({
   const dismiss = () => call(`/api/tasks/${task.id}`, "DELETE");
   const confirm = () => call(`/api/tasks/${task.id}/confirm`, "POST");
 
+  // Toggle one checklist item. Progress-only: the task stays active until the
+  // user presses Done, even when every item is ticked.
+  const toggleItem = (index: number) => {
+    if (!task.checklist) return;
+    const next = task.checklist.map((it, i) =>
+      i === index ? { ...it, done: !it.done } : it,
+    );
+    call(`/api/tasks/${task.id}`, "PATCH", { checklist: next });
+  };
+
   const meta = [
     dueLabel(task),
     amountLabel(task),
@@ -98,6 +114,23 @@ export default function TaskCard({
         </div>
         {task.detail && <div className="meta">{task.detail}</div>}
         {meta && <div className="meta">{meta}</div>}
+        {task.checklist && task.checklist.length > 0 && (
+          <ul className="checklist">
+            {task.checklist.map((item, i) => (
+              <li key={i} className={item.done ? "checked" : ""}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={item.done}
+                    disabled={pending || review}
+                    onChange={() => toggleItem(i)}
+                  />
+                  <span>{item.text}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
         {task.source_excerpt && (
           <div className="excerpt">“{task.source_excerpt}”</div>
         )}

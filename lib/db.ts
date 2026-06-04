@@ -52,4 +52,22 @@ async function applySchema(): Promise<void> {
   for (const stmt of statements) {
     await db.execute(stmt);
   }
+  await applyAdditiveMigrations();
+}
+
+/**
+ * Idempotent column additions for databases created before a column existed
+ * (CREATE TABLE IF NOT EXISTS won't add new columns to an existing table).
+ * Each entry is safe to run repeatedly — a duplicate-column error is ignored.
+ */
+async function applyAdditiveMigrations(): Promise<void> {
+  const additions = ["ALTER TABLE tasks ADD COLUMN checklist TEXT"];
+  for (const stmt of additions) {
+    try {
+      await db.execute(stmt);
+    } catch (err) {
+      const msg = (err as Error).message?.toLowerCase() ?? "";
+      if (!msg.includes("duplicate column")) throw err;
+    }
+  }
 }

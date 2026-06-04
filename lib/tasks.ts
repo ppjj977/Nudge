@@ -5,6 +5,11 @@ import { config } from "./config";
 import type { ExtractionResult } from "./extract";
 import type { Category, DueType, LifeArea, TaskStatus } from "./categories";
 
+export interface ChecklistItem {
+  text: string;
+  done: boolean;
+}
+
 export interface Task {
   id: string;
   user_id: string;
@@ -18,12 +23,32 @@ export interface Task {
   currency: string | null;
   location: string | null;
   life_area: LifeArea | null;
+  checklist: ChecklistItem[] | null;
   status: TaskStatus;
   confidence: number;
   source_excerpt: string | null;
   created_at: string;
   updated_at: string;
   completed_at: string | null;
+}
+
+/** Parse a raw DB row, decoding the checklist JSON column into objects. */
+function mapTaskRow(row: Record<string, unknown>): Task {
+  let checklist: ChecklistItem[] | null = null;
+  const raw = row.checklist;
+  if (typeof raw === "string" && raw.trim().length > 0) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        checklist = parsed
+          .filter((i) => i && typeof i.text === "string")
+          .map((i) => ({ text: i.text, done: Boolean(i.done) }));
+      }
+    } catch {
+      checklist = null;
+    }
+  }
+  return { ...(row as unknown as Task), checklist };
 }
 
 /**
@@ -44,12 +69,16 @@ export async function insertTasksFromExtraction(
     const status: TaskStatus =
       item.confidence < threshold ? "review" : "active";
     const id = newId("tsk");
+    const checklist: ChecklistItem[] | null = item.checklist
+      ? item.checklist.map((text) => ({ text, done: false }))
+      : null;
+    const checklistJson = checklist ? JSON.stringify(checklist) : null;
     await db.execute({
       sql: `INSERT INTO tasks
         (id, user_id, capture_id, category, title, detail, due_at, due_type,
-         amount, currency, location, life_area, status, confidence,
+         amount, currency, location, life_area, checklist, status, confidence,
          source_excerpt, created_at, updated_at, completed_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       args: [
         id,
         userId,
@@ -63,6 +92,7 @@ export async function insertTasksFromExtraction(
         item.currency,
         item.location,
         item.life_area,
+        checklistJson,
         status,
         item.confidence,
         item.source_excerpt,
@@ -84,6 +114,7 @@ export async function insertTasksFromExtraction(
       currency: item.currency,
       location: item.location,
       life_area: item.life_area,
+      checklist,
       status,
       confidence: item.confidence,
       source_excerpt: item.source_excerpt,
@@ -137,7 +168,7 @@ export async function getTimeline(
           ORDER BY (due_at IS NULL), due_at ASC, created_at DESC`,
     args: [userId],
   });
-  const tasks = res.rows as unknown as Task[];
+  const tasks = res.rows.map((r) => mapTaskRow(r as Record<string, unknown>));
   const now = DateTime.now().setZone(timezone);
 
   const timeline: Timeline = { today: [], week: [], later: [], review: [] };
@@ -159,7 +190,9 @@ export async function getTask(
     sql: "SELECT * FROM tasks WHERE id = ? AND user_id = ? LIMIT 1",
     args: [id, userId],
   });
-  return res.rows.length ? (res.rows[0] as unknown as Task) : null;
+  return res.rows.length
+    ? mapTaskRow(res.rows[0] as Record<string, unknown>)
+    : null;
 }
 
 const EDITABLE_FIELDS = new Set([
@@ -172,6 +205,7 @@ const EDITABLE_FIELDS = new Set([
   "location",
   "life_area",
   "category",
+  "checklist",
   "status",
 ]);
 
@@ -192,7 +226,12 @@ export async function updateTask(
   for (const [k, v] of Object.entries(patch)) {
     if (!EDITABLE_FIELDS.has(k)) continue;
     sets.push(`${k} = ?`);
-    args.push(v);
+    // checklist is stored as a JSON string; accept an array or pre-encoded string
+    if (k === "checklist") {
+      args.push(v == null ? null : typeof v === "string" ? v : JSON.stringify(v));
+    } else {
+      args.push(v);
+    }
   }
 
   const now = new Date().toISOString();
