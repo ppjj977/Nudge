@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 import { ingestAndExtract } from "@/lib/pipeline";
 
 export const runtime = "nodejs";
@@ -18,7 +18,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "text is required" }, { status: 400 });
   }
 
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const result = await ingestAndExtract(user, {
     source: "text",
     rawContent: text,

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 import { ingestAndExtract } from "@/lib/pipeline";
 import { transcribeAudio } from "@/lib/normalize";
 
@@ -30,7 +30,8 @@ export async function POST(req: Request) {
     );
   }
 
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const result = await ingestAndExtract(user, {
     source: "audio",
     rawContent: `audio:${file.name || "voice-note"} (${file.type}, ${file.size} bytes)`,

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 import { saveSubscription, deleteSubscription } from "@/lib/push";
 
 export const runtime = "nodejs";
@@ -18,7 +18,8 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await saveSubscription(user.id, {
     endpoint: body.endpoint,
     keys: { p256dh: body.keys.p256dh, auth: body.keys.auth },
@@ -28,6 +29,8 @@ export async function POST(req: Request) {
 
 /** DELETE /api/push/subscribe — remove a device subscription. */
 export async function DELETE(req: Request) {
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   let body: { endpoint?: string };
   try {
     body = await req.json();

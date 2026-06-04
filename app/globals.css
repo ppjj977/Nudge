@@ -309,6 +309,80 @@ button.recording {
 .manual-add select {
   text-transform: capitalize;
 }
+
+/* ---- auth ---- */
+.auth-wrap {
+  max-width: 380px;
+  margin: 24px auto 0;
+}
+.auth {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.auth .field {
+  display: block;
+  margin-bottom: 10px;
+}
+.auth .field > span {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.auth input {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 11px;
+  font: inherit;
+}
+.auth-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+.auth-actions button {
+  flex: 1;
+}
+.btn-google {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 700;
+  color: var(--navy);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.auth-divider {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  margin: 14px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.auth-msg {
+  margin-top: 12px;
+}
+.menu-item.signout {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  color: var(--danger);
+  font-weight: 600;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  margin-top: 4px;
+}
 .error {
   color: #d1453b;
 }

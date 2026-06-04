@@ -4,6 +4,7 @@ import Link from "next/link";
 import LogoMark from "./LogoMark";
 import SWRegister from "./SWRegister";
 import Menu from "./Menu";
+import { getCurrentUser } from "@/lib/auth";
 import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin"], display: "swap" });
@@ -30,11 +31,12 @@ export const viewport: Viewport = {
   themeColor: "#0D1B2A",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getCurrentUser();
   return (
     <html lang="en" className={manrope.className}>
       <body>
@@ -44,7 +46,7 @@ export default function RootLayout({
             <LogoMark size={28} />
             <span className="wordmark">{APP_NAME}</span>
           </Link>
-          <Menu />
+          {user && <Menu />}
         </header>
         <main className="container">{children}</main>
         <footer className="tagline-footer">

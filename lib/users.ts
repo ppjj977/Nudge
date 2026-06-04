@@ -25,6 +25,8 @@ export function getUserLifeAreas(user: Pick<User, "settings">): string[] {
 export interface User {
   id: string;
   email: string;
+  name: string | null;
+  image: string | null;
   timezone: string;
   inbound_address: string | null;
   digest_hour: number;
@@ -94,6 +96,8 @@ export async function getOrCreateDefaultUser(): Promise<User> {
   return {
     id,
     email,
+    name: null,
+    image: null,
     timezone: config.defaultUser.timezone,
     inbound_address: null,
     digest_hour: 7,

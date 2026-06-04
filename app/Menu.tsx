@@ -70,6 +70,16 @@ export default function Menu() {
           <Link href="/help" className="menu-item" role="menuitem" onClick={close}>
             ? Categories &amp; help
           </Link>
+          <button
+            className="menu-item signout"
+            role="menuitem"
+            onClick={async () => {
+              await fetch("/api/auth/logout", { method: "POST" });
+              location.href = "/login";
+            }}
+          >
+            Sign out
+          </button>
         </div>
       )}
     </div>

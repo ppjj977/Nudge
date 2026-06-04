@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 import { updateTask, dismissTask } from "@/lib/tasks";
 
 export const runtime = "nodejs";
@@ -19,7 +19,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const task = await updateTask(user.id, id, patch);
   if (!task) {
     return NextResponse.json({ error: "Task not found" }, { status: 404 });
@@ -30,7 +31,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
 /** DELETE /api/tasks/:id — dismiss (soft-delete; cancels reminders in phase 2). */
 export async function DELETE(_req: Request, { params }: Ctx) {
   const { id } = await params;
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const task = await dismissTask(user.id, id);
   if (!task) {
     return NextResponse.json({ error: "Task not found" }, { status: 404 });

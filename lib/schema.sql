@@ -7,11 +7,32 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users (
   id              TEXT PRIMARY KEY,
   email           TEXT UNIQUE NOT NULL,
+  name            TEXT,
+  image           TEXT,
+  password_hash   TEXT,                                   -- scrypt; null for oauth/magic-link only
   timezone        TEXT NOT NULL DEFAULT 'Europe/London', -- IANA
   inbound_address TEXT UNIQUE,                            -- per-user forwarding addr (phase 3)
   digest_hour     INTEGER NOT NULL DEFAULT 7,             -- local hour
   settings        TEXT,                                   -- json: reminder offsets, retention prefs
   created_at      TEXT NOT NULL
+);
+
+-- Server-side sessions (SPEC §10a): the cookie holds the random session id.
+CREATE TABLE IF NOT EXISTS sessions (
+  id         TEXT PRIMARY KEY,   -- the session token
+  user_id    TEXT NOT NULL REFERENCES users(id),
+  expires_at TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+-- Single-use tokens for magic-link sign-in (and future password reset).
+CREATE TABLE IF NOT EXISTS auth_tokens (
+  id         TEXT PRIMARY KEY,
+  token_hash TEXT NOT NULL,      -- sha256 of the emailed token
+  email      TEXT NOT NULL,
+  purpose    TEXT NOT NULL DEFAULT 'magic',
+  expires_at TEXT NOT NULL,
+  used_at    TEXT
 );
 
 -- Raw inbound, kept for audit and reprocessing. raw_content is purged per
@@ -85,4 +106,6 @@ CREATE INDEX IF NOT EXISTS idx_captures_user        ON captures(user_id, receive
 CREATE INDEX IF NOT EXISTS idx_reminders_dispatch   ON reminders(status, fire_at);
 CREATE INDEX IF NOT EXISTS idx_reminders_task        ON reminders(task_id, status);
 CREATE INDEX IF NOT EXISTS idx_push_user             ON push_subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_user         ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_auth_tokens_hash      ON auth_tokens(token_hash);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_digest_per_day ON digest_log(user_id, sent_for);

@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import { getOrCreateDefaultUser } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 import { getTimeline, createManualTask } from "@/lib/tasks";
 
 export const runtime = "nodejs";
 
 /** GET /api/tasks — timeline (today / week / later) + review tray (SPEC §10). */
 export async function GET() {
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const timeline = await getTimeline(user.id, user.timezone);
   return NextResponse.json(timeline);
 }
@@ -23,7 +24,8 @@ export async function POST(req: Request) {
   if (title.length === 0) {
     return NextResponse.json({ error: "title is required" }, { status: 400 });
   }
-  const user = await getOrCreateDefaultUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const task = await createManualTask(user.id, {
     title,
     category: typeof body.category === "string" ? body.category : undefined,
