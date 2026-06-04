@@ -55,19 +55,51 @@ a {
   letter-spacing: -0.5px;
   color: var(--navy);
 }
-.nav {
+.menu {
   margin-left: auto;
+  position: relative;
+}
+.burger {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 40px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
 }
-.nav-link {
-  color: var(--muted);
+.burger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  margin: 0 auto;
+  background: var(--navy);
+  border-radius: 2px;
+}
+.menu-panel {
+  position: absolute;
+  right: 0;
+  top: 46px;
+  min-width: 190px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+  z-index: 30;
+}
+.menu-item {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
-}
-.nav-link:hover {
   color: var(--navy);
+  font-weight: 600;
+  font-size: 14px;
+}
+.menu-item:hover {
+  background: var(--bg);
 }
 
 .tagline-footer {

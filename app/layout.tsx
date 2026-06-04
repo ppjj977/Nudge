@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import Link from "next/link";
 import LogoMark from "./LogoMark";
 import SWRegister from "./SWRegister";
+import Menu from "./Menu";
 import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin"], display: "swap" });
@@ -43,14 +44,7 @@ export default function RootLayout({
             <LogoMark size={28} />
             <span className="wordmark">{APP_NAME}</span>
           </Link>
-          <nav className="nav">
-            <Link href="/done" className="nav-link">
-              Done
-            </Link>
-            <Link href="/settings" className="nav-link">
-              Settings
-            </Link>
-          </nav>
+          <Menu />
         </header>
         <main className="container">{children}</main>
         <footer className="tagline-footer">
