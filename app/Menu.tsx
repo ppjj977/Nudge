@@ -44,6 +44,9 @@ export default function Menu() {
           <Link href="/" className="menu-item" role="menuitem" onClick={close}>
             Timeline
           </Link>
+          <Link href="/digest" className="menu-item" role="menuitem" onClick={close}>
+            Digest
+          </Link>
           <Link href="/done" className="menu-item" role="menuitem" onClick={close}>
             Closed Nudges
           </Link>
