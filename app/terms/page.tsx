@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { config } from "@/lib/config";
 
 export const metadata = { title: "nudge — Terms of Service" };
 
 export default function TermsPage() {
+  const email = config.supportEmail;
   return (
     <div className="legal">
       <div className="settings-head">
@@ -64,7 +66,7 @@ export default function TermsPage() {
       <p>We may update these terms; we&apos;ll change the date above when we do.</p>
 
       <p className="legal-foot">
-        Questions? <a href="mailto:hello@nudgelive.co.uk">hello@nudgelive.co.uk</a>
+        Questions? <a href={`mailto:${email}`}>{email}</a>
       </p>
     </div>
   );

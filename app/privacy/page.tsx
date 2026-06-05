@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { config } from "@/lib/config";
 
 export const metadata = { title: "nudge — Privacy Policy" };
 
 export default function PrivacyPage() {
+  const email = config.supportEmail;
   return (
     <div className="legal">
       <div className="settings-head">
@@ -84,7 +86,7 @@ export default function PrivacyPage() {
       <p>
         You can access and update your details in Profile, and delete your
         account and data at any time. For any privacy request, contact us at{" "}
-        <a href="mailto:hello@nudgelive.co.uk">hello@nudgelive.co.uk</a>.
+        <a href={`mailto:${email}`}>{email}</a>.
       </p>
 
       <h2>Children</h2>

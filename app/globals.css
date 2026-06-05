@@ -1553,3 +1553,64 @@ button.snoozed {
 .danger-btn:disabled {
   opacity: 0.5;
 }
+
+/* error / not-found pages */
+.error-page {
+  text-align: center;
+  padding: 56px 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.error-page h1 {
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.error-page .hero-cta {
+  margin-top: 18px;
+}
+
+/* first-run onboarding */
+.onboard {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-top: 18px;
+}
+.onboard h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  color: var(--navy);
+}
+.onboard > p {
+  color: var(--muted);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+.onboard-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.onboard-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+.onboard-list li span {
+  font-size: 18px;
+}
+.onboard-list code {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 13px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1px 6px;
+  word-break: break-all;
+}

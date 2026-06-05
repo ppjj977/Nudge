@@ -41,6 +41,10 @@ export const config = {
     resendApiKey: env("RESEND_API_KEY"),
     from: env("MAIL_FROM") ?? "nudge@example.com",
   },
+  /** Public contact address shown in the privacy policy / terms. */
+  supportEmail: env("SUPPORT_EMAIL") ?? "hello@nudgelive.co.uk",
+  /** Optional webhook (Slack/Discord/etc.) to alert on server errors. */
+  errorWebhook: env("ERROR_WEBHOOK_URL"),
   /** Email-in (SPEC §3): inbound capture via Resend's receiving webhook. */
   inbound: {
     /** Domain new per-user addresses are shown on, e.g. "in.nudgelive.co.uk". */
