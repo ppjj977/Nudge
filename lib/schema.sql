@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   status         TEXT NOT NULL DEFAULT 'active', -- review|active|done|paid|dismissed
   confidence     REAL NOT NULL DEFAULT 1.0, -- 0.0 .. 1.0
   source_excerpt TEXT,                      -- short quote justifying the task
+  snoozed_until  TEXT,                       -- ISO 8601 UTC of the next manual nudge
   created_at     TEXT NOT NULL,
   updated_at     TEXT NOT NULL,
   completed_at   TEXT

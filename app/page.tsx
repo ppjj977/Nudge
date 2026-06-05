@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { getUserLifeAreas } from "@/lib/users";
+import { getUserLifeAreas, ensureInboundAddress } from "@/lib/users";
 import { getCurrentUser } from "@/lib/auth";
 import { getTimeline, type Task } from "@/lib/tasks";
 import CaptureBox from "./CaptureBox";
@@ -40,6 +40,7 @@ export default async function Dashboard({
 
   const timeline = await getTimeline(user.id, user.timezone);
   const lifeAreas = getUserLifeAreas(user);
+  const inboundAddress = await ensureInboundAddress(user);
   const now = DateTime.now().setZone(user.timezone);
   const { shared } = await searchParams;
   const sharedMsg = shared ? SHARED_MESSAGES[shared] : null;
@@ -54,7 +55,7 @@ export default async function Dashboard({
         <p>Here’s your day.</p>
       </div>
 
-      <CaptureBox />
+      <CaptureBox inboundAddress={inboundAddress} />
       {sharedMsg && <div className="toast">{sharedMsg}</div>}
       <ManualAdd />
 
