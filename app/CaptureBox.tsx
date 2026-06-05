@@ -243,6 +243,9 @@ export default function CaptureBox({
         <button className="cap-camera" onClick={takePhoto} disabled={busy}>
           📷 Photo
         </button>
+        <button onClick={() => fileRef.current?.click()} disabled={busy}>
+          🖼 Gallery
+        </button>
         {recording ? (
           <button className="recording" onClick={stopRecording}>
             ⏹ Stop
@@ -279,14 +282,6 @@ export default function CaptureBox({
           <span className={`note ${isError ? "error" : ""}`}>{message}</span>
         )}
       </div>
-      <button
-        type="button"
-        className="gallery-link"
-        onClick={() => fileRef.current?.click()}
-        disabled={busy}
-      >
-        or choose an existing photo from your gallery
-      </button>
 
       {created.length > 0 && (
         <div className="capture-result">
