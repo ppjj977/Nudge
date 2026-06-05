@@ -1,0 +1,14 @@
+{
+  "appId": "uk.co.nudgelive.app",
+  "appName": "nudge",
+  "webDir": "native-shell",
+  "server": {
+    "url": "https://nudgelive.co.uk",
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}

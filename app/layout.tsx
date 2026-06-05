@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import Link from "next/link";
 import LogoMark from "./LogoMark";
 import SWRegister from "./SWRegister";
+import NativePush from "./NativePush";
 import Menu from "./Menu";
 import { getCurrentUser } from "@/lib/auth";
 import "./globals.css";
@@ -41,6 +42,7 @@ export default async function RootLayout({
     <html lang="en" className={manrope.className}>
       <body>
         <SWRegister />
+        {user && <NativePush />}
         <header className="topbar">
           <Link href="/" className="brand">
             <LogoMark size={28} />

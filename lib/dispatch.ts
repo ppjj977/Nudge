@@ -7,6 +7,7 @@ import { getUserById, getAllUsers } from "./users";
 import { parseUserSettings } from "./reminders";
 import { sendEmail, esc, emailShell, emailBrand } from "./email";
 import { sendPushToUser } from "./push";
+import { sendFcmToUser } from "./fcm";
 import { composeDigest } from "./digest";
 import { config } from "./config";
 
@@ -128,11 +129,13 @@ export async function runDispatch(
       await sendEmail({ to: user.email, ...msg });
     }
     if (channels.push) {
-      await sendPushToUser(user.id, {
+      const payload = {
         title: `⏰ ${task.title}`,
         body: task.detail ?? "Tap to open nudge",
         url: config.appBaseUrl,
-      });
+      };
+      await sendPushToUser(user.id, payload); // web push (PWA / desktop)
+      await sendFcmToUser(user.id, payload); // native push (Android app)
     }
     await markReminder(r.id, "sent", now.toUTC().toISO());
     sent++;

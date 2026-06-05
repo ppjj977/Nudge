@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { sendPushToUser, pushEnabled } from "@/lib/push";
+import { sendFcmToUser, fcmEnabled } from "@/lib/fcm";
 import { sendEmail } from "@/lib/email";
 import { config } from "@/lib/config";
 
@@ -14,14 +15,15 @@ export async function POST() {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const payload = {
+    title: "🔔 nudge test",
+    body: "Notifications are working. You'll be nudged before things are due.",
+    url: "/",
+  };
   let delivered = 0;
-  if (pushEnabled()) {
-    delivered = await sendPushToUser(user.id, {
-      title: "🔔 nudge test",
-      body: "Notifications are working. You'll be nudged before things are due.",
-      url: "/",
-    });
-  }
+  if (pushEnabled()) delivered = await sendPushToUser(user.id, payload);
+  let fcmDelivered = 0;
+  if (fcmEnabled()) fcmDelivered = await sendFcmToUser(user.id, payload);
 
   let emailSent = false;
   if (config.email.resendApiKey) {
@@ -36,6 +38,7 @@ export async function POST() {
   return NextResponse.json({
     to: user.email,
     push: { configured: pushEnabled(), delivered },
+    fcm: { configured: fcmEnabled(), delivered: fcmDelivered },
     email: { configured: Boolean(config.email.resendApiKey), sent: emailSent },
   });
 }

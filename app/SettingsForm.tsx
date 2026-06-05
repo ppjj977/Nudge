@@ -176,9 +176,11 @@ export default function SettingsForm({
       setPushMsg(`Test failed: ${d.error ?? res.status}`);
       return;
     }
-    const pushPart = d.push?.configured
-      ? `Push: accepted by ${d.push.delivered} device(s)`
-      : "Push: not configured on server";
+    const appDevices = (d.push?.delivered ?? 0) + (d.fcm?.delivered ?? 0);
+    const pushPart =
+      d.push?.configured || d.fcm?.configured
+        ? `Push: sent to ${appDevices} device(s)`
+        : "Push: not configured on server";
     const emailPart = d.email?.configured
       ? d.email.sent
         ? `Email: sent to ${d.to}`
