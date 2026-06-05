@@ -3,7 +3,7 @@
   --teal: #22c1a2;
   --mint: #a7e2cf;
   --amber: #ffc857;
-  --bg: #f7f7f5;
+  --bg: #faf7f1;
   --panel: #ffffff;
   --text: #0d1b2a;
   --muted: #667085;
@@ -1188,4 +1188,156 @@ button.recording {
   background: linear-gradient(transparent, var(--bg) 28%);
   padding: 16px 0 8px;
   margin-top: 16px;
+}
+
+/* ============================================================
+   UI refresh: inbox-detox surfaces (capture / tabs / review)
+   ============================================================ */
+
+.capture-lead {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.capture-hint {
+  margin: 10px 2px 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.capture-hint a {
+  color: var(--teal);
+  font-weight: 600;
+}
+
+/* timeline tabs */
+.timeline {
+  margin-top: 22px;
+}
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 14px;
+  -webkit-overflow-scrolling: touch;
+}
+.tab {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.tab.active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+.tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+.tab.active .tab-count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+.tab.review-tab .tab-count {
+  background: var(--amber);
+  color: #6b4e00;
+}
+.tab.review-tab.active {
+  background: #6b4e00;
+  border-color: #6b4e00;
+}
+
+/* clickable review banner */
+.review-banner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 14px;
+}
+.nudge-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgba(255, 200, 87, 0.28);
+  flex: 0 0 auto;
+}
+.review-hero {
+  background: rgba(255, 200, 87, 0.16);
+  border: 1px solid var(--amber);
+  border-left-width: 4px;
+  border-radius: 12px;
+  padding: 13px 16px;
+  margin: 0 0 14px;
+  color: #6b4e00;
+  font-weight: 600;
+  font-size: 15px;
+}
+.money-total {
+  margin: 0 0 14px;
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 15px;
+}
+
+/* low-confidence badge */
+.chip.low-conf {
+  background: rgba(255, 200, 87, 0.22);
+  color: #6b4e00;
+  border: 1px solid var(--amber);
+}
+
+/* snooze picker */
+.snooze-picker {
+  border-top: 1px dashed var(--border);
+  margin-top: 10px;
+  padding-top: 10px;
+}
+.snooze-lead {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.snooze-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.snooze-row input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 9px;
+  font: inherit;
 }

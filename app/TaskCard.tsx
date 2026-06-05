@@ -84,6 +84,7 @@ export default function TaskCard({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState(false);
+  const [snoozing, setSnoozing] = useState(false);
   const mode: Mode = done ? "done" : review ? "review" : "active";
 
   async function call(url: string, method: string, body?: object) {
@@ -125,16 +126,12 @@ export default function TaskCard({
     );
   }
 
-  const meta = [
-    dueLabel(task),
-    amountLabel(task),
-    task.location,
-    review ? `${Math.round(task.confidence * 100)}% sure` : null,
-  ]
+  const meta = [dueLabel(task), amountLabel(task), task.location]
     .filter(Boolean)
     .join(" · ");
 
   const isFyi = task.category === "fyi";
+  const lowConfidence = task.confidence < 0.6;
 
   return (
     <div className={`task ${isFyi ? "fyi" : ""} ${done ? "is-done" : ""}`}>
@@ -148,6 +145,11 @@ export default function TaskCard({
         <div className="chips">
           <span className="chip cat">{task.category}</span>
           {task.life_area && <span className="chip">{task.life_area}</span>}
+          {lowConfidence && (
+            <span className="chip low-conf">
+              ~{Math.round(task.confidence * 100)}% sure
+            </span>
+          )}
         </div>
         {task.detail && <div className="meta">{task.detail}</div>}
         {meta && <div className="meta">{meta}</div>}
@@ -195,6 +197,11 @@ export default function TaskCard({
                 {task.category === "pay" ? "Paid" : "Done"}
               </button>
             )}
+            {mode === "active" && (
+              <button onClick={() => setSnoozing((s) => !s)} disabled={pending}>
+                Snooze
+              </button>
+            )}
             <button onClick={() => setEditing(true)} disabled={pending}>
               Edit
             </button>
@@ -203,6 +210,55 @@ export default function TaskCard({
             </button>
           </>
         )}
+      </div>
+
+      {snoozing && (
+        <SnoozePicker
+          disabled={pending}
+          onCancel={() => setSnoozing(false)}
+          onPick={(date, time) => {
+            setSnoozing(false);
+            call(`/api/tasks/${task.id}/snooze`, "POST", { date, time });
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ---- snooze: pick when to be nudged next ---- */
+
+function SnoozePicker({
+  onPick,
+  onCancel,
+  disabled,
+}: {
+  onPick: (date: string, time: string) => void;
+  onCancel: () => void;
+  disabled: boolean;
+}) {
+  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+  const [date, setDate] = useState(tomorrow);
+  const [time, setTime] = useState("09:00");
+
+  return (
+    <div className="snooze-picker">
+      <span className="snooze-lead">Nudge me again on…</span>
+      <div className="snooze-row">
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+        <button
+          className="primary"
+          disabled={disabled || !date}
+          onClick={() => onPick(date, time)}
+        >
+          Nudge me
+        </button>
+        <button onClick={onCancel} disabled={disabled}>
+          Cancel
+        </button>
       </div>
     </div>
   );

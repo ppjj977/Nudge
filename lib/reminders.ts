@@ -151,6 +151,19 @@ export async function cancelRemindersForTask(taskId: string): Promise<void> {
 }
 
 /**
+ * Snooze: schedule a single one-off nudge at an explicit time, without touching
+ * the task's due date or its rule-based reminders. Used by the "Snooze → pick a
+ * date & time" action.
+ */
+export async function snoozeTask(task: Task, fireAtUtcISO: string): Promise<void> {
+  await db.execute({
+    sql: `INSERT INTO reminders (id, task_id, user_id, fire_at, channel, status, sent_at)
+          VALUES (?,?,?,?,?,?,?)`,
+    args: [newId("rem"), task.id, task.user_id, fireAtUtcISO, "all", "pending", null],
+  });
+}
+
+/**
  * (Re)generate reminders for a task: cancel any pending ones, then create fresh
  * rows from the user's rules. No-op for review/terminal tasks and `fyi`.
  * Call after create, confirm, due-date edits, and status changes.
