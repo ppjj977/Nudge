@@ -4,7 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { getTimeline, type Task } from "@/lib/tasks";
 import CaptureBox from "./CaptureBox";
 import ManualAdd from "./ManualAdd";
-import TaskCard, { type TaskView } from "./TaskCard";
+import Timeline from "./Timeline";
+import { type TaskView } from "./TaskCard";
 import Landing from "./Landing";
 
 // Always read fresh state; the dashboard reflects live captures.
@@ -26,36 +27,6 @@ const SHARED_MESSAGES: Record<string, string> = {
   failed: "Couldn’t read that one. Try again or paste the text.",
   empty: "Nothing to capture there.",
 };
-
-function Section({
-  title,
-  tasks,
-  review = false,
-  lifeAreas,
-}: {
-  title: string;
-  tasks: Task[];
-  review?: boolean;
-  lifeAreas: string[];
-}) {
-  return (
-    <section>
-      <h2 className="section">{title}</h2>
-      {tasks.length === 0 ? (
-        <div className="empty">Nothing here.</div>
-      ) : (
-        tasks.map((t) => (
-          <TaskCard
-            key={t.id}
-            task={toView(t)}
-            review={review}
-            lifeAreas={lifeAreas}
-          />
-        ))
-      )}
-    </section>
-  );
-}
 
 export default async function Dashboard({
   searchParams,
@@ -87,25 +58,13 @@ export default async function Dashboard({
       {sharedMsg && <div className="toast">{sharedMsg}</div>}
       <ManualAdd />
 
-      <Section title="Today" tasks={timeline.today} lifeAreas={lifeAreas} />
-      <Section title="This week" tasks={timeline.week} lifeAreas={lifeAreas} />
-      <Section title="Later" tasks={timeline.later} lifeAreas={lifeAreas} />
-
-      {timeline.review.length > 0 && (
-        <>
-          <div className="review-banner">
-            {timeline.review.length} item
-            {timeline.review.length === 1 ? "" : "s"} need a quick look — low
-            confidence, so they are held out of your timeline.
-          </div>
-          <Section
-            title="Needs review"
-            tasks={timeline.review}
-            review
-            lifeAreas={lifeAreas}
-          />
-        </>
-      )}
+      <Timeline
+        today={timeline.today.map(toView)}
+        week={timeline.week.map(toView)}
+        later={timeline.later.map(toView)}
+        review={timeline.review.map(toView)}
+        lifeAreas={lifeAreas}
+      />
     </>
   );
 }

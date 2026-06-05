@@ -133,8 +133,11 @@ export default function CaptureBox() {
 
   return (
     <div className="capture">
+      <p className="capture-lead">
+        Drop in the thing you don&apos;t want to process right now.
+      </p>
       <textarea
-        placeholder="Paste an email, newsletter, message export… or upload a screenshot below."
+        placeholder="Paste an email, a newsletter, a message — anything. Or add a photo or voice note below."
         value={text}
         onChange={(e) => setText(e.target.value)}
         disabled={busy}
@@ -173,6 +176,11 @@ export default function CaptureBox() {
           <span className={`note ${isError ? "error" : ""}`}>{message}</span>
         )}
       </div>
+      <p className="capture-hint">
+        On your phone you can also <strong>Share to Nudge</strong> from any app —
+        or forward an email to your{" "}
+        <a href="/profile">personal Nudge address</a>.
+      </p>
     </div>
   );
 }
