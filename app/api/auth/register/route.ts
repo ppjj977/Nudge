@@ -8,11 +8,18 @@ import {
   createSession,
 } from "@/lib/auth";
 import { rateLimited, clientIp } from "@/lib/rate-limit";
+import { config } from "@/lib/config";
 
 export const runtime = "nodejs";
 
 /** POST /api/auth/register { name?, email, password } */
 export async function POST(req: Request) {
+  if (!config.registrationOpen) {
+    return NextResponse.json(
+      { error: "Sign-ups aren’t open yet — register your interest.", closed: true },
+      { status: 403 },
+    );
+  }
   const limited = rateLimited(`register:${clientIp(req)}`, 5, 15 * 60_000);
   if (limited) return limited;
   const { name, email, password } = await req.json().catch(() => ({}));

@@ -39,6 +39,17 @@ CREATE TABLE IF NOT EXISTS promo_redemptions (
   redeemed_at TEXT NOT NULL
 );
 
+-- Pre-launch waitlist: people who registered interest before sign-up opens.
+CREATE TABLE IF NOT EXISTS interest_signups (
+  id         TEXT PRIMARY KEY,
+  email      TEXT UNIQUE NOT NULL,
+  name       TEXT,
+  note       TEXT,                 -- optional "what would you use it for"
+  source     TEXT,                 -- utm / referrer hint, e.g. 'tiktok'
+  position   INTEGER NOT NULL,     -- 1-based join order (drives "first 10 free")
+  created_at TEXT NOT NULL
+);
+
 -- Server-side sessions (SPEC §10a): the cookie holds the random session id.
 CREATE TABLE IF NOT EXISTS sessions (
   id         TEXT PRIMARY KEY,   -- the session token
@@ -200,3 +211,4 @@ CREATE INDEX IF NOT EXISTS idx_lists_user            ON lists(user_id);
 CREATE INDEX IF NOT EXISTS idx_lists_household        ON lists(household_id);
 CREATE INDEX IF NOT EXISTS idx_list_items_list        ON list_items(list_id);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_promo_redemption  ON promo_redemptions(code, user_id);
+CREATE INDEX IF NOT EXISTS idx_interest_created        ON interest_signups(created_at);

@@ -10,6 +10,14 @@ import type { User } from "./users";
 const SESSION_COOKIE = "nudge_session";
 const SESSION_DAYS = 60;
 
+/** Thrown by provisionUser when sign-up is closed and the user doesn't exist. */
+export class RegistrationClosedError extends Error {
+  constructor() {
+    super("Sign-ups aren’t open yet.");
+    this.name = "RegistrationClosedError";
+  }
+}
+
 /* -------------------------------------------------------------------------- */
 /* Passwords (scrypt, no external dependency)                                  */
 /* -------------------------------------------------------------------------- */
@@ -66,6 +74,10 @@ export async function provisionUser(
       });
     }
     return (await findUserByEmail(normalized))!;
+  }
+  // No existing account: block creation while sign-up is closed (pre-launch).
+  if (!config.registrationOpen) {
+    throw new RegistrationClosedError();
   }
   const id = newId("usr");
   const now = new Date().toISOString();
