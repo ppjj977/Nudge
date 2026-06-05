@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import TaskCard, { type TaskView } from "./TaskCard";
 
@@ -24,6 +24,23 @@ export default function CaptureBox({
   const [created, setCreated] = useState<TaskView[]>([]);
   const [createdVia, setCreatedVia] = useState("");
   const [showCreated, setShowCreated] = useState(false);
+
+  // Tasks created from a native "Share to nudge" land here (stashed by
+  // NativeExtras before it navigated back), so they get the same verify cards.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("nudge_shared_tasks");
+      if (!raw) return;
+      sessionStorage.removeItem("nudge_shared_tasks");
+      const tasks = JSON.parse(raw);
+      if (Array.isArray(tasks) && tasks.length) {
+        setCreated(tasks as TaskView[]);
+        setCreatedVia(" from your share");
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   async function copyAddress() {
     if (!inboundAddress) return;

@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 
-// Temporary: surface what the OS share hands over so we can pin down why image
-// shares aren't landing. Set back to false once share is confirmed working.
-const SHARE_DEBUG = true;
+// Flip to true to surface (via alert) what the OS share hands over — useful for
+// debugging share issues. Off in normal use; failures still show a toast.
+const SHARE_DEBUG = false;
 
 /**
  * Native-only extras for the Capacitor Android app, driven through the runtime
@@ -65,28 +65,46 @@ function base64ToBlob(b64: string, mime: string): Blob {
   return new Blob([arr], { type: mime });
 }
 
-/** Map an ingest API response to a timeline outcome toast. */
-function outcomeUrl(ok: boolean, data: { status?: string; nothingActionable?: boolean }): string {
-  if (!ok || data.status === "failed") return "/?shared=failed";
-  return data.nothingActionable ? "/?shared=nothing" : "/?shared=added";
+interface IngestResult {
+  ok: boolean;
+  status?: string;
+  nothingActionable?: boolean;
+  tasks?: unknown[];
 }
 
 /** Send a shared image through the same ingest endpoint the Upload button uses. */
-async function ingestImage(blob: Blob): Promise<string> {
+async function ingestImage(blob: Blob): Promise<IngestResult> {
   const fd = new FormData();
   fd.append("file", blob, "shared.jpg");
   const res = await fetch("/api/ingest/image", { method: "POST", body: fd });
-  return outcomeUrl(res.ok, await res.json().catch(() => ({})));
+  return { ok: res.ok, ...(await res.json().catch(() => ({}))) };
 }
 
 /** Send shared text/links through the text ingest endpoint. */
-async function ingestText(text: string): Promise<string> {
+async function ingestText(text: string): Promise<IngestResult> {
   const res = await fetch("/api/ingest/text", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ text }),
   });
-  return outcomeUrl(res.ok, await res.json().catch(() => ({})));
+  return { ok: res.ok, ...(await res.json().catch(() => ({}))) };
+}
+
+/**
+ * Land a finished share: stash created tasks for the capture-verify view, then
+ * navigate. Returns the destination URL.
+ */
+function landShare(result: IngestResult): string {
+  if (!result.ok || result.status === "failed") return "/?shared=failed";
+  if (result.nothingActionable || !(result.tasks && result.tasks.length))
+    return "/?shared=nothing";
+  try {
+    sessionStorage.setItem("nudge_shared_tasks", JSON.stringify(result.tasks));
+  } catch {
+    /* sessionStorage unavailable — fall back to a toast */
+    return "/?shared=added";
+  }
+  return "/?shared=added";
 }
 
 export default function NativeExtras() {
@@ -99,7 +117,7 @@ export default function NativeExtras() {
     // safe to surface diagnostics (a cold-start check fires on every launch).
     async function handleSharedIntent(viaEvent: boolean) {
       const dbg = (m: string) => {
-        if (viaEvent || SHARE_DEBUG) window.alert(`nudge share — ${m}`);
+        if (SHARE_DEBUG) window.alert(`nudge share — ${m}`);
       };
       try {
         const SendIntent = cap?.Plugins?.SendIntent;
@@ -118,14 +136,24 @@ export default function NativeExtras() {
           if (viaEvent) dbg("no data in intent: " + JSON.stringify(r));
           return;
         }
-        if (SHARE_DEBUG || viaEvent)
-          dbg(
-            `got type=${r.type ?? "?"} url=${(r.url ?? "").slice(0, 60)} title=${(r.title ?? "").slice(0, 40)}`,
-          );
+
+        // De-dupe: landing a share reloads the page, and the plugin keeps
+        // returning the same intent — without this guard it re-ingests in a
+        // loop. Mark this intent handled (survives the reload via session).
+        const marker = `${r.url ?? ""}|${r.title ?? ""}|${r.description ?? ""}`;
+        try {
+          if (sessionStorage.getItem("nudge_share_marker") === marker) return;
+          sessionStorage.setItem("nudge_share_marker", marker);
+        } catch {
+          /* sessionStorage unavailable — proceed without dedupe */
+        }
+
+        dbg(`got type=${r.type ?? "?"} url=${(r.url ?? "").slice(0, 60)}`);
 
         const isImage =
           (r.type && r.type.startsWith("image")) ||
-          (typeof r.url === "string" && r.url.startsWith("content://"));
+          (typeof r.url === "string" && r.url.startsWith("content://")) ||
+          (typeof r.url === "string" && /\.(jpe?g|png|gif|webp|heic)$/i.test(r.url));
 
         // Shared image: read its bytes and run them through OCR/vision.
         if (isImage && r.url) {
@@ -136,7 +164,7 @@ export default function NativeExtras() {
             return;
           }
           try {
-            window.location.href = await ingestImage(blob);
+            window.location.href = landShare(await ingestImage(blob));
           } catch (e) {
             dbg("upload failed: " + (e as Error).message);
             window.location.href = "/?shared=failed";
@@ -152,7 +180,7 @@ export default function NativeExtras() {
         const text = parts.join("\n").trim();
         if (!text) return;
         try {
-          window.location.href = await ingestText(text);
+          window.location.href = landShare(await ingestText(text));
         } catch (e) {
           dbg("upload failed: " + (e as Error).message);
           window.location.href = "/?shared=failed";
