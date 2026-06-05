@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser, googleEnabled } from "@/lib/auth";
-import LoginForm from "../LoginForm";
+import AuthForm from "../AuthForm";
 
 export const dynamic = "force-dynamic";
 
@@ -22,12 +22,13 @@ export default async function LoginPage({
   return (
     <div className="auth-wrap">
       <div className="greeting">
-        <h1>Welcome to nudge</h1>
-        <p>Sign in to capture and get nudged.</p>
+        <h1>Welcome back</h1>
+        <p>Sign in to your nudge.</p>
       </div>
-      <LoginForm
+      <AuthForm
+        mode="signin"
         googleEnabled={googleEnabled()}
-        initialMessage={error ? ERRORS[error] ?? null : null}
+        initialMessage={error ? (ERRORS[error] ?? null) : null}
       />
     </div>
   );

@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
-export default function LoginForm({
+export default function AuthForm({
+  mode,
   googleEnabled,
   initialMessage,
 }: {
+  mode: "signin" | "signup";
   googleEnabled: boolean;
   initialMessage?: string | null;
 }) {
@@ -23,24 +26,28 @@ export default function LoginForm({
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
     });
-    const d = await r.json().catch(() => ({}));
+    const d = (await r.json().catch(() => ({}))) as { error?: string };
     setBusy(false);
-    return { ok: r.ok, d } as { ok: boolean; d: { error?: string } };
+    return { ok: r.ok, d };
   }
 
-  async function login() {
+  async function signin() {
     const { ok, d } = await post("/api/auth/login", { email, password });
     if (ok) location.href = "/";
     else setMsg(d.error || "Sign in failed");
   }
-  async function register() {
+  async function signup() {
+    if (!name.trim()) {
+      setMsg("Please enter your name.");
+      return;
+    }
     const { ok, d } = await post("/api/auth/register", { name, email, password });
     if (ok) location.href = "/";
     else setMsg(d.error || "Could not create account");
   }
   async function magic() {
     if (!email.includes("@")) {
-      setMsg("Enter your email first");
+      setMsg("Enter your email first, then tap this.");
       return;
     }
     const { ok } = await post("/api/auth/request", { email });
@@ -60,16 +67,17 @@ export default function LoginForm({
       )}
       {googleEnabled && <div className="auth-divider">or</div>}
 
-      <label className="field">
-        <span>Name (for new accounts)</span>
-        <input
-          type="text"
-          value={name}
-          autoComplete="name"
-          placeholder="Optional"
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
+      {mode === "signup" && (
+        <label className="field">
+          <span>Name</span>
+          <input
+            type="text"
+            value={name}
+            autoComplete="name"
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
+      )}
       <label className="field">
         <span>Email</span>
         <input
@@ -84,22 +92,33 @@ export default function LoginForm({
         <input
           type="password"
           value={password}
-          autoComplete="current-password"
+          autoComplete={mode === "signup" ? "new-password" : "current-password"}
           onChange={(e) => setPassword(e.target.value)}
         />
       </label>
 
-      <div className="auth-actions">
-        <button className="primary" onClick={login} disabled={busy}>
-          Sign in
-        </button>
-        <button onClick={register} disabled={busy}>
-          Create account
-        </button>
-      </div>
-      <button className="link" onClick={magic} disabled={busy}>
-        Email me a sign-in link instead
-      </button>
+      {mode === "signin" ? (
+        <>
+          <button className="primary auth-submit" onClick={signin} disabled={busy}>
+            Sign in
+          </button>
+          <button className="link" onClick={magic} disabled={busy}>
+            Forgot your password? Email me a sign-in link
+          </button>
+          <p className="auth-foot">
+            New to nudge? <Link href="/signup">Create an account</Link>
+          </p>
+        </>
+      ) : (
+        <>
+          <button className="primary auth-submit" onClick={signup} disabled={busy}>
+            Create account
+          </button>
+          <p className="auth-foot">
+            Already have an account? <Link href="/login">Sign in</Link>
+          </p>
+        </>
+      )}
 
       {msg && <p className="note auth-msg">{msg}</p>}
     </div>
