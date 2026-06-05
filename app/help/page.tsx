@@ -47,6 +47,18 @@ const CATEGORIES: CatInfo[] = [
     reminders: "2 weeks before, then 3 days before",
   },
   {
+    icon: "🧳",
+    name: "trip",
+    what: "A holiday, trip away or multi-day time off. Set a start and end date to block the whole period on the calendar.",
+    reminders: "1 week before, and the day before (6pm)",
+  },
+  {
+    icon: "🎂",
+    name: "celebrate",
+    what: "A birthday, anniversary or yearly occasion to remember. Usually set to repeat every year.",
+    reminders: "1 week before (time to sort a card or gift), and on the day",
+  },
+  {
     icon: "⏰",
     name: "reminder",
     what: "A catch-all time-based nudge with no cleaner verb above.",
