@@ -8,6 +8,7 @@ import ManualAdd from "./ManualAdd";
 import Timeline from "./Timeline";
 import { type TaskView } from "./TaskCard";
 import Landing from "./Landing";
+import Onboarding from "./Onboarding";
 
 // Always read fresh state; the dashboard reflects live captures.
 export const dynamic = "force-dynamic";
@@ -48,6 +49,13 @@ export default async function Dashboard({
   const now = DateTime.now().setZone(user.timezone);
   const { shared } = await searchParams;
   const sharedMsg = shared ? SHARED_MESSAGES[shared] : null;
+  const isEmpty =
+    timeline.today.length +
+      timeline.week.length +
+      timeline.later.length +
+      timeline.review.length +
+      family.length ===
+    0;
 
   return (
     <>
@@ -63,17 +71,21 @@ export default async function Dashboard({
       {sharedMsg && <div className="toast">{sharedMsg}</div>}
       <ManualAdd />
 
-      <Timeline
-        today={timeline.today.map(toView)}
-        week={timeline.week.map(toView)}
-        later={timeline.later.map(toView)}
-        review={timeline.review.map(toView)}
-        family={family}
-        members={members}
-        inHousehold={Boolean(membership)}
-        meId={user.id}
-        lifeAreas={lifeAreas}
-      />
+      {isEmpty ? (
+        <Onboarding inboundAddress={inboundAddress} />
+      ) : (
+        <Timeline
+          today={timeline.today.map(toView)}
+          week={timeline.week.map(toView)}
+          later={timeline.later.map(toView)}
+          review={timeline.review.map(toView)}
+          family={family}
+          members={members}
+          inHousehold={Boolean(membership)}
+          meId={user.id}
+          lifeAreas={lifeAreas}
+        />
+      )}
     </>
   );
 }
