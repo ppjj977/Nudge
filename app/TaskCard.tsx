@@ -390,6 +390,7 @@ function EditForm({
   const [date, setDate] = useState(initialDate);
   const [time, setTime] = useState(initialTime);
   const [endDate, setEndDate] = useState(initialEnd);
+  const [repeat, setRepeat] = useState(task.recurrence?.freq ?? "none");
   const [amount, setAmount] = useState(task.amount?.toString() ?? "");
   const [location, setLocation] = useState(task.location ?? "");
   const [category, setCategory] = useState<string>(task.category);
@@ -444,6 +445,9 @@ function EditForm({
     }
     // Multi-day span: keep end only when it's on/after the start.
     patch.end_at = date && endDate && endDate >= date ? endDate : null;
+    // Recurrence needs a date to anchor to; clear it otherwise.
+    patch.recurrence =
+      date && repeat !== "none" ? { freq: repeat, interval: 1 } : null;
     await fetch(`/api/tasks/${task.id}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
@@ -497,6 +501,20 @@ function EditForm({
               onChange={(e) => setEndDate(e.target.value)}
               disabled={!date}
             />
+          </label>
+          <label className="field">
+            <span>Repeat</span>
+            <select
+              value={repeat}
+              onChange={(e) => setRepeat(e.target.value)}
+              disabled={!date}
+            >
+              <option value="none">Doesn&apos;t repeat</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
           </label>
         </div>
         {category === "pay" && (

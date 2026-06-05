@@ -31,6 +31,14 @@ no follow-up, marketing), return `{ "nothing_actionable": true, "items": [] }`.
 Inventing tasks from informational content is the worst thing you can do and
 the fastest way to lose the user's trust. When in doubt, extract less.
 
+Exception — dated events worth attending. A poster, flyer or photo for a
+specific dated event (a carnival, fair, fête, show, open day, concert, market,
+community event) IS actionable: the user photographed it because they may want
+to go. Emit a single `attend` item with the event name as the title and the
+date as `due_at` (e.g. "Woodley Carnival" on "2026-06-13"). Capture the
+`location` if shown. Do not also emit items for the individual attractions
+listed on the poster.
+
 ## Categories (choose exactly one per item)
 
 - `pay` — money out by a date. Capture `amount` and `currency`.
