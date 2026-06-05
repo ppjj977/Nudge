@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getMembershipForUser, createInvite } from "@/lib/households";
 import { sendEmail, esc, emailShell, emailBrand } from "@/lib/email";
 import { config } from "@/lib/config";
+import { rateLimited, clientIp } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,8 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const limited = rateLimited(`invite:${clientIp(req)}`, 10, 60 * 60_000);
+  if (limited) return limited;
 
   const membership = await getMembershipForUser(user.id);
   if (!membership) {

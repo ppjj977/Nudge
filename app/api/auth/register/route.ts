@@ -7,11 +7,14 @@ import {
   updateUserName,
   createSession,
 } from "@/lib/auth";
+import { rateLimited, clientIp } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 /** POST /api/auth/register { name?, email, password } */
 export async function POST(req: Request) {
+  const limited = rateLimited(`register:${clientIp(req)}`, 5, 15 * 60_000);
+  if (limited) return limited;
   const { name, email, password } = await req.json().catch(() => ({}));
   if (typeof email !== "string" || typeof password !== "string") {
     return NextResponse.json({ error: "email and password required" }, { status: 400 });

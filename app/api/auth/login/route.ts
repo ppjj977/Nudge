@@ -5,11 +5,14 @@ import {
   verifyPassword,
   createSession,
 } from "@/lib/auth";
+import { rateLimited, clientIp } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 /** POST /api/auth/login { email, password } */
 export async function POST(req: Request) {
+  const limited = rateLimited(`login:${clientIp(req)}`, 10, 5 * 60_000);
+  if (limited) return limited;
   const { email, password } = await req.json().catch(() => ({}));
   if (typeof email !== "string" || typeof password !== "string") {
     return NextResponse.json({ error: "email and password required" }, { status: 400 });

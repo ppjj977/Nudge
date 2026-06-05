@@ -61,7 +61,12 @@ export default async function RootLayout({
         </header>
         <main className="container">{children}</main>
         <footer className="tagline-footer">
-          a gentle nudge for everything that matters
+          <div>a gentle nudge for everything that matters</div>
+          <div className="footer-links">
+            <Link href="/privacy">Privacy</Link>
+            <span aria-hidden="true">·</span>
+            <Link href="/terms">Terms</Link>
+          </div>
         </footer>
       </body>
     </html>

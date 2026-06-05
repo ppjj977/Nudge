@@ -1482,3 +1482,74 @@ button.snoozed {
   text-transform: none;
   letter-spacing: 0;
 }
+
+/* footer legal links */
+.footer-links {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  font-size: 12px;
+}
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.footer-links a:hover {
+  color: var(--navy);
+}
+
+/* legal pages */
+.legal {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.legal h2 {
+  font-size: 16px;
+  color: var(--navy);
+  margin: 22px 0 6px;
+}
+.legal p,
+.legal li {
+  color: var(--text);
+  line-height: 1.6;
+}
+.legal a {
+  color: var(--teal);
+  font-weight: 600;
+}
+.legal-updated {
+  color: var(--muted);
+  font-size: 13px;
+}
+.legal-foot {
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.legal-consent {
+  text-align: center;
+  margin-top: 14px;
+}
+.legal-consent a {
+  color: var(--teal);
+  font-weight: 600;
+}
+
+/* danger zone (account deletion) */
+.danger-card {
+  border-color: rgba(229, 72, 77, 0.4);
+}
+.danger-btn {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+  font-weight: 700;
+}
+.danger-btn:hover {
+  background: #c93b40;
+  border-color: #c93b40;
+}
+.danger-btn:disabled {
+  opacity: 0.5;
+}
