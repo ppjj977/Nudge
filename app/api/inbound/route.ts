@@ -20,7 +20,12 @@ export async function POST(req: Request) {
   if (secret) {
     const ok = verifySvix(secret, req.headers, raw);
     if (!ok) {
-      return NextResponse.json({ error: "Bad signature" }, { status: 401 });
+      const present = [...req.headers.keys()].filter((h) => /svix|webhook/i.test(h));
+      console.warn("[inbound] signature check failed", { present });
+      return NextResponse.json(
+        { error: "Bad signature", reason: "signature", headers: present },
+        { status: 401 },
+      );
     }
   } else {
     console.warn("[inbound] INBOUND_WEBHOOK_SECRET unset — skipping verification");
@@ -40,6 +45,7 @@ export async function POST(req: Request) {
   }
 
   const data = payload.data ?? (payload as unknown as InboundEmail);
+  const dataKeys = Object.keys(data);
   const recipients = toList(data.to);
   const domain = config.inbound.domain?.toLowerCase();
 
@@ -57,18 +63,31 @@ export async function POST(req: Request) {
     }
   }
   if (!localPart) {
-    console.warn("[inbound] no matching recipient", { to: recipients });
-    return NextResponse.json({ ok: true, ignored: "no-recipient" });
+    console.warn("[inbound] no matching recipient", { to: recipients, domain });
+    return NextResponse.json({ ok: true, ignored: "no-recipient", to: recipients });
   }
 
   const user = await findUserByInboundLocalPart(localPart);
   if (!user) {
     console.warn("[inbound] unknown inbound address", { localPart });
-    return NextResponse.json({ ok: true, ignored: "unknown-address" });
+    return NextResponse.json({ ok: true, ignored: "unknown-address", localPart });
   }
 
   const subject = (data.subject ?? "").trim();
-  const body = (data.text ?? "").trim() || htmlToText(data.html ?? "");
+
+  // The webhook sometimes carries only metadata; fetch the full body if needed.
+  let text = (data.text ?? "").trim();
+  let html = data.html ?? "";
+  let fetched = false;
+  if (!text && !html && data.email_id) {
+    const got = await fetchInboundBody(data.email_id);
+    if (got) {
+      text = (got.text ?? "").trim();
+      html = got.html ?? "";
+      fetched = true;
+    }
+  }
+  const body = text || htmlToText(html);
   const from = extractEmail(data.from);
   const normalizedText = [subject, body].filter(Boolean).join("\n\n");
 
@@ -79,7 +98,43 @@ export async function POST(req: Request) {
     meta: { from, subject, to: recipients },
   });
 
-  return NextResponse.json({ ok: true, captureId: result.captureId });
+  const diag = {
+    ok: true,
+    matchedUser: user.id,
+    dataKeys,
+    bodyChars: body.length,
+    bodyFetched: fetched,
+    captureId: result.captureId,
+    status: result.status,
+    nothingActionable: result.nothingActionable,
+    tasks: result.tasks.length,
+    error: result.error,
+  };
+  console.log("[inbound] processed", diag);
+  return NextResponse.json(diag);
+}
+
+/** Resend's inbound webhook may omit the body; fetch it by id from the API. */
+async function fetchInboundBody(
+  emailId: string,
+): Promise<{ text?: string; html?: string } | null> {
+  if (!config.email.resendApiKey) return null;
+  for (const url of [
+    `https://api.resend.com/emails/receiving/${emailId}`,
+    `https://api.resend.com/emails/${emailId}`,
+  ]) {
+    try {
+      const res = await fetch(url, {
+        headers: { authorization: `Bearer ${config.email.resendApiKey}` },
+      });
+      if (!res.ok) continue;
+      const j = (await res.json()) as { text?: string; html?: string };
+      if (j.text || j.html) return { text: j.text, html: j.html };
+    } catch {
+      /* try next */
+    }
+  }
+  return null;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -90,6 +145,7 @@ interface InboundEmail {
   subject?: string;
   text?: string;
   html?: string;
+  email_id?: string;
 }
 interface InboundPayload {
   type?: string;
