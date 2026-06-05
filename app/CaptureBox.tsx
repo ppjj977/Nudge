@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import TaskCard, { type TaskView } from "./TaskCard";
 
 /**
  * The capture-first entry point (SPEC §1, §6). Paste text or drop an image;
@@ -10,14 +11,19 @@ import { useRouter } from "next/navigation";
  */
 export default function CaptureBox({
   inboundAddress,
+  lifeAreas = [],
 }: {
   inboundAddress?: string | null;
+  lifeAreas?: string[];
 }) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [created, setCreated] = useState<TaskView[]>([]);
+  const [createdVia, setCreatedVia] = useState("");
+  const [showCreated, setShowCreated] = useState(false);
 
   async function copyAddress() {
     if (!inboundAddress) return;
@@ -43,6 +49,8 @@ export default function CaptureBox({
     error?: string;
     ocr?: { method: string };
   }) {
+    setCreated([]);
+    setShowCreated(false);
     if (result.status === "failed") {
       setIsError(true);
       setMessage(`Couldn't read that one: ${result.error ?? "extraction failed"}`);
@@ -51,11 +59,14 @@ export default function CaptureBox({
     setIsError(false);
     const n = result.tasks.length;
     const via = result.ocr ? ` (read via ${result.ocr.method})` : "";
-    setMessage(
-      result.nothingActionable
-        ? `Nothing actionable found${via}. Nothing added.`
-        : `Added ${n} ${n === 1 ? "item" : "items"}${via}.`,
-    );
+    if (result.nothingActionable || n === 0) {
+      setMessage(`Nothing actionable found${via}. Nothing added.`);
+    } else {
+      // Keep the created tasks so the user can open and verify them.
+      setCreated(result.tasks as TaskView[]);
+      setCreatedVia(via);
+      setMessage(null);
+    }
     startTransition(() => router.refresh());
   }
 
@@ -190,6 +201,33 @@ export default function CaptureBox({
           <span className={`note ${isError ? "error" : ""}`}>{message}</span>
         )}
       </div>
+
+      {created.length > 0 && (
+        <div className="capture-result">
+          <button
+            type="button"
+            className="created-toggle"
+            onClick={() => setShowCreated((s) => !s)}
+            aria-expanded={showCreated}
+          >
+            ✓ Added {created.length} {created.length === 1 ? "task" : "tasks"}
+            {createdVia} — {showCreated ? "hide" : "check them"}
+            <span className="chev">{showCreated ? "▴" : "▾"}</span>
+          </button>
+          {showCreated && (
+            <div className="created-list">
+              {created.map((t) => (
+                <TaskCard
+                  key={t.id}
+                  task={t}
+                  review={t.status === "review"}
+                  lifeAreas={lifeAreas}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       <p className="capture-hint">
         On your phone you can also <strong>Share to Nudge</strong> from any app —
         or forward an email to your{" "}
