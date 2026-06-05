@@ -15,6 +15,11 @@ month") against today's date in that timezone. If a date is genuinely
 ambiguous or absent, do NOT guess — set `due_type` to `none` and `due_at` to
 null.
 
+For things that span several days (a holiday, a trip, a conference, "off work
+5–12 July"), set `due_at` to the first day, `end_at` to the last (inclusive)
+day, and `due_type` to `date`. For single-day or single-moment items leave
+`end_at` null.
+
 ## What counts as actionable
 
 An item is actionable only if the user must DO something: pay, book, attend,
@@ -74,8 +79,10 @@ Bad: `Email from school about the museum trip`.
 - `title` — the action, per the convention above.
 - `detail` — optional short context (one line). Use null if none.
 - `due_at` — ISO 8601 (`YYYY-MM-DD` for a date, full timestamp for a datetime),
-  or null. Must be null when `due_type` is `none`.
+  or null. Must be null when `due_type` is `none`. For a multi-day span this is
+  the first day.
 - `due_type` — `datetime` | `date` | `none`.
+- `end_at` — inclusive last day (`YYYY-MM-DD`) for a multi-day span, else null.
 - `amount` — number for `pay`, else null.
 - `currency` — ISO currency for `pay` (default `GBP` if a £ amount with no code), else null.
 - `location` — string for `attend`/`book` where relevant, else null.

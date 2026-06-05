@@ -13,6 +13,7 @@ export default function ManualAdd() {
   const [category, setCategory] = useState<string>(ACTION_CATEGORIES[0]);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function add() {
@@ -22,6 +23,7 @@ export default function ManualAdd() {
     if (date) {
       body.due_at = time ? `${date}T${time}:00` : date;
       body.due_type = time ? "datetime" : "date";
+      if (endDate && endDate >= date) body.end_at = endDate;
     }
     await fetch("/api/tasks", {
       method: "POST",
@@ -31,6 +33,7 @@ export default function ManualAdd() {
     setTitle("");
     setDate("");
     setTime("");
+    setEndDate("");
     setSaving(false);
     setOpen(false);
     startTransition(() => router.refresh());
@@ -76,6 +79,16 @@ export default function ManualAdd() {
             type="time"
             value={time}
             onChange={(e) => setTime(e.target.value)}
+            disabled={!date}
+          />
+        </label>
+        <label className="field">
+          <span>End date</span>
+          <input
+            type="date"
+            value={endDate}
+            min={date || undefined}
+            onChange={(e) => setEndDate(e.target.value)}
             disabled={!date}
           />
         </label>

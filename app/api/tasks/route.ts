@@ -32,6 +32,7 @@ export async function POST(req: Request) {
     detail: typeof body.detail === "string" ? body.detail : null,
     due_at: typeof body.due_at === "string" ? body.due_at : null,
     due_type: body.due_type as never,
+    end_at: typeof body.end_at === "string" ? body.end_at : null,
     amount: typeof body.amount === "number" ? body.amount : null,
     currency: typeof body.currency === "string" ? body.currency : null,
     location: typeof body.location === "string" ? body.location : null,

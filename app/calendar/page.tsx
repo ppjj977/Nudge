@@ -29,14 +29,27 @@ export default async function CalendarPage({
 
   const tasks = await getActiveTasks(user.id);
   const byDay = new Map<string, TaskView[]>();
+  const place = (key: string, t: TaskView) => {
+    const arr = byDay.get(key) ?? [];
+    arr.push(t);
+    byDay.set(key, arr);
+  };
   for (const t of tasks) {
     if (!t.due_at || t.due_type === "none") continue;
-    const d = DateTime.fromISO(t.due_at, { zone: tz });
-    if (!d.isValid) continue;
-    const key = d.toFormat("yyyy-LL-dd");
-    const arr = byDay.get(key) ?? [];
-    arr.push(t as unknown as TaskView);
-    byDay.set(key, arr);
+    const start = DateTime.fromISO(t.due_at, { zone: tz });
+    if (!start.isValid) continue;
+    const view = t as unknown as TaskView;
+    // Multi-day spans block every day from start to end (inclusive, capped).
+    const end =
+      t.end_at && DateTime.fromISO(t.end_at, { zone: tz }).isValid
+        ? DateTime.fromISO(t.end_at, { zone: tz })
+        : start;
+    let cursor = start.startOf("day");
+    const last = end.startOf("day");
+    for (let i = 0; i < 90 && cursor <= last; i++) {
+      place(cursor.toFormat("yyyy-LL-dd"), view);
+      cursor = cursor.plus({ days: 1 });
+    }
   }
 
   const days: CalDay[] = Array.from({ length: 42 }, (_, i) => {

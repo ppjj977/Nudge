@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   detail         TEXT,
   due_at         TEXT,                      -- ISO 8601, null when due_type='none'
   due_type       TEXT NOT NULL DEFAULT 'none', -- 'datetime' | 'date' | 'none'
+  end_at         TEXT,                      -- inclusive end date for multi-day spans (holidays/trips)
   amount         REAL,                      -- for 'pay'
   currency       TEXT,                      -- for 'pay', default 'GBP'
   location       TEXT,                      -- for 'attend' / 'book'

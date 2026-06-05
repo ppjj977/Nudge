@@ -35,6 +35,8 @@ export const ExtractedItemSchema = z
     detail: nullableString.optional().default(null),
     due_at: nullableString.optional().default(null),
     due_type: z.enum(DUE_TYPES).default("none"),
+    // Inclusive end date for multi-day spans (holidays, trips). Null otherwise.
+    end_at: nullableString.optional().default(null),
     amount: nullableNumber.optional().default(null),
     currency: nullableString.optional().default(null),
     location: nullableString.optional().default(null),
@@ -68,7 +70,15 @@ export const ExtractedItemSchema = z
   })
   .transform((item) => {
     // Hard rule (SPEC §7.4): due_at must be null when due_type is none.
-    if (item.due_type === "none") return { ...item, due_at: null };
+    if (item.due_type === "none") return { ...item, due_at: null, end_at: null };
+    // A span's end can't precede its start.
+    if (
+      item.end_at &&
+      item.due_at &&
+      item.end_at.slice(0, 10) < item.due_at.slice(0, 10)
+    ) {
+      return { ...item, end_at: null };
+    }
     return item;
   });
 
