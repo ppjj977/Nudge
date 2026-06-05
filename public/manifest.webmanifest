@@ -1,6 +1,7 @@
 {
   "name": "nudge",
   "short_name": "nudge",
+  "id": "/",
   "description": "A gentle nudge for everything that matters.",
   "start_url": "/",
   "scope": "/",
