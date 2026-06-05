@@ -60,9 +60,25 @@ export function composeDigest(
   const tz = user.timezone;
   const dateStr = now.toFormat("cccc d LLLL");
   const link = config.appBaseUrl;
+  const firstName = user.name?.trim().split(/\s+/)[0] ?? null;
+  const greet = now.hour < 12 ? "Good morning" : now.hour < 18 ? "Good afternoon" : "Good evening";
+
+  // A warm, human one-liner summarising the day.
+  const plural = (n: number, s: string) => `${n} ${s}${n === 1 ? "" : "s"}`;
+  let summary: string;
+  if (today.length > 0) {
+    summary = `You've got ${plural(today.length, "thing")} for today`;
+    if (week.length) summary += ` and ${plural(week.length, "more")} coming up this week`;
+    summary += ".";
+  } else if (week.length > 0) {
+    summary = `Nothing pressing today — ${plural(week.length, "thing")} on the way this week.`;
+  } else {
+    summary = "Just a couple of things to glance over.";
+  }
 
   // --- text ---
-  const textParts: string[] = [`nudge — ${dateStr}`, ""];
+  const opener = `${greet}${firstName ? `, ${firstName}` : ""} — ${summary}`;
+  const textParts: string[] = [opener, dateStr, ""];
   if (today.length) {
     textParts.push("TODAY");
     today.forEach((t) => textParts.push(`• ${lineText(t, tz)}`));
@@ -95,9 +111,9 @@ export function composeDigest(
     : "";
 
   const html = emailShell({
-    heading: "Here’s your day",
-    intro: esc(dateStr),
-    bodyHtml: `${section("Today", today)}${section("This week", week)}${reviewHtml}`,
+    heading: `${greet}${firstName ? `, ${esc(firstName)}` : ""}`,
+    intro: esc(summary),
+    bodyHtml: `<div style="color:${emailBrand.muted};font-size:13px;margin:0 0 4px">${esc(dateStr)}</div>${section("Today", today)}${section("This week", week)}${reviewHtml}`,
     ctaText: link ? "Open nudge" : undefined,
     ctaUrl: link,
   });

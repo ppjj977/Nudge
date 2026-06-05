@@ -59,6 +59,7 @@ export function esc(s: string): string {
 const BRAND = {
   green: "#7BAA94",
   amber: "#F5B52E",
+  mint: "#CFE0D5",
   text: "#232A32",
   muted: "#667085",
   bg: "#F8F7F4",

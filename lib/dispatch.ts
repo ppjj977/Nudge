@@ -34,15 +34,18 @@ function reminderEmail(task: Task, tz: string) {
   const link = config.appBaseUrl;
 
   const textLines = [task.title];
+  if (task.household_id) textLines.push("(shared with your family)");
   if (due) textLines.push(`Due: ${due}`);
   if (task.location) textLines.push(`Where: ${task.location}`);
   if (task.amount != null)
     textLines.push(`Amount: ${task.currency ?? "GBP"} ${task.amount}`);
   if (task.detail) textLines.push("", task.detail);
+  if (task.source_excerpt) textLines.push("", `From: "${task.source_excerpt}"`);
   if (pending.length) {
     textLines.push("", "Checklist:");
     pending.forEach((c) => textLines.push(`☐ ${c.text}`));
   }
+  textLines.push("", "Open nudge to mark it done or snooze it for later.");
   if (link) textLines.push("", link);
 
   const meta = (label: string, value: string) =>
@@ -52,13 +55,22 @@ function reminderEmail(task: Task, tz: string) {
         .map((c) => `<li>${esc(c.text)}</li>`)
         .join("")}</ul>`
     : "";
+  const familyHtml = task.household_id
+    ? `<div style="display:inline-block;margin:0 0 10px;padding:3px 10px;border-radius:999px;background:${emailBrand.mint};color:#2f5a45;font-size:12px;font-weight:700">👪 Shared with your family</div>`
+    : "";
+  const excerptHtml = task.source_excerpt
+    ? `<blockquote style="border-left:3px solid ${emailBrand.mint};margin:14px 0 0;padding:2px 0 2px 12px;color:${emailBrand.muted};font-style:italic">“${esc(task.source_excerpt)}”</blockquote>`
+    : "";
 
   const bodyHtml = `
+    ${familyHtml}
     ${due ? meta("Due", esc(due)) : ""}
     ${task.location ? meta("Where", esc(task.location)) : ""}
     ${task.amount != null ? meta("Amount", `${esc(task.currency ?? "GBP")} ${task.amount}`) : ""}
     ${task.detail ? `<p style="color:${emailBrand.text};margin:12px 0 0">${esc(task.detail)}</p>` : ""}
-    ${checklistHtml}`;
+    ${excerptHtml}
+    ${checklistHtml}
+    <p style="color:${emailBrand.muted};font-size:13px;margin:16px 0 0">Open nudge to mark it done or snooze it for later.</p>`;
 
   const html = emailShell({
     heading: `⏰ ${esc(task.title)}`,
