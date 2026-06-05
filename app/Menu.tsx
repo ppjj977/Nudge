@@ -13,6 +13,7 @@ const NAV = [
 ];
 
 const ACCOUNT = [
+  { href: "/family", label: "Family" },
   { href: "/profile", label: "Profile" },
   { href: "/settings", label: "Settings" },
   { href: "/help", label: "Categories & help" },
