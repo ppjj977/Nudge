@@ -93,16 +93,28 @@ export interface DispatchResult {
   cancelled: number;
 }
 
+/**
+ * How far ahead each tick looks for reminders. Set to the cron cadence so a
+ * reminder due any time before the next tick is sent on this one — i.e. it
+ * arrives at or slightly before its due time, never after. Keep this in sync
+ * with the schedule in .github/workflows/cron.yml (currently every 5 minutes).
+ */
+const DISPATCH_LOOKAHEAD_MINUTES = 5;
+
 export async function runDispatch(
   now: DateTime = DateTime.now(),
 ): Promise<DispatchResult> {
   await ensureSchema();
-  const nowIso = now.toUTC().toISO();
+  // Include anything due before the next tick so timed nudges fire early, not late.
+  const windowEnd = now
+    .plus({ minutes: DISPATCH_LOOKAHEAD_MINUTES })
+    .toUTC()
+    .toISO();
   const res = await db.execute({
     sql: `SELECT id, task_id, user_id, fire_at, status FROM reminders
           WHERE status = 'pending' AND fire_at <= ?
           ORDER BY fire_at ASC LIMIT 500`,
-    args: [nowIso],
+    args: [windowEnd],
   });
   const rows = res.rows as unknown as ReminderRow[];
 
