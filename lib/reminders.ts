@@ -66,7 +66,10 @@ export const DEFAULT_REMINDER_RULES: Record<Category, ReminderRule[]> = {
   fyi: [],
 };
 
-export const DEFAULT_CHANNELS: UserChannels = { email: true, push: true };
+// Default to in-app push only. Email reminders are opt-in (the box is shown but
+// unticked by default). This does NOT affect transactional email — family
+// invites, password resets and magic links are always sent by email.
+export const DEFAULT_CHANNELS: UserChannels = { email: false, push: true };
 
 const TIME_RE = /^([01]?\d|2[0-3]):([0-5]\d)$/;
 
