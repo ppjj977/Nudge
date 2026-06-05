@@ -2,6 +2,10 @@
 
 import { useEffect } from "react";
 
+// Temporary: surface what the OS share hands over so we can pin down why image
+// shares aren't landing. Set back to false once share is confirmed working.
+const SHARE_DEBUG = true;
+
 /**
  * Native-only extras for the Capacitor Android app, driven through the runtime
  * `window.Capacitor` bridge (no Capacitor dependency in the web build):
@@ -78,12 +82,33 @@ export default function NativeExtras() {
     if (!cap?.isNativePlatform?.()) return;
 
     // --- Share-target: forward shared text OR an image into capture. ---
-    async function handleSharedIntent() {
+    // `viaEvent` = triggered by an actual share into the running app, so it's
+    // safe to surface diagnostics (a cold-start check fires on every launch).
+    async function handleSharedIntent(viaEvent: boolean) {
+      const dbg = (m: string) => {
+        if (viaEvent || SHARE_DEBUG) window.alert(`nudge share — ${m}`);
+      };
       try {
         const SendIntent = cap?.Plugins?.SendIntent;
-        if (!SendIntent) return;
-        const r = await SendIntent.checkSendIntentReceived();
-        if (!r || (!r.url && !r.title && !r.description)) return;
+        if (!SendIntent) {
+          dbg("SendIntent plugin not found on the bridge");
+          return;
+        }
+        let r: SharedIntent;
+        try {
+          r = await SendIntent.checkSendIntentReceived();
+        } catch (e) {
+          dbg("checkSendIntentReceived threw: " + (e as Error).message);
+          return;
+        }
+        if (!r || (!r.url && !r.title && !r.description)) {
+          if (viaEvent) dbg("no data in intent: " + JSON.stringify(r));
+          return;
+        }
+        if (SHARE_DEBUG || viaEvent)
+          dbg(
+            `got type=${r.type ?? "?"} url=${(r.url ?? "").slice(0, 60)} title=${(r.title ?? "").slice(0, 40)}`,
+          );
 
         const isImage =
           (r.type && r.type.startsWith("image")) ||
@@ -92,9 +117,8 @@ export default function NativeExtras() {
         // Shared image: read its bytes and run them through OCR/vision.
         if (isImage && r.url) {
           const blob = await readSharedImage(cap!, r.url, r.type || "image/jpeg");
-          window.location.href = blob
-            ? await postShare(blob)
-            : "/?shared=failed";
+          if (!blob) dbg("could not read the image bytes");
+          window.location.href = blob ? await postShare(blob) : "/?shared=failed";
           return;
         }
 
@@ -106,15 +130,16 @@ export default function NativeExtras() {
         const text = parts.join("\n").trim();
         if (!text) return;
         window.location.href = await postShare(text);
-      } catch {
-        /* no shared intent — ignore */
+      } catch (e) {
+        dbg("error: " + (e as Error).message);
       }
     }
 
     // Cold start (app launched by the share) AND already-running (the plugin
     // fires `sendIntentReceived` on a new intent without reloading the page).
-    handleSharedIntent();
-    window.addEventListener("sendIntentReceived", handleSharedIntent);
+    handleSharedIntent(false);
+    const onShare = () => handleSharedIntent(true);
+    window.addEventListener("sendIntentReceived", onShare);
 
     // --- Widget sync: cache today's & tomorrow's nudges for the widget. ---
     (async () => {
@@ -161,8 +186,7 @@ export default function NativeExtras() {
       }
     })();
 
-    return () =>
-      window.removeEventListener("sendIntentReceived", handleSharedIntent);
+    return () => window.removeEventListener("sendIntentReceived", onShare);
   }, []);
 
   return null;
