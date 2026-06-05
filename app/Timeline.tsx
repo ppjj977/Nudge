@@ -2,21 +2,15 @@
 
 import { useState } from "react";
 import TaskCard, { type TaskView } from "./TaskCard";
+import type { FamilyTask } from "@/lib/tasks";
 
-type Tab = "today" | "week" | "later" | "money" | "review";
-
-const TABS: { key: Tab; label: string }[] = [
-  { key: "today", label: "Today" },
-  { key: "week", label: "This week" },
-  { key: "later", label: "Later" },
-  { key: "money", label: "Money" },
-  { key: "review", label: "Needs review" },
-];
+type Tab = "today" | "week" | "later" | "family" | "money" | "review";
 
 const EMPTY: Record<Tab, string> = {
   today: "Nothing for today. Breathe.",
   week: "Nothing booked this week.",
   later: "Nothing parked for later.",
+  family: "Nothing shared with the family yet.",
   money: "No payments to track right now.",
   review: "Nothing to review — you’re all caught up.",
 };
@@ -26,23 +20,47 @@ export default function Timeline({
   week,
   later,
   review,
+  family,
   lifeAreas,
+  inHousehold,
+  meId,
 }: {
   today: TaskView[];
   week: TaskView[];
   later: TaskView[];
   review: TaskView[];
+  family: FamilyTask[];
   lifeAreas: string[];
+  inHousehold: boolean;
+  meId: string;
 }) {
   const money = [...today, ...week, ...later].filter((t) => t.category === "pay");
-  const lists: Record<Tab, TaskView[]> = { today, week, later, money, review };
-  const counts = Object.fromEntries(
-    TABS.map((t) => [t.key, lists[t.key].length]),
-  ) as Record<Tab, number>;
 
-  // Review is the hero: open straight to it when there's anything uncertain.
+  const tabs: { key: Tab; label: string }[] = [
+    { key: "today", label: "Today" },
+    { key: "week", label: "This week" },
+    { key: "later", label: "Later" },
+    ...(inHousehold ? [{ key: "family" as Tab, label: "Family" }] : []),
+    { key: "money", label: "Money" },
+    { key: "review", label: "Needs review" },
+  ];
+  const counts: Record<Tab, number> = {
+    today: today.length,
+    week: week.length,
+    later: later.length,
+    family: family.length,
+    money: money.length,
+    review: review.length,
+  };
+
   const [tab, setTab] = useState<Tab>(review.length > 0 ? "review" : "today");
-  const active = lists[tab];
+
+  const owned: Record<"today" | "week" | "later" | "money", TaskView[]> = {
+    today,
+    week,
+    later,
+    money,
+  };
 
   return (
     <div className="timeline">
@@ -54,7 +72,7 @@ export default function Timeline({
       )}
 
       <div className="tabs" role="tablist">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t.key}
             role="tab"
@@ -78,19 +96,51 @@ export default function Timeline({
       {tab === "money" && money.length > 0 && (
         <p className="money-total">{moneyTotal(money)}</p>
       )}
-
-      {active.length === 0 ? (
-        <div className="empty">{EMPTY[tab]}</div>
-      ) : (
-        active.map((t) => (
-          <TaskCard
-            key={t.id}
-            task={t}
-            review={tab === "review"}
-            lifeAreas={lifeAreas}
-          />
-        ))
+      {tab === "family" && (
+        <p className="note family-note">
+          Shared with your family — everyone gets the nudge. Manage your own from
+          the other tabs.
+        </p>
       )}
+
+      {tab === "family" &&
+        (family.length === 0 ? (
+          <div className="empty">{EMPTY.family}</div>
+        ) : (
+          family.map((t) => (
+            <TaskCard
+              key={t.id}
+              task={t as unknown as TaskView}
+              readOnly
+              ownerName={t.user_id === meId ? "you" : t.owner_name || t.owner_email}
+              lifeAreas={lifeAreas}
+            />
+          ))
+        ))}
+
+      {tab === "review" &&
+        (review.length === 0 ? (
+          <div className="empty">{EMPTY.review}</div>
+        ) : (
+          review.map((t) => (
+            <TaskCard key={t.id} task={t} review lifeAreas={lifeAreas} />
+          ))
+        ))}
+
+      {tab !== "family" &&
+        tab !== "review" &&
+        (owned[tab as "today" | "week" | "later" | "money"].length === 0 ? (
+          <div className="empty">{EMPTY[tab]}</div>
+        ) : (
+          owned[tab as "today" | "week" | "later" | "money"].map((t) => (
+            <TaskCard
+              key={t.id}
+              task={t}
+              inHousehold={inHousehold}
+              lifeAreas={lifeAreas}
+            />
+          ))
+        ))}
     </div>
   );
 }

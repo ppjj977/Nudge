@@ -1408,3 +1408,15 @@ button.snoozed {
   font-weight: 600;
   color: var(--navy);
 }
+
+/* family timeline */
+.chip.owner {
+  background: var(--mint);
+  color: #2f5a45;
+  border-color: transparent;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.family-note {
+  margin: 0 0 14px;
+}

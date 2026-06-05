@@ -25,6 +25,7 @@ export interface TaskView {
   confidence: number;
   source_excerpt: string | null;
   snoozed_until: string | null;
+  household_id: string | null;
 }
 
 const CATEGORY_ICON: Record<string, string> = {
@@ -76,11 +77,20 @@ export default function TaskCard({
   review = false,
   done = false,
   lifeAreas = [],
+  inHousehold = false,
+  readOnly = false,
+  ownerName = null,
 }: {
   task: TaskView;
   review?: boolean;
   done?: boolean;
   lifeAreas?: string[];
+  /** User is in a family, so show the share toggle. */
+  inHousehold?: boolean;
+  /** Family view of someone else's task: show it, but no actions. */
+  readOnly?: boolean;
+  /** Owner's name, shown as a chip in the family view. */
+  ownerName?: string | null;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -103,6 +113,8 @@ export default function TaskCard({
     });
   const dismiss = () => call(`/api/tasks/${task.id}`, "DELETE");
   const confirm = () => call(`/api/tasks/${task.id}/confirm`, "POST");
+  const toggleShare = () =>
+    call(`/api/tasks/${task.id}/share`, "POST", { share: !task.household_id });
   const undo = () => call(`/api/tasks/${task.id}`, "PATCH", { status: "active" });
 
   const toggleItem = (index: number) => {
@@ -159,6 +171,10 @@ export default function TaskCard({
         <div className="chips">
           <span className="chip cat">{task.category}</span>
           {task.life_area && <span className="chip">{task.life_area}</span>}
+          {ownerName && <span className="chip owner">{ownerName}</span>}
+          {!ownerName && task.household_id && (
+            <span className="chip owner">shared</span>
+          )}
           {lowConfidence && (
             <span className="chip low-conf">
               ~{Math.round(task.confidence * 100)}% sure
@@ -189,47 +205,58 @@ export default function TaskCard({
         )}
       </div>
 
-      <div className="actions">
-        {mode === "done" ? (
-          <>
-            <button className="primary" onClick={undo} disabled={pending}>
-              Undo
-            </button>
-            <button onClick={dismiss} disabled={pending}>
-              Delete
-            </button>
-          </>
-        ) : (
-          <>
-            {mode === "review" && (
-              <button className="primary" onClick={confirm} disabled={pending}>
-                Confirm
+      {!readOnly && (
+        <div className="actions">
+          {mode === "done" ? (
+            <>
+              <button className="primary" onClick={undo} disabled={pending}>
+                Undo
               </button>
-            )}
-            {mode === "active" && !isFyi && (
-              <button onClick={complete} disabled={pending}>
-                {task.category === "pay" ? "Paid" : "Done"}
+              <button onClick={dismiss} disabled={pending}>
+                Delete
               </button>
-            )}
-            {mode === "active" && (
-              <button
-                className={snoozedUntil ? "snoozed" : ""}
-                title={snoozeLabel}
-                onClick={() => setSnoozing((s) => !s)}
-                disabled={pending}
-              >
-                {snoozedUntil ? "💤 Snoozed" : "Snooze"}
+            </>
+          ) : (
+            <>
+              {mode === "review" && (
+                <button className="primary" onClick={confirm} disabled={pending}>
+                  Confirm
+                </button>
+              )}
+              {mode === "active" && !isFyi && (
+                <button onClick={complete} disabled={pending}>
+                  {task.category === "pay" ? "Paid" : "Done"}
+                </button>
+              )}
+              {mode === "active" && (
+                <button
+                  className={snoozedUntil ? "snoozed" : ""}
+                  title={snoozeLabel}
+                  onClick={() => setSnoozing((s) => !s)}
+                  disabled={pending}
+                >
+                  {snoozedUntil ? "💤 Snoozed" : "Snooze"}
+                </button>
+              )}
+              {mode === "active" && inHousehold && (
+                <button
+                  className={task.household_id ? "snoozed" : ""}
+                  onClick={toggleShare}
+                  disabled={pending}
+                >
+                  {task.household_id ? "✓ Shared" : "Share with family"}
+                </button>
+              )}
+              <button onClick={() => setEditing(true)} disabled={pending}>
+                Edit
               </button>
-            )}
-            <button onClick={() => setEditing(true)} disabled={pending}>
-              Edit
-            </button>
-            <button onClick={dismiss} disabled={pending}>
-              Dismiss
-            </button>
-          </>
-        )}
-      </div>
+              <button onClick={dismiss} disabled={pending}>
+                Dismiss
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       {snoozing && (
         <SnoozePicker
