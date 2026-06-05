@@ -5,6 +5,7 @@ import { ensureSchema } from "./db";
 import { getTaskByIdAny, getTimeline, type Task } from "./tasks";
 import { getUserById, getAllUsers } from "./users";
 import { parseUserSettings } from "./reminders";
+import { isPro } from "./plan";
 import { sendEmail, esc, emailShell, emailBrand } from "./email";
 import { sendPushToUser } from "./push";
 import { sendFcmToUser } from "./fcm";
@@ -143,7 +144,8 @@ export async function runDispatch(
 
     try {
       const { channels } = parseUserSettings(user);
-      if (channels.email && user.email) {
+      // Email reminders are a Pro feature; free users get push only.
+      if (channels.email && user.email && isPro(user)) {
         const msg = reminderEmail(task, user.timezone);
         await sendEmail({ to: user.email, ...msg });
       }
@@ -209,9 +211,9 @@ export async function runDigest(
     const local = now.setZone(user.timezone);
     if (local.hour !== user.digest_hour) continue;
 
-    // The digest is its own opt-in (default on), separate from email reminders.
+    // The digest is its own opt-in (default on); email is Pro-only.
     const { digest } = parseUserSettings(user);
-    if (!digest || !user.email) continue;
+    if (!digest || !user.email || !isPro(user)) continue;
 
     const sentFor = local.toFormat("yyyy-LL-dd");
     const already = await db.execute({

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { getMembershipForUser, getMembers } from "@/lib/households";
+import { isPro } from "@/lib/plan";
 import FamilyManager from "../FamilyManager";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +24,7 @@ export default async function FamilyPage() {
         members={members}
         meId={user.id}
         isOwner={membership?.role === "owner"}
+        pro={isPro(user)}
       />
     </>
   );

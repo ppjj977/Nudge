@@ -11,7 +11,7 @@ import type { User } from "./users";
  * Granting Pro is decoupled from *how* it's paid for: a future Play/Stripe
  * webhook, an admin comp, or a redeemed promo code all just call setPlan().
  */
-export const FREE_MONTHLY_CAPTURES = 20;
+export const FREE_MONTHLY_CAPTURES = 10;
 
 type PlanFields = Pick<User, "plan" | "plan_until">;
 
