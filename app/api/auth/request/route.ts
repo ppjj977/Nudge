@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createMagicToken } from "@/lib/auth";
-import { sendEmail, esc } from "@/lib/email";
+import { sendEmail, emailShell } from "@/lib/email";
 import { config } from "@/lib/config";
 
 export const runtime = "nodejs";
@@ -20,7 +20,12 @@ export async function POST(req: Request) {
     to: email,
     subject: "Your nudge sign-in link",
     text: `Sign in to nudge:\n${link}\n\nThis link expires in 15 minutes. If you didn't request it, ignore this email.`,
-    html: `<div style="font-family:system-ui,sans-serif;max-width:480px"><h2>Sign in to nudge</h2><p><a href="${esc(link)}" style="display:inline-block;background:#7BAA94;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Sign in</a></p><p style="color:#888;font-size:13px">This link expires in 15 minutes. If you didn't request it, ignore this email.</p></div>`,
+    html: emailShell({
+      heading: "Sign in to nudge",
+      intro: "Tap the button to sign in. This link expires in 15 minutes.",
+      ctaText: "Sign in",
+      ctaUrl: link,
+    }),
   });
 
   // Always report success so we don't leak which emails exist.
