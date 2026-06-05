@@ -1,5 +1,47 @@
 import { describe, it, expect } from "vitest";
-import { normalizeEmail, tidyText } from "../lib/normalize";
+import { normalizeEmail, tidyText, cleanForwardedEmail } from "../lib/normalize";
+
+describe("cleanForwardedEmail", () => {
+  it("keeps forwarded body but drops headers, footers and tracking URLs", () => {
+    const out = cleanForwardedEmail(
+      [
+        "Hi, forwarding this.",
+        "",
+        "---------- Forwarded message ---------",
+        "From: Spa <book@spa.test>",
+        "Date: Mon, 1 Jun 2026",
+        "Subject: Booking confirmation",
+        "To: me@gmail.com",
+        "",
+        "Your party is booked for 14 June at 2pm.",
+        "Pay the £40 balance by 7 June.",
+        "",
+        "Unsubscribe here https://spa.test/unsub?t=abc123",
+      ].join("\n"),
+    );
+    expect(out).toContain("Your party is booked for 14 June");
+    expect(out).toContain("Pay the £40 balance by 7 June.");
+    expect(out).not.toMatch(/From:|Subject:|To:|Forwarded message/i);
+    expect(out).not.toContain("Unsubscribe");
+    expect(out).not.toContain("https://");
+  });
+
+  it("truncates a quoted reply chain", () => {
+    const out = cleanForwardedEmail(
+      [
+        "Can you bring snacks on Friday?",
+        "On Tue, 3 Jun 2026 at 10:00, A <a@b.test> wrote:",
+        "> earlier message we don't want",
+      ].join("\n"),
+    );
+    expect(out).toBe("Can you bring snacks on Friday?");
+  });
+
+  it("caps very long input", () => {
+    const out = cleanForwardedEmail("x ".repeat(5000), 100);
+    expect(out.length).toBeLessThanOrEqual(101);
+  });
+});
 
 describe("tidyText", () => {
   it("collapses blank-line runs and trailing whitespace", () => {

@@ -47,7 +47,7 @@ export default async function RootLayout({
             <span className="wordmark">{APP_NAME}</span>
           </Link>
           {user ? (
-            <Menu />
+            <Menu userName={user.name} userEmail={user.email} />
           ) : (
             <nav className="auth-nav">
               <Link href="/login" className="auth-nav-link">
