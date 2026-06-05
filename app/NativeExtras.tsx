@@ -17,12 +17,41 @@ type SharedIntent = {
 };
 type Cap = {
   isNativePlatform?: () => boolean;
+  convertFileSrc?: (url: string) => string;
   Plugins?: {
     SendIntent?: { checkSendIntentReceived: () => Promise<SharedIntent> };
     Filesystem?: { readFile: (o: { path: string }) => Promise<{ data: string }> };
     Preferences?: { set: (o: { key: string; value: string }) => Promise<void> };
   };
 };
+
+/** Read a shared image into a Blob, trying Filesystem then a fetch fallback. */
+async function readSharedImage(
+  cap: Cap,
+  url: string,
+  mime: string,
+): Promise<Blob | null> {
+  const path = decodeURIComponent(url);
+  try {
+    const fs = cap.Plugins?.Filesystem;
+    if (fs) {
+      const read = await fs.readFile({ path });
+      if (read?.data) return base64ToBlob(read.data, mime);
+    }
+  } catch {
+    /* fall through to fetch */
+  }
+  try {
+    const src = cap.convertFileSrc?.(url);
+    if (src) {
+      const res = await fetch(src);
+      if (res.ok) return await res.blob();
+    }
+  } catch {
+    /* give up */
+  }
+  return null;
+}
 
 /** Decode a base64 string into a Blob of the given mime type. */
 function base64ToBlob(b64: string, mime: string): Blob {
@@ -51,11 +80,12 @@ export default function NativeExtras() {
           (typeof r.url === "string" && r.url.startsWith("content://"));
 
         // Shared image: read its bytes and run them through OCR/vision.
-        if (isImage && r.url && cap.Plugins?.Filesystem) {
-          const read = await cap.Plugins.Filesystem.readFile({
-            path: decodeURIComponent(r.url),
-          });
-          const blob = base64ToBlob(read.data, r.type || "image/jpeg");
+        if (isImage && r.url) {
+          const blob = await readSharedImage(cap, r.url, r.type || "image/jpeg");
+          if (!blob) {
+            window.location.href = "/?shared=failed";
+            return;
+          }
           const fd = new FormData();
           fd.append("file", blob, "shared.jpg");
           await fetch("/share", { method: "POST", body: fd });
