@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LogoMark from "./LogoMark";
+import DemoPlayer from "./DemoPlayer";
 
 /** Public marketing page shown at "/" to logged-out visitors. */
 export default function Landing() {
@@ -22,7 +23,7 @@ export default function Landing() {
           See how it works ↓
         </a>
 
-        <Mockup />
+        <DemoPlayer />
       </section>
 
       {/* ---- screenshots ---- */}
@@ -124,44 +125,6 @@ export default function Landing() {
         </a>
         <span>· APK, ~5&nbsp;MB · allow “install from unknown sources”</span>
       </footer>
-    </div>
-  );
-}
-
-/** Stylised before→after mockup: messy input on the left, clean timeline right. */
-function Mockup() {
-  return (
-    <div className="mockup" aria-hidden="true">
-      <div className="mock-panel mock-in">
-        <div className="mock-label">messy in</div>
-        <div className="mock-note">
-          Fwd: Oakwood Primary newsletter — PE kits needed this Friday, museum
-          trip £15 due by 15th June, parents&apos; evening booking now open…
-        </div>
-        <div className="mock-chips">
-          <span>✉️ email</span>
-          <span>📷 photo</span>
-          <span>🎤 voice</span>
-        </div>
-      </div>
-
-      <div className="mock-arrow">→</div>
-
-      <div className="mock-panel mock-out">
-        <div className="mock-label">clean timeline</div>
-        <div className="mock-task">
-          <span>Bring PE kit</span>
-          <b>Fri</b>
-        </div>
-        <div className="mock-task">
-          <span>Pay £15 trip</span>
-          <b>15 Jun</b>
-        </div>
-        <div className="mock-task">
-          <span>Parents&apos; evening — book</span>
-          <b>soon</b>
-        </div>
-      </div>
     </div>
   );
 }
