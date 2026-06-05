@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireUser, getPasswordHash } from "@/lib/auth";
 import { ensureInboundAddress } from "@/lib/users";
 import ProfileForm from "../ProfileForm";
+import DeleteAccount from "../DeleteAccount";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,7 @@ export default async function ProfilePage() {
           </section>
         </div>
       )}
+      <DeleteAccount />
     </>
   );
 }

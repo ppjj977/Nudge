@@ -20,6 +20,10 @@ export default async function SignupPage({
         <p>Start capturing in seconds — it&apos;s free.</p>
       </div>
       <AuthForm mode="signup" googleEnabled={googleEnabled()} next={next} />
+      <p className="note legal-consent">
+        By creating an account you agree to our{" "}
+        <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+      </p>
     </div>
   );
 }

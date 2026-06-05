@@ -2,11 +2,14 @@ import { NextResponse } from "next/server";
 import { createMagicToken } from "@/lib/auth";
 import { sendEmail, emailShell } from "@/lib/email";
 import { config } from "@/lib/config";
+import { rateLimited, clientIp } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 /** POST /api/auth/request { email } — email a single-use magic-link. */
 export async function POST(req: Request) {
+  const limited = rateLimited(`magic:${clientIp(req)}`, 5, 15 * 60_000);
+  if (limited) return limited;
   const { email } = await req.json().catch(() => ({}));
   if (typeof email !== "string" || !email.includes("@")) {
     return NextResponse.json({ error: "Valid email required" }, { status: 400 });
