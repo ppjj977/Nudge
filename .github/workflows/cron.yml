@@ -1,16 +1,16 @@
-name: nudge cron
+name: nudge cron (reminders)
 
-# Free scheduler for reminders + daily digest. GitHub runs this on a best-effort
-# schedule (can be delayed a few minutes under load). It pings the app's secured
-# cron endpoints, so the work runs inside the deployed app — no background worker
-# needed on Render's free plan.
+# Free scheduler for reminder dispatch. GitHub runs this best-effort (it can be
+# delayed a few minutes under load and won't honour intervals tighter than ~5
+# min), so it pings the app's secured dispatch endpoint frequently. The daily
+# digest runs on its own slower schedule in cron-digest.yml.
 #
 # Required repository secret (Settings -> Secrets and variables -> Actions):
 #   CRON_SECRET   the same value set in the app's environment
 # The app URL is public, so it's set inline below (edit if your URL changes).
 on:
   schedule:
-    - cron: "*/15 * * * *" # every 15 minutes
+    - cron: "*/5 * * * *" # every 5 minutes (GitHub's reliable floor)
   workflow_dispatch: {} # allow manual runs from the Actions tab
 
 env:
@@ -25,8 +25,3 @@ jobs:
           curl -fsS -X POST \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
             "$APP_BASE_URL/api/cron/dispatch" && echo
-      - name: Send any due daily digests
-        run: |
-          curl -fsS -X POST \
-            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
-            "$APP_BASE_URL/api/cron/digest" && echo
