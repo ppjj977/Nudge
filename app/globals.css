@@ -1933,3 +1933,18 @@ button.link.danger { color: var(--danger); }
   .dp-arrow.is-reading { transform: rotate(90deg) scale(1.35); }
   .dp-panel { min-height: 0; }
 }
+
+/* ---- data-safety table ---- */
+.data-table { margin: 12px 0 6px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.dt-head, .dt-row { display: grid; grid-template-columns: 2.4fr 1fr 1fr 2.4fr; gap: 8px; padding: 10px 12px; }
+.dt-head { background: var(--bg); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+.dt-row { border-top: 1px solid var(--border); font-size: 14px; }
+.dt-row span[data-l="Collected"], .dt-row span[data-l="Shared"] { font-weight: 700; color: var(--navy); }
+.legal-rule { border: 0; border-top: 1px solid var(--border); margin: 28px 0; }
+@media (max-width: 560px) {
+  .dt-head { display: none; }
+  .dt-row { grid-template-columns: 1fr; gap: 2px; padding: 12px; }
+  .dt-row span::before { content: attr(data-l) ": "; font-weight: 700; color: var(--muted); }
+  .dt-row span[data-l="Data"] { font-weight: 700; margin-bottom: 2px; }
+  .dt-row span[data-l="Data"]::before { content: ""; }
+}

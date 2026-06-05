@@ -98,6 +98,7 @@ export default function PrivacyPage() {
       </p>
 
       <p className="legal-foot">
+        <Link href="/data-safety">Data Safety</Link> ·{" "}
         <Link href="/terms">Terms of Service</Link>
       </p>
     </div>
