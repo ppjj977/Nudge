@@ -1679,3 +1679,37 @@ button.snoozed {
 .hero-android span {
   font-size: 12px;
 }
+
+/* in-context "turn on reminders" prompt */
+.push-prompt {
+  background: rgba(245, 181, 46, 0.14);
+  border: 1px solid var(--amber);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.push-prompt-text {
+  display: flex;
+  flex-direction: column;
+}
+.push-prompt-text strong {
+  color: var(--navy);
+  font-size: 15px;
+}
+.push-prompt-text span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.push-prompt-actions {
+  display: flex;
+  gap: 8px;
+}
+.push-prompt-msg {
+  flex-basis: 100%;
+  margin: 4px 0 0;
+}
