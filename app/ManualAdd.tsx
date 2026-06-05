@@ -64,7 +64,15 @@ export default function ManualAdd() {
       <div className="field-row">
         <label className="field">
           <span>Type</span>
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              // Birthdays/anniversaries almost always repeat yearly.
+              if (e.target.value === "celebrate" && repeat === "none")
+                setRepeat("yearly");
+            }}
+          >
             {ACTION_CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {c}

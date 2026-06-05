@@ -40,6 +40,7 @@ const CATEGORY_ICON: Record<string, string> = {
   send: "✉️",
   renew: "🔁",
   trip: "🧳",
+  celebrate: "🎂",
   reminder: "⏰",
   fyi: "📄",
 };
