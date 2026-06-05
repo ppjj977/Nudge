@@ -1,0 +1,25 @@
+name: nudge cron (daily digest)
+
+# The once-a-day digest only needs coarse granularity: the endpoint self-gates
+# on each user's local digest hour and de-dupes per day, so it just needs to run
+# at least once within every clock hour. Every 15 min gives a safe margin
+# against GitHub's best-effort delays without scanning users every few minutes.
+#
+# Required repository secret: CRON_SECRET (same value as in the app's env).
+on:
+  schedule:
+    - cron: "*/15 * * * *" # every 15 minutes
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+env:
+  APP_BASE_URL: https://nudge-s1mn.onrender.com
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send any due daily digests
+        run: |
+          curl -fsS -X POST \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            "$APP_BASE_URL/api/cron/digest" && echo
