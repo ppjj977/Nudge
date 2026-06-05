@@ -62,18 +62,28 @@ function base64ToBlob(b64: string, mime: string): Blob {
   return new Blob([arr], { type: mime });
 }
 
+/** POST shared text or an image file to the capture pipeline; return the
+ *  timeline URL with the outcome toast. */
+async function postShare(content: Blob | string): Promise<string> {
+  const fd = new FormData();
+  if (typeof content === "string") fd.append("text", content);
+  else fd.append("file", content, "shared.jpg");
+  const res = await fetch("/share", { method: "POST", body: fd });
+  return res.ok ? "/?shared=added" : "/?shared=failed";
+}
+
 export default function NativeExtras() {
   useEffect(() => {
     const cap = (window as unknown as { Capacitor?: Cap }).Capacitor;
     if (!cap?.isNativePlatform?.()) return;
 
     // --- Share-target: forward shared text OR an image into capture. ---
-    (async () => {
+    async function handleSharedIntent() {
       try {
-        const SendIntent = cap.Plugins?.SendIntent;
+        const SendIntent = cap?.Plugins?.SendIntent;
         if (!SendIntent) return;
         const r = await SendIntent.checkSendIntentReceived();
-        if (!r) return;
+        if (!r || (!r.url && !r.title && !r.description)) return;
 
         const isImage =
           (r.type && r.type.startsWith("image")) ||
@@ -81,15 +91,10 @@ export default function NativeExtras() {
 
         // Shared image: read its bytes and run them through OCR/vision.
         if (isImage && r.url) {
-          const blob = await readSharedImage(cap, r.url, r.type || "image/jpeg");
-          if (!blob) {
-            window.location.href = "/?shared=failed";
-            return;
-          }
-          const fd = new FormData();
-          fd.append("file", blob, "shared.jpg");
-          await fetch("/share", { method: "POST", body: fd });
-          window.location.href = "/?shared=added";
+          const blob = await readSharedImage(cap!, r.url, r.type || "image/jpeg");
+          window.location.href = blob
+            ? await postShare(blob)
+            : "/?shared=failed";
           return;
         }
 
@@ -100,14 +105,16 @@ export default function NativeExtras() {
         );
         const text = parts.join("\n").trim();
         if (!text) return;
-        const fd = new FormData();
-        fd.append("text", text);
-        await fetch("/share", { method: "POST", body: fd });
-        window.location.href = "/?shared=added";
+        window.location.href = await postShare(text);
       } catch {
         /* no shared intent — ignore */
       }
-    })();
+    }
+
+    // Cold start (app launched by the share) AND already-running (the plugin
+    // fires `sendIntentReceived` on a new intent without reloading the page).
+    handleSharedIntent();
+    window.addEventListener("sendIntentReceived", handleSharedIntent);
 
     // --- Widget sync: cache today's & tomorrow's nudges for the widget. ---
     (async () => {
@@ -153,6 +160,9 @@ export default function NativeExtras() {
         /* preferences unavailable — ignore */
       }
     })();
+
+    return () =>
+      window.removeEventListener("sendIntentReceived", handleSharedIntent);
   }, []);
 
   return null;
