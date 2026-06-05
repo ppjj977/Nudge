@@ -25,7 +25,7 @@ export default function Landing() {
           <a href="/nudge.apk" download>
             📱 Download the Android app
           </a>{" "}
-          <span>· APK, ~1&nbsp;MB · allow “install from unknown sources”</span>
+          <span>· APK, ~5&nbsp;MB · allow “install from unknown sources”</span>
         </p>
 
         <Mockup />
