@@ -32,6 +32,7 @@ body {
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 a {
@@ -1615,23 +1616,22 @@ button.snoozed {
   word-break: break-all;
 }
 
-/* landing screenshots gallery */
+/* landing screenshots gallery — breaks out wider than the text column */
 .shots {
-  padding: 28px 0;
-  border-top: 1px solid var(--border);
-  margin-top: 28px;
+  margin: 32px calc(50% - 50vw) 0;
+  padding: 28px max(18px, calc(50vw - 540px)) 8px;
 }
 .shots-row {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   overflow-x: auto;
-  padding: 4px 2px 10px;
+  padding: 4px 0 12px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
 .shot {
   flex: 0 0 auto;
-  width: 230px;
+  width: 250px;
   margin: 0;
   background: var(--panel);
   border: 1px solid var(--border);
@@ -1653,8 +1653,14 @@ button.snoozed {
   color: var(--muted);
   text-align: center;
 }
-@media (min-width: 720px) {
+/* On wider screens show them all, centred, with no scrollbar. */
+@media (min-width: 800px) {
   .shots-row {
+    overflow: visible;
     justify-content: center;
+    flex-wrap: wrap;
+  }
+  .shot {
+    width: 270px;
   }
 }
