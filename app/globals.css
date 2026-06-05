@@ -1822,3 +1822,36 @@ button.link.danger { color: var(--danger); }
   cursor: pointer;
 }
 .gallery-link:disabled { opacity: 0.5; cursor: default; }
+
+/* ---- pull-to-refresh indicator ---- */
+.ptr {
+  position: fixed;
+  top: 4px;
+  left: 50%;
+  z-index: 60;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  color: var(--teal);
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.ptr-spin {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+.ptr-spin.is-spinning {
+  animation: ptr-rot 0.8s linear infinite;
+}
+@keyframes ptr-rot {
+  to {
+    transform: rotate(360deg);
+  }
+}
