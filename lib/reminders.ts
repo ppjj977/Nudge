@@ -147,6 +147,25 @@ export function computeFireTimes(
   return out.sort();
 }
 
+/**
+ * The guaranteed nudge for a task with an explicit time. If a task is due at a
+ * specific time (`due_type === "datetime"`), the user should always be notified
+ * at that time — regardless of the category's reminder settings (even `fyi`, or
+ * a category the user has set to "no reminders"). Returns the exact due instant
+ * as a UTC ISO string, or null when there's no future time to fire.
+ */
+export function exactTimeFire(
+  task: Pick<Task, "due_at" | "due_type">,
+  timezone: string,
+  now: DateTime = DateTime.now(),
+): string | null {
+  if (task.due_type !== "datetime" || !task.due_at) return null;
+  const due = DateTime.fromISO(task.due_at, { zone: timezone });
+  if (!due.isValid) return null;
+  if (due.toUTC() <= now.toUTC()) return null; // already passed
+  return due.toUTC().toISO();
+}
+
 /** Cancel a task's still-pending reminders (SPEC §5 note). */
 export async function cancelRemindersForTask(taskId: string): Promise<void> {
   await db.execute({
@@ -185,19 +204,28 @@ export async function reminderTargets(task: Task): Promise<string[]> {
 
 /**
  * (Re)generate reminders for a task: cancel any pending ones, then create fresh
- * rows from the user's rules. No-op for review/terminal tasks and `fyi`.
+ * rows. A task with an explicit time always gets a nudge at that time, on top
+ * of any category rules. Category rules add extra advance reminders (and `fyi`
+ * / empty categories add none). No-op for review/terminal tasks.
  * Call after create, confirm, due-date edits, and status changes.
  */
 export async function generateRemindersForTask(task: Task): Promise<void> {
   await cancelRemindersForTask(task.id);
-  if (task.status !== "active" || task.category === "fyi") return;
+  if (task.status !== "active") return;
 
   const user = await getUserById(task.user_id);
   if (!user) return;
 
+  const fires = new Set<string>();
+
+  // Always notify at an explicit time, regardless of category settings.
+  const exact = exactTimeFire(task, user.timezone);
+  if (exact) fires.add(exact);
+
+  // Category rules add any extra advance reminders (day-before, week-before…).
   const { rules } = parseUserSettings(user);
   const catRules = rules[task.category] ?? [];
-  const fires = computeFireTimes(task, catRules, user.timezone);
+  for (const f of computeFireTimes(task, catRules, user.timezone)) fires.add(f);
 
   const targets = await reminderTargets(task);
 

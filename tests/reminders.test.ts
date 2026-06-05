@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { DateTime } from "luxon";
 import {
   computeFireTimes,
+  exactTimeFire,
   parseUserSettings,
   DEFAULT_REMINDER_RULES,
   isValidRule,
@@ -71,6 +72,31 @@ describe("computeFireTimes", () => {
       now,
     );
     expect(fires).toHaveLength(1);
+  });
+});
+
+describe("exactTimeFire", () => {
+  const now = DateTime.fromISO("2026-06-04T08:00", { zone: TZ });
+
+  it("fires at the exact due time for a timed task", () => {
+    const iso = exactTimeFire(
+      { due_at: "2026-06-05T14:30", due_type: "datetime" },
+      TZ,
+      now,
+    );
+    expect(iso).not.toBeNull();
+    expect(localTimes([iso!])).toEqual(["2026-06-05 14:30"]);
+  });
+
+  it("returns null for date-only and undated tasks (no time set)", () => {
+    expect(exactTimeFire({ due_at: "2026-06-05", due_type: "date" }, TZ, now)).toBeNull();
+    expect(exactTimeFire({ due_at: null, due_type: "none" }, TZ, now)).toBeNull();
+  });
+
+  it("returns null when the time has already passed", () => {
+    expect(
+      exactTimeFire({ due_at: "2026-06-04T07:00", due_type: "datetime" }, TZ, now),
+    ).toBeNull();
   });
 });
 
