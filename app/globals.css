@@ -200,9 +200,16 @@ a {
 .edit-form .field-row {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 .edit-form .field-row .field {
-  flex: 1;
+  flex: 1 1 120px;
+  min-width: 110px;
+}
+.edit-form .field-row .field select,
+.edit-form .field-row .field input {
+  width: 100%;
+  box-sizing: border-box;
 }
 .task.is-done .title {
   text-decoration: line-through;
