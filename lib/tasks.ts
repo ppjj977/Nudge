@@ -21,6 +21,7 @@ export interface Task {
   detail: string | null;
   due_at: string | null;
   due_type: DueType;
+  end_at: string | null;
   amount: number | null;
   currency: string | null;
   location: string | null;
@@ -80,10 +81,10 @@ export async function insertTasksFromExtraction(
     const checklistJson = checklist ? JSON.stringify(checklist) : null;
     await db.execute({
       sql: `INSERT INTO tasks
-        (id, user_id, capture_id, category, title, detail, due_at, due_type,
+        (id, user_id, capture_id, category, title, detail, due_at, due_type, end_at,
          amount, currency, location, life_area, checklist, status, confidence,
          source_excerpt, created_at, updated_at, completed_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       args: [
         id,
         userId,
@@ -93,6 +94,7 @@ export async function insertTasksFromExtraction(
         item.detail,
         item.due_at,
         item.due_type,
+        item.end_at,
         item.amount,
         item.currency,
         item.location,
@@ -115,6 +117,7 @@ export async function insertTasksFromExtraction(
       detail: item.detail,
       due_at: item.due_at,
       due_type: item.due_type,
+      end_at: item.end_at,
       amount: item.amount,
       currency: item.currency,
       location: item.location,
@@ -221,6 +224,7 @@ export interface ManualTaskInput {
   detail?: string | null;
   due_at?: string | null;
   due_type?: DueType;
+  end_at?: string | null;
   amount?: number | null;
   currency?: string | null;
   location?: string | null;
@@ -247,6 +251,10 @@ export async function createManualTask(
       ? input.due_type
       : "date"
     : "none";
+  // A span only makes sense with a start, and the end must not precede it.
+  const endRaw = input.end_at && input.end_at.trim() ? input.end_at.trim() : null;
+  const end_at =
+    due_at && endRaw && endRaw.slice(0, 10) >= due_at.slice(0, 10) ? endRaw : null;
 
   const task: Task = {
     id,
@@ -257,6 +265,7 @@ export async function createManualTask(
     detail: input.detail?.trim() || null,
     due_at,
     due_type,
+    end_at,
     amount: category === "pay" ? (input.amount ?? null) : null,
     currency: category === "pay" ? (input.currency || "GBP") : null,
     location: input.location?.trim() || null,
@@ -275,13 +284,13 @@ export async function createManualTask(
 
   await db.execute({
     sql: `INSERT INTO tasks
-      (id, user_id, capture_id, category, title, detail, due_at, due_type,
+      (id, user_id, capture_id, category, title, detail, due_at, due_type, end_at,
        amount, currency, location, life_area, checklist, status, confidence,
        source_excerpt, created_at, updated_at, completed_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     args: [
       task.id, task.user_id, task.capture_id, task.category, task.title,
-      task.detail, task.due_at, task.due_type, task.amount, task.currency,
+      task.detail, task.due_at, task.due_type, task.end_at, task.amount, task.currency,
       task.location, task.life_area, null, task.status, task.confidence,
       task.source_excerpt, task.created_at, task.updated_at, task.completed_at,
     ],
@@ -334,6 +343,7 @@ const EDITABLE_FIELDS = new Set([
   "detail",
   "due_at",
   "due_type",
+  "end_at",
   "amount",
   "currency",
   "location",

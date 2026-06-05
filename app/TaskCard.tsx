@@ -17,6 +17,7 @@ export interface TaskView {
   detail: string | null;
   due_at: string | null;
   due_type: string;
+  end_at: string | null;
   amount: number | null;
   currency: string | null;
   location: string | null;
@@ -41,23 +42,29 @@ const CATEGORY_ICON: Record<string, string> = {
   fyi: "📄",
 };
 
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+const fmtDateTime = (d: Date) =>
+  d.toLocaleString(undefined, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
 function dueLabel(t: TaskView): string | null {
   if (!t.due_at || t.due_type === "none") return null;
-  const d = new Date(t.due_at);
-  if (Number.isNaN(d.getTime())) return t.due_at;
-  return t.due_type === "datetime"
-    ? d.toLocaleString(undefined, {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : d.toLocaleDateString(undefined, {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-      });
+  const start = new Date(t.due_at);
+  if (Number.isNaN(start.getTime())) return t.due_at;
+  const startStr = t.due_type === "datetime" ? fmtDateTime(start) : fmtDate(start);
+
+  // Multi-day span: show "start – end" when the end is a different day.
+  if (t.end_at && t.end_at.slice(0, 10) !== t.due_at.slice(0, 10)) {
+    const end = new Date(t.end_at);
+    if (!Number.isNaN(end.getTime())) return `${startStr} – ${fmtDate(end)}`;
+  }
+  return startStr;
 }
 
 function amountLabel(t: TaskView): string | null {
@@ -364,11 +371,13 @@ function EditForm({
     task.due_type === "datetime" && task.due_at
       ? task.due_at.slice(11, 16)
       : "";
+  const initialEnd = task.end_at ? task.end_at.slice(0, 10) : "";
 
   const [title, setTitle] = useState(task.title);
   const [detail, setDetail] = useState(task.detail ?? "");
   const [date, setDate] = useState(initialDate);
   const [time, setTime] = useState(initialTime);
+  const [endDate, setEndDate] = useState(initialEnd);
   const [amount, setAmount] = useState(task.amount?.toString() ?? "");
   const [location, setLocation] = useState(task.location ?? "");
   const [category, setCategory] = useState<string>(task.category);
@@ -421,6 +430,8 @@ function EditForm({
       patch.due_type = "datetime";
       patch.due_at = `${date}T${time}:00`;
     }
+    // Multi-day span: keep end only when it's on/after the start.
+    patch.end_at = date && endDate && endDate >= date ? endDate : null;
     await fetch(`/api/tasks/${task.id}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
@@ -462,6 +473,16 @@ function EditForm({
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
+              disabled={!date}
+            />
+          </label>
+          <label className="field">
+            <span>End date (optional)</span>
+            <input
+              type="date"
+              value={endDate}
+              min={date || undefined}
+              onChange={(e) => setEndDate(e.target.value)}
               disabled={!date}
             />
           </label>
