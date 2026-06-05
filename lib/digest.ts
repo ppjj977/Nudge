@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { config } from "./config";
-import { esc } from "./email";
+import { esc, emailShell, emailBrand } from "./email";
 import type { Task, Timeline } from "./tasks";
 import type { User } from "./users";
 
@@ -33,10 +33,10 @@ function lineHtml(task: Task, tz: string): string {
   const due = dueContext(task, tz);
   const amount =
     task.amount != null
-      ? ` <span style="color:#888">— ${esc(task.currency ?? "GBP")} ${task.amount}</span>`
+      ? ` <span style="color:${emailBrand.muted}">— ${esc(task.currency ?? "GBP")} ${task.amount}</span>`
       : "";
-  return `<li><strong>${esc(task.title)}</strong>${
-    due ? ` <span style="color:#888">(${esc(due)})</span>` : ""
+  return `<li style="margin:4px 0;color:${emailBrand.text}"><strong>${esc(task.title)}</strong>${
+    due ? ` <span style="color:${emailBrand.muted}">(${esc(due)})</span>` : ""
   }${amount}</li>`;
 }
 
@@ -83,25 +83,24 @@ export function composeDigest(
   // --- html ---
   const section = (title: string, tasks: Task[]) =>
     tasks.length
-      ? `<h3 style="margin:18px 0 6px;font-size:13px;letter-spacing:1px;color:#888;text-transform:uppercase">${title}</h3><ul style="margin:0;padding-left:18px">${tasks
+      ? `<h3 style="margin:18px 0 6px;font-size:12px;letter-spacing:1px;color:${emailBrand.green};text-transform:uppercase">${title}</h3><ul style="margin:0;padding-left:18px">${tasks
           .map((t) => lineHtml(t, tz))
           .join("")}</ul>`
       : "";
 
   const reviewHtml = review.length
-    ? `<p style="margin-top:18px;color:#b8860b">${review.length} item${
+    ? `<p style="margin-top:18px;padding:10px 14px;background:rgba(245,181,46,0.16);border:1px solid ${emailBrand.amber};border-radius:10px;color:#6b4e00;font-weight:600">${review.length} item${
         review.length === 1 ? "" : "s"
-      } need a quick review${link ? ` — <a href="${esc(link)}">open nudge</a>` : ""}.</p>`
+      } need a quick review.</p>`
     : "";
 
-  const html = `<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#111">
-    <h2 style="margin:0 0 2px">nudge</h2>
-    <div style="color:#888;font-size:13px">${esc(dateStr)}</div>
-    ${section("Today", today)}
-    ${section("This week", week)}
-    ${reviewHtml}
-    ${link ? `<p style="margin-top:24px"><a href="${esc(link)}">Open nudge →</a></p>` : ""}
-  </div>`;
+  const html = emailShell({
+    heading: "Here’s your day",
+    intro: esc(dateStr),
+    bodyHtml: `${section("Today", today)}${section("This week", week)}${reviewHtml}`,
+    ctaText: link ? "Open nudge" : undefined,
+    ctaUrl: link,
+  });
 
   const count = today.length + week.length;
   const subject =

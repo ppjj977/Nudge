@@ -5,7 +5,7 @@ import { ensureSchema } from "./db";
 import { getTaskByIdAny, getTimeline, type Task } from "./tasks";
 import { getUserById, getAllUsers } from "./users";
 import { parseUserSettings } from "./reminders";
-import { sendEmail, esc } from "./email";
+import { sendEmail, esc, emailShell, emailBrand } from "./email";
 import { sendPushToUser } from "./push";
 import { composeDigest } from "./digest";
 import { config } from "./config";
@@ -45,19 +45,27 @@ function reminderEmail(task: Task, tz: string) {
   }
   if (link) textLines.push("", link);
 
+  const meta = (label: string, value: string) =>
+    `<div style="color:${emailBrand.muted};font-size:14px;margin-top:2px">${label}: ${value}</div>`;
   const checklistHtml = pending.length
-    ? `<ul>${pending.map((c) => `<li>☐ ${esc(c.text)}</li>`).join("")}</ul>`
+    ? `<ul style="margin:12px 0 0;padding-left:18px;color:${emailBrand.text}">${pending
+        .map((c) => `<li>${esc(c.text)}</li>`)
+        .join("")}</ul>`
     : "";
 
-  const html = `<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#111">
-    <h2 style="margin:0 0 8px">⏰ ${esc(task.title)}</h2>
-    ${due ? `<div style="color:#555">Due: ${esc(due)}</div>` : ""}
-    ${task.location ? `<div style="color:#555">Where: ${esc(task.location)}</div>` : ""}
-    ${task.amount != null ? `<div style="color:#555">Amount: ${esc(task.currency ?? "GBP")} ${task.amount}</div>` : ""}
-    ${task.detail ? `<p>${esc(task.detail)}</p>` : ""}
-    ${checklistHtml}
-    ${link ? `<p style="margin-top:18px"><a href="${esc(link)}">Open nudge →</a></p>` : ""}
-  </div>`;
+  const bodyHtml = `
+    ${due ? meta("Due", esc(due)) : ""}
+    ${task.location ? meta("Where", esc(task.location)) : ""}
+    ${task.amount != null ? meta("Amount", `${esc(task.currency ?? "GBP")} ${task.amount}`) : ""}
+    ${task.detail ? `<p style="color:${emailBrand.text};margin:12px 0 0">${esc(task.detail)}</p>` : ""}
+    ${checklistHtml}`;
+
+  const html = emailShell({
+    heading: `⏰ ${esc(task.title)}`,
+    bodyHtml,
+    ctaText: link ? "Open nudge" : undefined,
+    ctaUrl: link,
+  });
 
   return {
     subject: `⏰ ${task.title}`,
