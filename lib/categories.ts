@@ -11,6 +11,7 @@ export const ACTION_CATEGORIES = [
   "prepare",
   "send",
   "renew",
+  "trip",
   "reminder",
 ] as const;
 

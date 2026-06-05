@@ -58,6 +58,10 @@ export const DEFAULT_REMINDER_RULES: Record<Category, ReminderRule[]> = {
     { daysBefore: 14, time: "09:00" },
     { daysBefore: 3, time: "09:00" },
   ],
+  trip: [
+    { daysBefore: 7, time: "09:00" },
+    { daysBefore: 1, time: "18:00" },
+  ],
   reminder: [{ daysBefore: 0, time: "09:00" }],
   fyi: [],
 };

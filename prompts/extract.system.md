@@ -39,6 +39,8 @@ the fastest way to lose the user's trust. When in doubt, extract less.
 - `prepare` — have something ready / bring something on a day. `due_at` is that day.
 - `send` — deliver or reply to someone by a date.
 - `renew` — a recurring deadline before something lapses or auto-charges.
+- `trip` — a holiday, trip away, or multi-day time off. Set `due_at` to the
+  first day and `end_at` to the last day, `due_type` `date`.
 - `reminder` — catch-all time-based nudge with no clean verb above.
 - `fyi` — informational, no action, no due date. No reminders. Use sparingly;
   prefer `nothing_actionable` over emitting many `fyi` items.
