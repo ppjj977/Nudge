@@ -31,14 +31,14 @@ export default async function UpgradePage() {
         <section className="panel">
           <h2 className="section">Go unlimited</h2>
           <p className="note">
-            Free includes {FREE_MONTHLY_CAPTURES} AI captures a month. Pro removes
-            the cap and unlocks the load-sharing features:
+            Free gives you {FREE_MONTHLY_CAPTURES} AI captures a month with
+            in-app reminders. Pro removes the cap and unlocks more:
           </p>
           <ul className="pro-list">
             <li>Unlimited captures — text, photo, voice &amp; email-in</li>
+            <li>Email reminders &amp; the daily digest</li>
+            <li>Nudge Family — shared tasks &amp; lists for the household</li>
             <li>Recurring tasks, birthdays &amp; trips</li>
-            <li>Nudge Family — shared tasks &amp; lists</li>
-            <li>Daily digest</li>
           </ul>
           <p className="note">
             Paid subscriptions are coming shortly. In the meantime, if you have a

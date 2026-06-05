@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { Household, Member } from "@/lib/households";
 
 export default function FamilyManager({
@@ -8,11 +9,13 @@ export default function FamilyManager({
   members,
   meId,
   isOwner = false,
+  pro = false,
 }: {
   household: Household | null;
   members: Member[];
   meId: string;
   isOwner?: boolean;
+  pro?: boolean;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -82,6 +85,25 @@ export default function FamilyManager({
     const r = await fetch("/api/family/leave", { method: "POST" });
     setBusy(false);
     if (r.ok) location.reload();
+  }
+
+  if (!household && !pro) {
+    return (
+      <div className="profile-form">
+        <section className="profile-card">
+          <h2 className="section">Nudge Family is a Pro feature</h2>
+          <p className="note">
+            Share tasks &amp; lists with the household, assign who does what, and
+            everyone gets the nudge. Upgrade to set up your family.
+          </p>
+          <p>
+            <Link href="/upgrade" className="btn-primary-lg">
+              See nudge Pro
+            </Link>
+          </p>
+        </section>
+      </div>
+    );
   }
 
   if (!household) {

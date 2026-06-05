@@ -54,6 +54,7 @@ export default function SettingsForm({
   initialLifeAreas,
   defaultLifeAreas,
   pushAvailable,
+  pro = false,
 }: {
   initialRules: Rules;
   defaults: Rules;
@@ -63,6 +64,7 @@ export default function SettingsForm({
   initialLifeAreas: string[];
   defaultLifeAreas: string[];
   pushAvailable: boolean;
+  pro?: boolean;
 }) {
   const [rules, setRules] = useState<Rules>(structuredClone(initialRules));
   const [channels, setChannels] = useState<Channels>(initialChannels);
@@ -200,10 +202,16 @@ export default function SettingsForm({
         <label className="row">
           <input
             type="checkbox"
-            checked={channels.email}
+            checked={pro && channels.email}
+            disabled={!pro}
             onChange={(e) => setChannels({ ...channels, email: e.target.checked })}
           />
-          <span>Email</span>
+          <span>
+            Email{" "}
+            {!pro && (
+              <a href="/upgrade" className="pro-tag">Pro</a>
+            )}
+          </span>
         </label>
         <label className="row">
           <input
@@ -231,10 +239,17 @@ export default function SettingsForm({
 
       <section className="panel">
         <h2>Daily digest</h2>
+        {!pro && (
+          <p className="note">
+            The daily digest is emailed, so it&apos;s part of{" "}
+            <a href="/upgrade" className="pro-tag">nudge Pro</a>.
+          </p>
+        )}
         <label className="row">
           <input
             type="checkbox"
-            checked={digest}
+            checked={pro && digest}
+            disabled={!pro}
             onChange={(e) => setDigest(e.target.checked)}
           />
           <span>Email me a daily digest</span>
@@ -243,7 +258,7 @@ export default function SettingsForm({
           <span>Send my morning digest at</span>
           <select
             value={digestHour}
-            disabled={!digest}
+            disabled={!pro || !digest}
             onChange={(e) => setDigestHour(Number(e.target.value))}
           >
             {Array.from({ length: 24 }, (_, h) => (
