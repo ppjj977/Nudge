@@ -14,6 +14,7 @@ const NAV = [
 ];
 
 const ACCOUNT = [
+  { href: "/upgrade", label: "nudge Pro" },
   { href: "/family", label: "Family" },
   { href: "/profile", label: "Profile" },
   { href: "/settings", label: "Settings" },

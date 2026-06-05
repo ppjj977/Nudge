@@ -5,6 +5,7 @@ import { extract, ExtractionParseError } from "./extract";
 import { insertTasksFromExtraction, type Task } from "./tasks";
 import { tidyText } from "./normalize";
 import { getUserLifeAreas, type User } from "./users";
+import { captureAllowance } from "./plan";
 
 /**
  * The one extraction path (SPEC §6): a capture's normalized text -> Groq ->
@@ -23,16 +24,30 @@ export interface IngestInput {
 
 export interface IngestResult {
   captureId: string;
-  status: "processed" | "failed";
+  status: "processed" | "failed" | "limit";
   nothingActionable: boolean;
   tasks: Task[];
   error?: string;
+  limit?: { used: number; limit: number };
 }
 
 export async function ingestAndExtract(
   user: User,
   input: IngestInput,
 ): Promise<IngestResult> {
+  // Free-plan monthly cap on AI captures (the cost driver). Blocks before we
+  // spend on extraction; Pro is unlimited. Manual task entry is never capped.
+  const allow = await captureAllowance(user);
+  if (!allow.allowed) {
+    return {
+      captureId: "",
+      status: "limit",
+      nothingActionable: false,
+      tasks: [],
+      limit: { used: allow.used, limit: allow.limit },
+    };
+  }
+
   const captureId = newId("cap");
   const receivedAt = new Date().toISOString();
   const normalized = tidyText(input.normalizedText);

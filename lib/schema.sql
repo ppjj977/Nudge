@@ -14,7 +14,29 @@ CREATE TABLE IF NOT EXISTS users (
   inbound_address TEXT UNIQUE,                            -- per-user forwarding addr (phase 3)
   digest_hour     INTEGER NOT NULL DEFAULT 7,             -- local hour
   settings        TEXT,                                   -- json: reminder offsets, retention prefs
+  plan            TEXT NOT NULL DEFAULT 'free',           -- 'free' | 'pro'
+  plan_until      TEXT,                                   -- ISO; null = perpetual pro
+  plan_source     TEXT,                                   -- 'play' | 'stripe' | 'comp' | 'promo:CODE'
   created_at      TEXT NOT NULL
+);
+
+-- Promo / comp codes that grant Pro (full or for a period). Discounted *price*
+-- is handled by the billing provider; these grant entitlement directly.
+CREATE TABLE IF NOT EXISTS promo_codes (
+  code            TEXT PRIMARY KEY,            -- uppercase
+  grants          TEXT NOT NULL DEFAULT 'pro',
+  duration_days   INTEGER,                     -- null = forever
+  max_redemptions INTEGER,                     -- null = unlimited
+  redeemed_count  INTEGER NOT NULL DEFAULT 0,
+  expires_at      TEXT,                        -- when the code stops working
+  note            TEXT,
+  created_at      TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS promo_redemptions (
+  id          TEXT PRIMARY KEY,
+  code        TEXT NOT NULL,
+  user_id     TEXT NOT NULL REFERENCES users(id),
+  redeemed_at TEXT NOT NULL
 );
 
 -- Server-side sessions (SPEC §10a): the cookie holds the random session id.
@@ -177,3 +199,4 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_digest_per_day ON digest_log(user_id, sent_
 CREATE INDEX IF NOT EXISTS idx_lists_user            ON lists(user_id);
 CREATE INDEX IF NOT EXISTS idx_lists_household        ON lists(household_id);
 CREATE INDEX IF NOT EXISTS idx_list_items_list        ON list_items(list_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_promo_redemption  ON promo_redemptions(code, user_id);
