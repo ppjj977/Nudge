@@ -17,16 +17,10 @@ export default function Landing() {
           <Link href="/signup" className="btn-primary-lg">
             Get started free
           </Link>
-          <a href="#how" className="btn-ghost-lg">
-            See how it works
-          </a>
         </div>
-        <p className="hero-android">
-          <a href="/nudge.apk" download>
-            📱 Download the Android app
-          </a>{" "}
-          <span>· APK, ~5&nbsp;MB · allow “install from unknown sources”</span>
-        </p>
+        <a href="#how" className="hero-link">
+          See how it works ↓
+        </a>
 
         <Mockup />
       </section>
@@ -118,6 +112,14 @@ export default function Landing() {
           </Link>
         </div>
       </section>
+
+      {/* ---- footer: get the Android app ---- */}
+      <footer className="landing-foot">
+        <a href="/nudge.apk" download className="foot-apk">
+          📱 Download the Android app
+        </a>
+        <span>· APK, ~5&nbsp;MB · allow “install from unknown sources”</span>
+      </footer>
     </div>
   );
 }
