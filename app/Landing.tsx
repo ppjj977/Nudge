@@ -25,6 +25,20 @@ export default function Landing() {
         <Mockup />
       </section>
 
+      {/* ---- screenshots ---- */}
+      <section className="shots">
+        <h2 className="landing-h2">See it in action</h2>
+        <div className="shots-row">
+          {SHOTS.map((s) => (
+            <figure className="shot" key={s.src}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={s.src} alt={s.cap} loading="lazy" />
+              <figcaption className="shot-cap">{s.cap}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
       {/* ---- how it works ---- */}
       <section id="how" className="how">
         <h2 className="landing-h2">How it works</h2>
@@ -139,6 +153,12 @@ function Mockup() {
     </div>
   );
 }
+
+const SHOTS = [
+  { src: "/screenshots/timeline.png", cap: "Your timeline" },
+  { src: "/screenshots/calendar.png", cap: "Multi-day plans on the calendar" },
+  { src: "/screenshots/family-tab.png", cap: "Share with your family" },
+];
 
 const STEPS = [
   {
