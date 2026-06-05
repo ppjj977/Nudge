@@ -64,6 +64,20 @@
       "type": "image/png",
       "form_factor": "narrow",
       "label": "A review tray for anything nudge wasn't sure about"
+    },
+    {
+      "src": "/screenshots/family-tab.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Nudge Family — share tasks, assign them, everyone gets nudged"
+    },
+    {
+      "src": "/screenshots/family.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Set up your family and invite people by email"
     }
   ],
   "share_target": {
