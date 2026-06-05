@@ -1,10 +1,11 @@
 import { DateTime } from "luxon";
 import { getUserLifeAreas } from "@/lib/users";
-import { requireUser } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { getTimeline, type Task } from "@/lib/tasks";
 import CaptureBox from "./CaptureBox";
 import ManualAdd from "./ManualAdd";
 import TaskCard, { type TaskView } from "./TaskCard";
+import Landing from "./Landing";
 
 // Always read fresh state; the dashboard reflects live captures.
 export const dynamic = "force-dynamic";
@@ -61,7 +62,11 @@ export default async function Dashboard({
 }: {
   searchParams: Promise<{ shared?: string }>;
 }) {
-  const user = await requireUser();
+  // Logged-out visitors get the public marketing page; signed-in users get
+  // their timeline at the same URL.
+  const user = await getCurrentUser();
+  if (!user) return <Landing />;
+
   const timeline = await getTimeline(user.id, user.timezone);
   const lifeAreas = getUserLifeAreas(user);
   const now = DateTime.now().setZone(user.timezone);

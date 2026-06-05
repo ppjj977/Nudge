@@ -46,7 +46,18 @@ export default async function RootLayout({
             <LogoMark size={28} />
             <span className="wordmark">{APP_NAME}</span>
           </Link>
-          {user && <Menu />}
+          {user ? (
+            <Menu />
+          ) : (
+            <nav className="auth-nav">
+              <Link href="/login" className="auth-nav-link">
+                Sign in
+              </Link>
+              <Link href="/signup" className="auth-nav-cta">
+                Get started
+              </Link>
+            </nav>
+          )}
         </header>
         <main className="container">{children}</main>
         <footer className="tagline-footer">
