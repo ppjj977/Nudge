@@ -8,11 +8,27 @@ import { useRouter } from "next/navigation";
  * both run the same extraction pipeline. Manual entry is deliberately not the
  * primary flow.
  */
-export default function CaptureBox() {
+export default function CaptureBox({
+  inboundAddress,
+}: {
+  inboundAddress?: string | null;
+}) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  async function copyAddress() {
+    if (!inboundAddress) return;
+    try {
+      await navigator.clipboard.writeText(inboundAddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      /* clipboard blocked — ignore */
+    }
+  }
   const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -133,9 +149,7 @@ export default function CaptureBox() {
 
   return (
     <div className="capture">
-      <p className="capture-lead">
-        Drop in the thing you don&apos;t want to process right now.
-      </p>
+      <p className="capture-lead">drop in the things you&apos;ve got to deal with.</p>
       <textarea
         placeholder="Paste an email, a newsletter, a message — anything. Or add a photo or voice note below."
         value={text}
@@ -179,7 +193,14 @@ export default function CaptureBox() {
       <p className="capture-hint">
         On your phone you can also <strong>Share to Nudge</strong> from any app —
         or forward an email to your{" "}
-        <a href="/profile">personal Nudge address</a>.
+        {inboundAddress ? (
+          <button type="button" className="link copy-addr" onClick={copyAddress}>
+            {copied ? `Copied ${inboundAddress} ✓` : "personal Nudge address"}
+          </button>
+        ) : (
+          <a href="/profile">personal Nudge address</a>
+        )}
+        {inboundAddress && !copied ? " (tap to copy)" : ""}
       </p>
     </div>
   );

@@ -63,6 +63,7 @@ async function applySchema(): Promise<void> {
 async function applyAdditiveMigrations(): Promise<void> {
   const additions = [
     "ALTER TABLE tasks ADD COLUMN checklist TEXT",
+    "ALTER TABLE tasks ADD COLUMN snoozed_until TEXT",
     "ALTER TABLE users ADD COLUMN name TEXT",
     "ALTER TABLE users ADD COLUMN image TEXT",
     "ALTER TABLE users ADD COLUMN password_hash TEXT",

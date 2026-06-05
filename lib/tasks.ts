@@ -29,6 +29,7 @@ export interface Task {
   status: TaskStatus;
   confidence: number;
   source_excerpt: string | null;
+  snoozed_until: string | null;
   created_at: string;
   updated_at: string;
   completed_at: string | null;
@@ -120,6 +121,7 @@ export async function insertTasksFromExtraction(
       status,
       confidence: item.confidence,
       source_excerpt: item.source_excerpt,
+      snoozed_until: null,
       created_at: now,
       updated_at: now,
       completed_at: null,
@@ -259,6 +261,7 @@ export async function createManualTask(
     status: "active",
     confidence: 1,
     source_excerpt: null,
+    snoozed_until: null,
     created_at: now,
     updated_at: now,
     completed_at: null,
@@ -397,6 +400,18 @@ export async function confirmTask(
   id: string,
 ): Promise<Task | null> {
   return updateTask(userId, id, { status: "active" });
+}
+
+/** Record when a task was snoozed to, so the card can show it persistently. */
+export async function setSnoozedUntil(
+  userId: string,
+  id: string,
+  isoUtc: string,
+): Promise<void> {
+  await db.execute({
+    sql: "UPDATE tasks SET snoozed_until = ?, updated_at = ? WHERE id = ? AND user_id = ?",
+    args: [isoUtc, new Date().toISOString(), id, userId],
+  });
 }
 
 /** Dismiss/delete a task (SPEC §10 DELETE). We soft-delete to keep the audit. */

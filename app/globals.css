@@ -1344,3 +1344,14 @@ button.recording {
   padding: 7px 9px;
   font: inherit;
 }
+
+/* snoozed button state + copy-address link */
+button.snoozed {
+  background: rgba(245, 181, 46, 0.16);
+  border-color: var(--amber);
+  color: #7a5a00;
+}
+.copy-addr {
+  white-space: normal;
+  text-align: left;
+}

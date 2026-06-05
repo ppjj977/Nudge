@@ -24,6 +24,7 @@ export interface TaskView {
   status: string;
   confidence: number;
   source_excerpt: string | null;
+  snoozed_until: string | null;
 }
 
 const CATEGORY_ICON: Record<string, string> = {
@@ -132,6 +133,19 @@ export default function TaskCard({
 
   const isFyi = task.category === "fyi";
   const lowConfidence = task.confidence < 0.6;
+  const snoozedUntil =
+    task.snoozed_until && new Date(task.snoozed_until) > new Date()
+      ? new Date(task.snoozed_until)
+      : null;
+  const snoozeLabel = snoozedUntil
+    ? `Next nudge: ${snoozedUntil.toLocaleString(undefined, {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`
+    : undefined;
 
   return (
     <div className={`task ${isFyi ? "fyi" : ""} ${done ? "is-done" : ""}`}>
@@ -198,8 +212,13 @@ export default function TaskCard({
               </button>
             )}
             {mode === "active" && (
-              <button onClick={() => setSnoozing((s) => !s)} disabled={pending}>
-                Snooze
+              <button
+                className={snoozedUntil ? "snoozed" : ""}
+                title={snoozeLabel}
+                onClick={() => setSnoozing((s) => !s)}
+                disabled={pending}
+              >
+                {snoozedUntil ? "💤 Snoozed" : "Snooze"}
               </button>
             )}
             <button onClick={() => setEditing(true)} disabled={pending}>
