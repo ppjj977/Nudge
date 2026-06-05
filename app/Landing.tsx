@@ -113,12 +113,16 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ---- footer: get the Android app ---- */}
+      {/* ---- footer: get the Android app ----
+          Always serves the newest signed APK from the latest GitHub Release. */}
       <footer className="landing-foot">
-        <a href="/nudge.apk" download className="foot-apk">
+        <a
+          href="https://github.com/ppjj977/Nudge/releases/latest/download/nudge.apk"
+          className="foot-apk"
+        >
           📱 Download the Android app
         </a>
-        <span>· APK, ~6&nbsp;MB · allow “install from unknown sources”</span>
+        <span>· APK, ~5&nbsp;MB · allow “install from unknown sources”</span>
       </footer>
     </div>
   );
