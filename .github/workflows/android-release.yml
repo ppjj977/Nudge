@@ -36,7 +36,7 @@ jobs:
         run: |
           npm install
           npm i -D @capacitor/cli
-          npm i @capacitor/core @capacitor/android @capacitor/push-notifications @capacitor/preferences @capacitor/filesystem send-intent
+          npm i @capacitor/core @capacitor/android @capacitor/push-notifications @capacitor/preferences @capacitor/filesystem @capacitor/camera send-intent
 
       - name: Add Android platform
         run: npx cap add android

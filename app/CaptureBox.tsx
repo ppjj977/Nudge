@@ -4,6 +4,31 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import TaskCard, { type TaskView } from "./TaskCard";
 
+/** Native camera bridge (Capacitor) — only present in the Android app. */
+type NativeCap = {
+  isNativePlatform?: () => boolean;
+  Plugins?: {
+    Camera?: {
+      getPhoto: (opts: {
+        quality?: number;
+        source?: string;
+        resultType?: string;
+        allowEditing?: boolean;
+      }) => Promise<{ dataUrl?: string }>;
+    };
+  };
+};
+
+/** Convert a data: URL (from the Camera plugin) into a File for upload. */
+function dataUrlToFile(dataUrl: string, name: string): File {
+  const [meta, b64] = dataUrl.split(",");
+  const mime = /data:(.*?);/.exec(meta)?.[1] || "image/jpeg";
+  const bin = atob(b64 ?? "");
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new File([arr], name, { type: mime });
+}
+
 /**
  * The capture-first entry point (SPEC §1, §6). Paste text or drop an image;
  * both run the same extraction pipeline. Manual entry is deliberately not the
@@ -109,6 +134,28 @@ export default function CaptureBox({
     }
   }
 
+  /** Open the device camera (native) and capture a photo. Falls back to the
+   *  capture file input on the web. */
+  async function takePhoto() {
+    const cap = (window as unknown as { Capacitor?: NativeCap }).Capacitor;
+    const Camera = cap?.isNativePlatform?.() ? cap.Plugins?.Camera : null;
+    if (!Camera) {
+      cameraRef.current?.click(); // web: HTML capture input
+      return;
+    }
+    try {
+      const photo = await Camera.getPhoto({
+        quality: 80,
+        source: "CAMERA",
+        resultType: "dataUrl",
+        allowEditing: false,
+      });
+      if (photo?.dataUrl) submitImage(dataUrlToFile(photo.dataUrl, "photo.jpg"));
+    } catch {
+      /* user cancelled or camera unavailable — do nothing */
+    }
+  }
+
   async function submitImage(file: File) {
     setBusy(true);
     setMessage("Reading image…");
@@ -193,11 +240,7 @@ export default function CaptureBox({
         >
           {busy ? "Working…" : "Capture"}
         </button>
-        <button
-          className="cap-camera"
-          onClick={() => cameraRef.current?.click()}
-          disabled={busy}
-        >
+        <button className="cap-camera" onClick={takePhoto} disabled={busy}>
           📷 Photo
         </button>
         {recording ? (
