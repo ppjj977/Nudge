@@ -1,12 +1,13 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="112" fill="#0D1B2A"/>
-  <!-- soft forward path -->
-  <path d="M150 312 C 214 372 296 212 372 270" stroke="#A7E2CF" stroke-width="12"
-        stroke-linecap="round" stroke-dasharray="2 26" opacity="0.7"/>
-  <!-- the N monoline -->
-  <path d="M150 364 L150 158 L356 364 L356 158" stroke="#F7F7F5" stroke-width="40"
-        stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- the nudge: glowing dot -->
-  <circle cx="392" cy="150" r="56" fill="#22C1A2" opacity="0.22"/>
-  <circle cx="392" cy="150" r="30" fill="#22C1A2"/>
+<svg width="512" height="512" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="22" fill="#7BAA94"/>
+  <!-- arc / cradle -->
+  <path d="M32.4 75.8 A29 29 0 1 1 65.6 75.8" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+  <!-- nudge dot -->
+  <circle cx="49" cy="56" r="8" fill="#F5B52E"/>
+  <!-- nudge lines -->
+  <g stroke="#F5B52E" stroke-width="4.2" stroke-linecap="round">
+    <path d="M70 30 L75 18"/>
+    <path d="M78 27 L84 14"/>
+    <path d="M85 32 L95 25"/>
+  </g>
 </svg>
