@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" width="720" height="720">
+  <!-- Nudge — circle-safe profile avatar (TikTok/IG). Mark centred so it never
+       clips when cropped to a circle. -->
+  <rect width="720" height="720" fill="#7BAA94"/>
+  <g transform="translate(3.5,81) scale(6.2)">
+    <!-- arc / cradle -->
+    <path d="M32.4 75.8 A29 29 0 1 1 65.6 75.8" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <!-- nudge dot -->
+    <circle cx="49" cy="56" r="8" fill="#F5B52E"/>
+    <!-- nudge lines -->
+    <g stroke="#F5B52E" stroke-width="4.2" stroke-linecap="round">
+      <path d="M70 30 L75 18"/>
+      <path d="M78 27 L84 14"/>
+      <path d="M85 32 L95 25"/>
+    </g>
+  </g>
+</svg>
