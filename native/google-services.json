@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "717452602485",
+    "project_id": "nudge-9caa3",
+    "storage_bucket": "nudge-9caa3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717452602485:android:62e3a2d00a1a239f239c3c",
+        "android_client_info": {
+          "package_name": "uk.co.nudgelive.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwZdLzw_NqMxOZu_WLZdT3UiOzlKTnkHw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
