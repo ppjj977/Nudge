@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
   const user = await requireUser();
-  const { rules, channels } = parseUserSettings(user);
+  const { rules, channels, digest } = parseUserSettings(user);
 
   return (
     <>
@@ -24,6 +24,7 @@ export default async function SettingsPage() {
         initialRules={rules}
         defaults={DEFAULT_REMINDER_RULES}
         initialChannels={channels}
+        initialDigest={digest}
         initialDigestHour={user.digest_hour}
         initialLifeAreas={getUserLifeAreas(user)}
         defaultLifeAreas={DEFAULT_LIFE_AREAS}

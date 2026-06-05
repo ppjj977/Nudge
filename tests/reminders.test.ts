@@ -114,9 +114,15 @@ describe("isValidRule", () => {
 
 describe("parseUserSettings", () => {
   it("falls back to defaults when settings are empty", () => {
-    const { rules, channels } = parseUserSettings({ settings: null });
+    const { rules, channels, digest } = parseUserSettings({ settings: null });
     expect(rules.pay).toEqual(DEFAULT_REMINDER_RULES.pay);
     expect(channels).toEqual({ email: false, push: true });
+    expect(digest).toBe(true); // daily digest on by default
+  });
+
+  it("respects an explicit digest opt-out, and defaults digest on when omitted", () => {
+    expect(parseUserSettings({ settings: JSON.stringify({ digest: false }) }).digest).toBe(false);
+    expect(parseUserSettings({ settings: JSON.stringify({ channels: {} }) }).digest).toBe(true);
   });
 
   it("lets stored rules override per category, including an explicit empty list", () => {
