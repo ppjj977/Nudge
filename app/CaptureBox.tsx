@@ -53,6 +53,7 @@ export default function CaptureBox({
     }
   }
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [recording, setRecording] = useState(false);
@@ -192,8 +193,12 @@ export default function CaptureBox({
         >
           {busy ? "Working…" : "Capture"}
         </button>
-        <button onClick={() => fileRef.current?.click()} disabled={busy}>
-          Upload image
+        <button
+          className="cap-camera"
+          onClick={() => cameraRef.current?.click()}
+          disabled={busy}
+        >
+          📷 Photo
         </button>
         {recording ? (
           <button className="recording" onClick={stopRecording}>
@@ -204,6 +209,19 @@ export default function CaptureBox({
             🎤 Voice note
           </button>
         )}
+        {/* Camera-first: opens the camera to take a photo. */}
+        <input
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) submitImage(f);
+          }}
+        />
+        {/* Gallery / files: pick an existing image. */}
         <input
           ref={fileRef}
           type="file"
@@ -218,6 +236,14 @@ export default function CaptureBox({
           <span className={`note ${isError ? "error" : ""}`}>{message}</span>
         )}
       </div>
+      <button
+        type="button"
+        className="gallery-link"
+        onClick={() => fileRef.current?.click()}
+        disabled={busy}
+      >
+        or choose an existing photo from your gallery
+      </button>
 
       {created.length > 0 && (
         <div className="capture-result">

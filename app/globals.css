@@ -1803,3 +1803,18 @@ button.link.danger { color: var(--danger); }
   flex-direction: column;
   gap: 10px;
 }
+
+/* ---- capture: gallery link under the camera button ---- */
+.gallery-link {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.gallery-link:disabled { opacity: 0.5; cursor: default; }
