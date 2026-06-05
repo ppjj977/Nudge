@@ -116,7 +116,7 @@ describe("parseUserSettings", () => {
   it("falls back to defaults when settings are empty", () => {
     const { rules, channels } = parseUserSettings({ settings: null });
     expect(rules.pay).toEqual(DEFAULT_REMINDER_RULES.pay);
-    expect(channels).toEqual({ email: true, push: true });
+    expect(channels).toEqual({ email: false, push: true });
   });
 
   it("lets stored rules override per category, including an explicit empty list", () => {

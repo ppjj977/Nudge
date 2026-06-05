@@ -209,6 +209,10 @@ export default function SettingsForm({
           />
           <span>App notifications (web push)</span>
         </label>
+        <p className="note">
+          Account emails (family invites, password resets) are always sent —
+          this only controls reminder nudges.
+        </p>
         <div className="capture-row">
           <button onClick={enablePush} disabled={!pushAvailable}>
             Enable on this device
