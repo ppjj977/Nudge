@@ -32,6 +32,9 @@ export interface User {
   inbound_address: string | null;
   digest_hour: number;
   settings: string | null;
+  plan: string | null;
+  plan_until: string | null;
+  plan_source: string | null;
   created_at: string;
 }
 
@@ -139,6 +142,9 @@ export async function getOrCreateDefaultUser(): Promise<User> {
     inbound_address: null,
     digest_hour: 7,
     settings: null,
+    plan: "free",
+    plan_until: null,
+    plan_source: null,
     created_at: now,
   };
 }

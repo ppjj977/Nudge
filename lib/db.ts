@@ -71,6 +71,9 @@ async function applyAdditiveMigrations(): Promise<void> {
     "ALTER TABLE users ADD COLUMN name TEXT",
     "ALTER TABLE users ADD COLUMN image TEXT",
     "ALTER TABLE users ADD COLUMN password_hash TEXT",
+    "ALTER TABLE users ADD COLUMN plan TEXT NOT NULL DEFAULT 'free'",
+    "ALTER TABLE users ADD COLUMN plan_until TEXT",
+    "ALTER TABLE users ADD COLUMN plan_source TEXT",
   ];
   for (const stmt of additions) {
     try {

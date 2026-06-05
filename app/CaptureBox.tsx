@@ -82,6 +82,7 @@ export default function CaptureBox({
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [recording, setRecording] = useState(false);
+  const [limited, setLimited] = useState(false);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -94,6 +95,13 @@ export default function CaptureBox({
   }) {
     setCreated([]);
     setShowCreated(false);
+    setLimited(false);
+    if (result.status === "limit") {
+      setIsError(false);
+      setMessage(null);
+      setLimited(true);
+      return;
+    }
     if (result.status === "failed") {
       setIsError(true);
       setMessage(`Couldn't read that one: ${result.error ?? "extraction failed"}`);
@@ -282,6 +290,12 @@ export default function CaptureBox({
           <span className={`note ${isError ? "error" : ""}`}>{message}</span>
         )}
       </div>
+      {limited && (
+        <div className="capture-limit">
+          You’ve used your free captures this month.{" "}
+          <a href="/upgrade">Go Pro for unlimited →</a>
+        </div>
+      )}
 
       {created.length > 0 && (
         <div className="capture-result">
