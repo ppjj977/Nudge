@@ -4,6 +4,8 @@ import { config } from "@/lib/config";
 import { findUserByInboundLocalPart } from "@/lib/users";
 import { cleanForwardedEmail } from "@/lib/normalize";
 import { ingestAndExtract } from "@/lib/pipeline";
+import { createManualTask } from "@/lib/tasks";
+import { parseFirstEvent, extractVCalendar } from "@/lib/ical";
 
 export const runtime = "nodejs";
 
@@ -94,6 +96,33 @@ export async function POST(req: Request) {
     .filter(Boolean)
     .join("\n\n");
 
+  // Calendar invite? Parse the .ics for an exact event instead of guessing from
+  // prose — gives the precise date/time/timezone. (Falls back to AI below.)
+  const ics = findCalendar(data, text, html);
+  if (ics) {
+    const evt = parseFirstEvent(ics, user.timezone);
+    if (evt) {
+      const task = await createManualTask(user.id, {
+        title: evt.title && evt.title !== "Event" ? evt.title : subject || "Event",
+        category: "attend",
+        detail: evt.detail,
+        due_at: evt.due_at,
+        due_type: evt.due_type,
+        end_at: evt.end_at,
+        location: evt.location,
+      });
+      const diag = {
+        ok: true,
+        matchedUser: user.id,
+        calendarEvent: true,
+        taskId: task.id,
+        due_at: task.due_at,
+      };
+      console.log("[inbound] calendar event", diag);
+      return NextResponse.json(diag);
+    }
+  }
+
   const result = await ingestAndExtract(user, {
     source: "email",
     rawContent: raw,
@@ -142,6 +171,12 @@ async function fetchInboundBody(
 
 /* -------------------------------------------------------------------------- */
 
+interface InboundAttachment {
+  filename?: string;
+  content_type?: string;
+  contentType?: string;
+  content?: string; // base64 (or raw .ics text)
+}
 interface InboundEmail {
   from?: string | { email?: string; name?: string };
   to?: string | string[] | Array<{ email?: string }>;
@@ -149,6 +184,29 @@ interface InboundEmail {
   text?: string;
   html?: string;
   email_id?: string;
+  attachments?: InboundAttachment[];
+}
+
+/** Find iCalendar content: inline in the body, or in a .ics/text-calendar
+ *  attachment (decoding base64 when needed). Returns the VCALENDAR text. */
+function findCalendar(data: InboundEmail, text: string, html: string): string | null {
+  const inline = extractVCalendar(text) || extractVCalendar(html);
+  if (inline) return inline;
+  for (const a of data.attachments ?? []) {
+    const ct = (a.content_type || a.contentType || "").toLowerCase();
+    const fn = (a.filename || "").toLowerCase();
+    if (!ct.includes("calendar") && !fn.endsWith(".ics")) continue;
+    const content = a.content;
+    if (typeof content !== "string" || !content) continue;
+    if (content.includes("BEGIN:VCALENDAR")) return extractVCalendar(content);
+    try {
+      const decoded = Buffer.from(content, "base64").toString("utf8");
+      if (decoded.includes("BEGIN:VCALENDAR")) return extractVCalendar(decoded);
+    } catch {
+      /* not base64 — skip */
+    }
+  }
+  return null;
 }
 interface InboundPayload {
   type?: string;
