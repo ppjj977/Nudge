@@ -57,8 +57,11 @@ a voice note) → the tasks appearing → a reminder firing. 9–15s is plenty.
 **Day 1 — TikTok + 🅵**
 - Hook: "POV: the school letter that's been in your bag for 3 days."
 - Show: photo of a crumpled letter → Nudge pulls out "Bring PE kit Friday" + "Pay £15 trip by 15 June".
-- Asset: `demo-walkthrough.svg` recording.
+- **Assets (ready):**
+  - 🎬 `public/social/day01-school-letter.svg` — animated 9:16 clip (loops every 14s). Open full-screen on a phone and **screen-record it** → that's your TikTok/Reel.
+  - 🖼️ `public/social/day01-cover.png` — static 1080×1920 for the Facebook single-image post / TikTok cover.
 - CTA: "First 10 to register interest get it FREE for life. Link in bio."
+- Caption (paste): *"Me: I'll remember that. The letter: gone for 3 days. Nudge: 🫡 sorted. Snap the mess → it pulls out the dates, times & payments. 🎁 First 10 to register interest get Pro free for life → nudgelive.co.uk #lifeadmin #adhdtok #mentalload #momlife #schoolrun"*
 
 **Day 2 — TikTok**
 - Hook: "Things my brain refuses to remember 🧠❌" (rapid list: bin day, the dentist, the birthday, the bill).
