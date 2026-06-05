@@ -30,6 +30,9 @@ jobs:
       - name: Add Android platform
         run: npx cap add android
 
+      - name: Generate launcher icons + splash (brand logo)
+        run: npx @capacitor/assets@3 generate --android --assetPath assets
+
       - name: Add Firebase config + Gradle plugin
         run: |
           cp native/google-services.json android/app/google-services.json

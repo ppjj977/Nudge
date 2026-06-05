@@ -25,6 +25,7 @@ base64-encode it first). Save → redeploy. Test push then has a delivery path.
 npm i -D @capacitor/cli
 npm i @capacitor/core @capacitor/android @capacitor/push-notifications
 npx cap add android
+npx @capacitor/assets@3 generate --android --assetPath assets   # brand launcher icons + splash
 # put google-services.json in android/app/
 npx cap sync
 npx cap open android     # opens Android Studio
