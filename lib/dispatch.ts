@@ -152,6 +152,8 @@ export async function runDispatch(
           title: `⏰ ${task.title}`,
           body: task.detail ?? "Tap to open nudge",
           url: config.appBaseUrl,
+          taskId: task.id,
+          doneStatus: task.category === "pay" ? "paid" : "done",
         };
         await sendPushToUser(user.id, payload); // web push (PWA / desktop)
         await sendFcmToUser(user.id, payload); // native push (Android app)

@@ -82,6 +82,10 @@ export interface PushPayload {
   title: string;
   body: string;
   url?: string;
+  /** Task this nudge is about — enables Done/Snooze action buttons. */
+  taskId?: string;
+  /** Terminal status to set when "Done" is tapped ('done' or 'paid'). */
+  doneStatus?: string;
 }
 
 /**

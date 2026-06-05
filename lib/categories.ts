@@ -12,6 +12,7 @@ export const ACTION_CATEGORIES = [
   "send",
   "renew",
   "trip",
+  "celebrate",
   "reminder",
 ] as const;
 

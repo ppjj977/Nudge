@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   snoozed_until  TEXT,                       -- ISO 8601 UTC of the next manual nudge
   household_id   TEXT REFERENCES households(id), -- shared to a family when set
   assignee_id    TEXT REFERENCES users(id),      -- shared task assigned to a member
+  recurrence     TEXT,                            -- json: {freq, interval} for repeating tasks
   created_at     TEXT NOT NULL,
   updated_at     TEXT NOT NULL,
   completed_at   TEXT
@@ -139,6 +140,26 @@ CREATE TABLE IF NOT EXISTS fcm_tokens (
   created_at TEXT NOT NULL
 );
 
+-- Shared family lists (shopping, packing, …). Shared when household_id is set.
+CREATE TABLE IF NOT EXISTS lists (
+  id           TEXT PRIMARY KEY,
+  user_id      TEXT NOT NULL REFERENCES users(id),     -- creator
+  household_id TEXT REFERENCES households(id),          -- shared to a family when set
+  name         TEXT NOT NULL,
+  kind         TEXT NOT NULL DEFAULT 'custom',          -- shopping | packing | custom
+  created_at   TEXT NOT NULL,
+  updated_at   TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS list_items (
+  id         TEXT PRIMARY KEY,
+  list_id    TEXT NOT NULL REFERENCES lists(id),
+  text       TEXT NOT NULL,
+  done       INTEGER NOT NULL DEFAULT 0,
+  added_by   TEXT REFERENCES users(id),
+  created_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_tasks_user_status   ON tasks(user_id, status);
 CREATE INDEX IF NOT EXISTS idx_tasks_user_due       ON tasks(user_id, due_at);
 CREATE INDEX IF NOT EXISTS idx_captures_user        ON captures(user_id, received_at);
@@ -153,3 +174,6 @@ CREATE INDEX IF NOT EXISTS idx_hh_invites_hash       ON household_invites(token_
 -- NOTE: idx_tasks_household is created in applyAdditiveMigrations (db.ts) because
 -- tasks.household_id is added by an ALTER on pre-existing databases.
 CREATE UNIQUE INDEX IF NOT EXISTS uq_digest_per_day ON digest_log(user_id, sent_for);
+CREATE INDEX IF NOT EXISTS idx_lists_user            ON lists(user_id);
+CREATE INDEX IF NOT EXISTS idx_lists_household        ON lists(household_id);
+CREATE INDEX IF NOT EXISTS idx_list_items_list        ON list_items(list_id);

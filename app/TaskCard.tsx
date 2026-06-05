@@ -29,6 +29,7 @@ export interface TaskView {
   snoozed_until: string | null;
   household_id: string | null;
   assignee_id: string | null;
+  recurrence: { freq: string; interval: number } | null;
 }
 
 const CATEGORY_ICON: Record<string, string> = {
@@ -39,6 +40,7 @@ const CATEGORY_ICON: Record<string, string> = {
   send: "✉️",
   renew: "🔁",
   trip: "🧳",
+  celebrate: "🎂",
   reminder: "⏰",
   fyi: "📄",
 };
@@ -167,6 +169,14 @@ export default function TaskCard({
     .filter(Boolean)
     .join(" · ");
 
+  const repeatLabel = task.recurrence
+    ? task.recurrence.interval > 1
+      ? `Every ${task.recurrence.interval} ${task.recurrence.freq.replace("ly", "")}s`
+      : { daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly" }[
+          task.recurrence.freq
+        ] ?? "Repeats"
+    : null;
+
   const isFyi = task.category === "fyi";
   const lowConfidence = task.confidence < 0.6;
   const snoozedUntil =
@@ -194,6 +204,7 @@ export default function TaskCard({
         </div>
         <div className="chips">
           <span className="chip cat">{task.category}</span>
+          {repeatLabel && <span className="chip">🔁 {repeatLabel}</span>}
           {task.life_area && <span className="chip">{task.life_area}</span>}
           {ownerName && <span className="chip owner">{ownerName}</span>}
           {!ownerName && task.household_id && (

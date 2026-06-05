@@ -65,6 +65,10 @@ export const DEFAULT_REMINDER_RULES: Record<Category, ReminderRule[]> = {
     { daysBefore: 7, time: "09:00" },
     { daysBefore: 1, time: "18:00" },
   ],
+  celebrate: [
+    { daysBefore: 7, time: "09:00" }, // time to buy a card / gift
+    { daysBefore: 0, time: "07:00" }, // on the day
+  ],
   reminder: [{ daysBefore: 0, time: "09:00" }],
   fyi: [],
 };

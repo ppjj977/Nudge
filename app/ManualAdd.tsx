@@ -14,6 +14,7 @@ export default function ManualAdd() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [repeat, setRepeat] = useState("none");
   const [saving, setSaving] = useState(false);
 
   async function add() {
@@ -24,6 +25,7 @@ export default function ManualAdd() {
       body.due_at = time ? `${date}T${time}:00` : date;
       body.due_type = time ? "datetime" : "date";
       if (endDate && endDate >= date) body.end_at = endDate;
+      if (repeat !== "none") body.recurrence = { freq: repeat, interval: 1 };
     }
     await fetch("/api/tasks", {
       method: "POST",
@@ -34,6 +36,7 @@ export default function ManualAdd() {
     setDate("");
     setTime("");
     setEndDate("");
+    setRepeat("none");
     setSaving(false);
     setOpen(false);
     startTransition(() => router.refresh());
@@ -61,7 +64,15 @@ export default function ManualAdd() {
       <div className="field-row">
         <label className="field">
           <span>Type</span>
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              // Birthdays/anniversaries almost always repeat yearly.
+              if (e.target.value === "celebrate" && repeat === "none")
+                setRepeat("yearly");
+            }}
+          >
             {ACTION_CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -91,6 +102,20 @@ export default function ManualAdd() {
             onChange={(e) => setEndDate(e.target.value)}
             disabled={!date}
           />
+        </label>
+        <label className="field">
+          <span>Repeat</span>
+          <select
+            value={repeat}
+            onChange={(e) => setRepeat(e.target.value)}
+            disabled={!date}
+          >
+            <option value="none">Doesn&apos;t repeat</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
         </label>
       </div>
       <div className="capture-row">
