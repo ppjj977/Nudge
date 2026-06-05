@@ -34,6 +34,50 @@ const QUOTE_MARKERS: RegExp[] = [
 // Common signature delimiter.
 const SIG_DELIM = /^--\s*$/;
 
+// Forwarded-message scaffolding (Gmail/Outlook) — drop the lines, keep content.
+const FORWARD_SEP = /^[-_]{2,}\s*forwarded message\s*[-_]{2,}/i;
+const HEADER_LINE = /^(from|to|cc|bcc|date|sent|subject|reply-to):\s/i;
+
+// Marketing/footer boilerplate that adds noise but never an action.
+const FOOTER_MARKERS: RegExp[] = [
+  /^unsubscribe\b/i,
+  /^view (this email |this )?in (your )?browser/i,
+  /^you('re| are) receiving this/i,
+  /^this (email|message) was sent to /i,
+  /^manage (your )?(email )?preferences/i,
+  /^©\s*\d{4}/,
+  /^privacy policy\b/i,
+];
+
+/**
+ * Reduce a forwarded/received email to its actionable text: drop the quoted
+ * reply chain, forwarded headers, signatures, marketing footers and tracking
+ * URLs, then cap length so extraction stays focused. Unlike normalizeEmail this
+ * keeps content that comes *after* a "From:" header (i.e. forwarded bodies).
+ */
+export function cleanForwardedEmail(input: string, maxChars = 6000): string {
+  const kept: string[] = [];
+  for (const line of input.split("\n")) {
+    const t = line.trim();
+    // Hard stops: everything below a reply chain or signature is noise.
+    if (QUOTE_MARKERS.some((re) => re.test(t)) && !HEADER_LINE.test(t)) break;
+    if (SIG_DELIM.test(t)) break;
+    if (!t) {
+      kept.push("");
+      continue;
+    }
+    if (FORWARD_SEP.test(t)) continue;
+    if (HEADER_LINE.test(t)) continue; // forwarded header fields
+    if (t.startsWith(">")) continue; // quoted
+    if (FOOTER_MARKERS.some((re) => re.test(t))) continue;
+    kept.push(line);
+  }
+  // Strip bare/tracking URLs but keep the surrounding words.
+  let out = tidyText(kept.join("\n").replace(/https?:\/\/\S+/g, ""));
+  if (out.length > maxChars) out = `${out.slice(0, maxChars)}…`;
+  return out;
+}
+
 function stripHtml(html: string): string {
   return html
     .replace(/<style[\s\S]*?<\/style>/gi, " ")

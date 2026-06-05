@@ -3,8 +3,29 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
+const NAV = [
+  { href: "/", label: "Timeline" },
+  { href: "/calendar", label: "Calendar" },
+  { href: "/digest", label: "Digest" },
+  { href: "/money", label: "Money" },
+  { href: "/filter", label: "Filter" },
+  { href: "/done", label: "Closed nudges" },
+];
+
+const ACCOUNT = [
+  { href: "/profile", label: "Profile" },
+  { href: "/settings", label: "Settings" },
+  { href: "/help", label: "Categories & help" },
+];
+
 /** Header burger menu: navigation that isn't the primary timeline view. */
-export default function Menu() {
+export default function Menu({
+  userName,
+  userEmail,
+}: {
+  userName?: string | null;
+  userEmail?: string;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -41,43 +62,47 @@ export default function Menu() {
       </button>
       {open && (
         <div className="menu-panel" role="menu">
-          <Link href="/" className="menu-item" role="menuitem" onClick={close}>
-            Timeline
-          </Link>
-          <Link href="/digest" className="menu-item" role="menuitem" onClick={close}>
-            Digest
-          </Link>
-          <Link href="/calendar" className="menu-item" role="menuitem" onClick={close}>
-            Calendar
-          </Link>
-          <Link href="/money" className="menu-item" role="menuitem" onClick={close}>
-            Money
-          </Link>
-          <Link href="/filter" className="menu-item" role="menuitem" onClick={close}>
-            Filter
-          </Link>
-          <Link href="/done" className="menu-item" role="menuitem" onClick={close}>
-            Closed Nudges
-          </Link>
-          <Link
-            href="/profile"
-            className="menu-item"
-            role="menuitem"
-            onClick={close}
-          >
-            Profile
-          </Link>
-          <Link
-            href="/settings"
-            className="menu-item"
-            role="menuitem"
-            onClick={close}
-          >
-            Settings
-          </Link>
-          <Link href="/help" className="menu-item" role="menuitem" onClick={close}>
-            ? Categories &amp; help
-          </Link>
+          {(userName || userEmail) && (
+            <div className="menu-id">
+              <div className="menu-id-name">{userName || userEmail}</div>
+              {userName && userEmail && (
+                <div className="menu-id-email">{userEmail}</div>
+              )}
+            </div>
+          )}
+
+          <div className="menu-group">
+            {NAV.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="menu-item"
+                role="menuitem"
+                onClick={close}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="menu-sep" />
+
+          <div className="menu-group">
+            {ACCOUNT.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="menu-item"
+                role="menuitem"
+                onClick={close}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="menu-sep" />
+
           <button
             className="menu-item signout"
             role="menuitem"

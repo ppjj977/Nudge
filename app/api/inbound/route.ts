@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { config } from "@/lib/config";
 import { findUserByInboundLocalPart } from "@/lib/users";
+import { cleanForwardedEmail } from "@/lib/normalize";
 import { ingestAndExtract } from "@/lib/pipeline";
 
 export const runtime = "nodejs";
@@ -87,9 +88,11 @@ export async function POST(req: Request) {
       fetched = true;
     }
   }
-  const body = text || htmlToText(html);
+  const body = cleanForwardedEmail(text || htmlToText(html));
   const from = extractEmail(data.from);
-  const normalizedText = [subject, body].filter(Boolean).join("\n\n");
+  const normalizedText = [subject ? `Subject: ${subject}` : "", body]
+    .filter(Boolean)
+    .join("\n\n");
 
   const result = await ingestAndExtract(user, {
     source: "email",
