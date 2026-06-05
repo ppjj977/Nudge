@@ -220,3 +220,42 @@ export async function leaveHousehold(userId: string): Promise<void> {
     await db.execute({ sql: "DELETE FROM households WHERE id = ?", args: [hid] });
   }
 }
+
+/**
+ * Remove a member from the family. Owner-only; the owner cannot remove
+ * themselves this way (they leave via leaveHousehold). Returns true on success,
+ * false if the caller isn't the owner or the target isn't a member.
+ */
+export async function removeMember(
+  ownerId: string,
+  targetUserId: string,
+): Promise<boolean> {
+  await ensureSchema();
+  if (ownerId === targetUserId) return false;
+  const m = await getMembershipForUser(ownerId);
+  if (!m || m.role !== "owner") return false;
+  const hid = m.household.id;
+
+  // Confirm the target is actually in this household.
+  const inHh = await db.execute({
+    sql: "SELECT 1 FROM household_members WHERE household_id = ? AND user_id = ? LIMIT 1",
+    args: [hid, targetUserId],
+  });
+  if (!inHh.rows.length) return false;
+
+  await db.execute({
+    sql: "DELETE FROM household_members WHERE household_id = ? AND user_id = ?",
+    args: [hid, targetUserId],
+  });
+  // Un-share the removed member's tasks, and clear them as an assignee on the
+  // family's shared tasks.
+  await db.execute({
+    sql: "UPDATE tasks SET household_id = NULL WHERE user_id = ? AND household_id = ?",
+    args: [targetUserId, hid],
+  });
+  await db.execute({
+    sql: "UPDATE tasks SET assignee_id = NULL WHERE household_id = ? AND assignee_id = ?",
+    args: [hid, targetUserId],
+  });
+  return true;
+}
