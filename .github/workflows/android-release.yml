@@ -82,6 +82,9 @@ jobs:
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('build-{0}', github.run_number) }}
           name: nudge Android ${{ github.ref_type == 'tag' && github.ref_name || format('build {0}', github.run_number) }}
           generate_release_notes: true
+          draft: false
+          prerelease: false
+          make_latest: "true"
           files: |
             dist/nudge.apk
             dist/nudge.aab
