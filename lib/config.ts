@@ -57,6 +57,11 @@ export const config = {
     privateKey: env("VAPID_PRIVATE_KEY"),
     subject: env("VAPID_SUBJECT") ?? "mailto:nudge@example.com",
   },
+  /** Native push via FCM (Capacitor app). The full service-account JSON
+   *  (raw or base64) from Firebase → Project settings → Service accounts. */
+  fcm: {
+    serviceAccount: env("FCM_SERVICE_ACCOUNT"),
+  },
   cron: {
     secret: env("CRON_SECRET"),
   },

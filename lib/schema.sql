@@ -131,12 +131,21 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
   created_at TEXT NOT NULL
 );
 
+-- Native (Android/Capacitor) FCM device tokens for first-class app push.
+CREATE TABLE IF NOT EXISTS fcm_tokens (
+  id         TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id),
+  token      TEXT UNIQUE NOT NULL,
+  created_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_tasks_user_status   ON tasks(user_id, status);
 CREATE INDEX IF NOT EXISTS idx_tasks_user_due       ON tasks(user_id, due_at);
 CREATE INDEX IF NOT EXISTS idx_captures_user        ON captures(user_id, received_at);
 CREATE INDEX IF NOT EXISTS idx_reminders_dispatch   ON reminders(status, fire_at);
 CREATE INDEX IF NOT EXISTS idx_reminders_task        ON reminders(task_id, status);
 CREATE INDEX IF NOT EXISTS idx_push_user             ON push_subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_fcm_user              ON fcm_tokens(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_user         ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_hash      ON auth_tokens(token_hash);
 CREATE INDEX IF NOT EXISTS idx_hh_members_user       ON household_members(user_id);
