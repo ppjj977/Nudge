@@ -21,6 +21,12 @@ export default function Landing() {
             See how it works
           </a>
         </div>
+        <p className="hero-android">
+          <a href="/nudge.apk" download>
+            📱 Download the Android app
+          </a>{" "}
+          <span>· APK, ~1&nbsp;MB · allow “install from unknown sources”</span>
+        </p>
 
         <Mockup />
       </section>

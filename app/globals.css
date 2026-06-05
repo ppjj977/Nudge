@@ -1664,3 +1664,18 @@ button.snoozed {
     width: 270px;
   }
 }
+
+/* hero Android APK download link */
+.hero-android {
+  margin: 14px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.hero-android a {
+  color: var(--teal);
+  font-weight: 700;
+  text-decoration: none;
+}
+.hero-android span {
+  font-size: 12px;
+}
