@@ -50,9 +50,16 @@ icon's nudge-lines clip under TikTok's circle crop; this one doesn't).
 **TikTok**
 - Handle: `@nudgelive` (fallbacks `@nudge.live`, `@getnudge`).
 - Display name: `Nudge · your life-admin brain`.
-- Bio (≤80 chars): `Snap the chaos → reminders before things slip. For brains that forget 🧠`
-- Switch to a **Business Account** (free) to unlock the website link + analytics; category **Apps**.
-- Website link: `https://nudgelive.co.uk/register-interest` (the waitlist, not the homepage).
+- Bio (≤80 chars): `Snap the chaos → reminders before things slip. nudgelive.co.uk 🧠`
+- **Clickable bio link** is only available on a **Business Account** (free, no
+  company registration needed — just pick a category like *Apps*) **or** once you
+  pass ~1,000 followers. Until then a typed URL isn't clickable and caption links
+  never are — so put the bare domain `nudgelive.co.uk` in the bio as text and say
+  it out loud on-screen. The homepage funnels visitors straight to the waitlist,
+  so the short root URL is best for typing.
+- Cross-link **Instagram** (allowed without Business) and put the clickable link
+  on IG; reference "link on my IG" in videos.
+- Captions: lead with the domain, not "link in bio", until the link is clickable.
 - Pin 3 videos once live: Day 1, Day 5 (promo), and a strong feature demo.
 - Public contact: `hello@nudgelive.co.uk`.
 
