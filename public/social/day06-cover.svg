@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Manrope, Arial, sans-serif">
+  <!-- Nudge — Day 6 (forward-email) static cover. Facebook image / TikTok thumbnail. -->
+  <rect width="1080" height="1920" fill="#F8F7F4"/>
+  <rect x="378" y="70" width="60" height="60" rx="17" fill="#7BAA94"/>
+  <text x="408" y="114" font-size="38" font-weight="800" fill="#FFFFFF" text-anchor="middle">n</text>
+  <text x="456" y="114" font-size="36" font-weight="800" fill="#232A32">nudge</text>
+
+  <text x="540" y="246" font-size="56" font-weight="800" fill="#232A32" text-anchor="middle">Forward your chaos</text>
+  <text x="540" y="314" font-size="56" font-weight="800" fill="#232A32" text-anchor="middle">to a robot. Watch.</text>
+
+  <g transform="rotate(-3 540 640)">
+    <rect x="290" y="450" width="500" height="380" rx="14" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
+    <rect x="290" y="450" width="500" height="76" rx="14" fill="#EDF2EF"/>
+    <text x="320" y="500" font-size="26" font-weight="800" fill="#3C5A4C">FWD: Booking confirmed</text>
+    <text x="320" y="540" font-size="26" fill="#232A32">Your table for 4 is booked</text>
+    <text x="320" y="586" font-size="26" fill="#232A32">Fri 20 June, 7:30pm</text>
+    <text x="320" y="632" font-size="26" fill="#232A32">The Brasserie, High St</text>
+    <text x="320" y="678" font-size="26" fill="#232A32">Ref: BR-8821</text>
+    <text x="320" y="748" font-size="24" fill="#9AA4AE" font-style="italic">forward it to Nudge →</text>
+  </g>
+
+  <text x="540" y="910" font-size="40" font-weight="800" fill="#7BAA94" text-anchor="middle">Nudge reads it ↓</text>
+  
+  <rect x="120" y="970" width="840" height="170" rx="20" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
+  <text x="160" y="1056" font-size="40" font-weight="800" fill="#232A32">Dinner — table for 4</text>
+  <text x="160" y="1104" font-size="27" fill="#667085">The Brasserie, 7:30pm</text>
+  <rect x="770" y="1020" width="140" height="70" rx="14" fill="#7BAA94"/>
+  <text x="840" y="1067" font-size="30" font-weight="800" fill="#FFFFFF" text-anchor="middle">FRI</text>
+  
+  <rect x="90" y="1470" width="900" height="300" rx="26" fill="#232A32"/>
+  <text x="540" y="1556" font-size="30" font-weight="700" fill="#9FD3BD" text-anchor="middle" letter-spacing="2">LAUNCH OFFER</text>
+  <text x="540" y="1622" font-size="40" font-weight="800" fill="#FFFFFF" text-anchor="middle">First 10 to register interest</text>
+  <text x="540" y="1680" font-size="44" font-weight="800" fill="#9FD3BD" text-anchor="middle">get Nudge Pro FREE for life</text>
+  <text x="540" y="1742" font-size="34" font-weight="700" fill="#FFFFFF" text-anchor="middle">nudgelive.co.uk · link in bio</text>
+</svg>
