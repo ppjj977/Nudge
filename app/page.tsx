@@ -9,6 +9,8 @@ import Timeline from "./Timeline";
 import { type TaskView } from "./TaskCard";
 import Landing from "./Landing";
 import Onboarding from "./Onboarding";
+import PushPrompt from "./PushPrompt";
+import { pushEnabled } from "@/lib/push";
 
 // Always read fresh state; the dashboard reflects live captures.
 export const dynamic = "force-dynamic";
@@ -67,6 +69,7 @@ export default async function Dashboard({
         <p>Here’s your day.</p>
       </div>
 
+      <PushPrompt available={pushEnabled()} />
       <CaptureBox inboundAddress={inboundAddress} />
       {sharedMsg && <div className="toast">{sharedMsg}</div>}
       <ManualAdd />
