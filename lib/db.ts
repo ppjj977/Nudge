@@ -67,6 +67,7 @@ async function applyAdditiveMigrations(): Promise<void> {
     "ALTER TABLE tasks ADD COLUMN household_id TEXT",
     "ALTER TABLE tasks ADD COLUMN assignee_id TEXT",
     "ALTER TABLE tasks ADD COLUMN end_at TEXT",
+    "ALTER TABLE tasks ADD COLUMN recurrence TEXT",
     "ALTER TABLE users ADD COLUMN name TEXT",
     "ALTER TABLE users ADD COLUMN image TEXT",
     "ALTER TABLE users ADD COLUMN password_hash TEXT",

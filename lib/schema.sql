@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   snoozed_until  TEXT,                       -- ISO 8601 UTC of the next manual nudge
   household_id   TEXT REFERENCES households(id), -- shared to a family when set
   assignee_id    TEXT REFERENCES users(id),      -- shared task assigned to a member
+  recurrence     TEXT,                            -- json: {freq, interval} for repeating tasks
   created_at     TEXT NOT NULL,
   updated_at     TEXT NOT NULL,
   completed_at   TEXT

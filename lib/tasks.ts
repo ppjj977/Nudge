@@ -3,6 +3,7 @@ import { db } from "./db";
 import { newId } from "./ids";
 import { config } from "./config";
 import { generateRemindersForTask } from "./reminders";
+import { advance, parseRecurrence, type Recurrence } from "./recurrence";
 import type { ExtractionResult } from "./extract";
 import { CATEGORIES } from "./categories";
 import type { Category, DueType, TaskStatus } from "./categories";
@@ -33,6 +34,7 @@ export interface Task {
   snoozed_until: string | null;
   household_id: string | null;
   assignee_id: string | null;
+  recurrence: Recurrence | null;
   created_at: string;
   updated_at: string;
   completed_at: string | null;
@@ -54,7 +56,8 @@ function mapTaskRow(row: Record<string, unknown>): Task {
       checklist = null;
     }
   }
-  return { ...(row as unknown as Task), checklist };
+  const recurrence = parseRecurrence(row.recurrence);
+  return { ...(row as unknown as Task), checklist, recurrence };
 }
 
 /**
@@ -83,8 +86,8 @@ export async function insertTasksFromExtraction(
       sql: `INSERT INTO tasks
         (id, user_id, capture_id, category, title, detail, due_at, due_type, end_at,
          amount, currency, location, life_area, checklist, status, confidence,
-         source_excerpt, created_at, updated_at, completed_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+         source_excerpt, recurrence, created_at, updated_at, completed_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       args: [
         id,
         userId,
@@ -103,6 +106,7 @@ export async function insertTasksFromExtraction(
         status,
         item.confidence,
         item.source_excerpt,
+        null,
         now,
         now,
         null,
@@ -129,6 +133,7 @@ export async function insertTasksFromExtraction(
       snoozed_until: null,
       household_id: null,
       assignee_id: null,
+      recurrence: null,
       created_at: now,
       updated_at: now,
       completed_at: null,
@@ -229,6 +234,7 @@ export interface ManualTaskInput {
   currency?: string | null;
   location?: string | null;
   life_area?: string | null;
+  recurrence?: unknown;
 }
 
 /**
@@ -255,6 +261,8 @@ export async function createManualTask(
   const endRaw = input.end_at && input.end_at.trim() ? input.end_at.trim() : null;
   const end_at =
     due_at && endRaw && endRaw.slice(0, 10) >= due_at.slice(0, 10) ? endRaw : null;
+  // Recurrence only makes sense with a date to anchor it to.
+  const recurrence = due_at ? parseRecurrence(input.recurrence) : null;
 
   const task: Task = {
     id,
@@ -277,6 +285,7 @@ export async function createManualTask(
     snoozed_until: null,
     household_id: null,
     assignee_id: null,
+    recurrence,
     created_at: now,
     updated_at: now,
     completed_at: null,
@@ -286,13 +295,14 @@ export async function createManualTask(
     sql: `INSERT INTO tasks
       (id, user_id, capture_id, category, title, detail, due_at, due_type, end_at,
        amount, currency, location, life_area, checklist, status, confidence,
-       source_excerpt, created_at, updated_at, completed_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+       source_excerpt, recurrence, created_at, updated_at, completed_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     args: [
       task.id, task.user_id, task.capture_id, task.category, task.title,
       task.detail, task.due_at, task.due_type, task.end_at, task.amount, task.currency,
       task.location, task.life_area, null, task.status, task.confidence,
-      task.source_excerpt, task.created_at, task.updated_at, task.completed_at,
+      task.source_excerpt, recurrence ? JSON.stringify(recurrence) : null,
+      task.created_at, task.updated_at, task.completed_at,
     ],
   });
   await generateRemindersForTask(task);
@@ -352,6 +362,7 @@ const EDITABLE_FIELDS = new Set([
   "checklist",
   "status",
   "assignee_id",
+  "recurrence",
 ]);
 
 /**
@@ -393,9 +404,13 @@ export async function updateTask(
   for (const [k, v] of Object.entries(patch)) {
     if (!EDITABLE_FIELDS.has(k)) continue;
     sets.push(`${k} = ?`);
-    // checklist is stored as a JSON string; accept an array or pre-encoded string
+    // checklist & recurrence are stored as JSON strings; accept an object/array
+    // or a pre-encoded string (or null to clear).
     if (k === "checklist") {
       args.push(v == null ? null : typeof v === "string" ? v : JSON.stringify(v));
+    } else if (k === "recurrence") {
+      const rec = parseRecurrence(v);
+      args.push(rec ? JSON.stringify(rec) : null);
     } else {
       args.push(v);
     }
@@ -430,7 +445,65 @@ export async function updateTask(
     await generateRemindersForTask(updated);
   }
 
+  // Completing a recurring task spawns its next occurrence (a fresh active task
+  // with the dates rolled forward). Only on the transition *into* done/paid.
+  const completedNow =
+    (patch.status === "done" || patch.status === "paid") &&
+    existing.status !== "done" &&
+    existing.status !== "paid";
+  if (updated && completedNow && updated.recurrence && updated.due_at) {
+    await spawnNextOccurrence(updated);
+  }
+
   return updated;
+}
+
+/**
+ * Create the next instance of a recurring task: clone it with the due (and end)
+ * dates advanced by one recurrence step, status active, checklist reset, and
+ * fresh reminders. Returns null if the date can't be advanced.
+ */
+async function spawnNextOccurrence(task: Task): Promise<Task | null> {
+  if (!task.recurrence || !task.due_at) return null;
+  const nextDue = advance(task.due_at, task.recurrence);
+  if (!nextDue) return null;
+  const nextEnd = task.end_at ? advance(task.end_at, task.recurrence) : null;
+
+  const id = newId("tsk");
+  const now = new Date().toISOString();
+  const checklist =
+    task.checklist?.map((c) => ({ text: c.text, done: false })) ?? null;
+  const next: Task = {
+    ...task,
+    id,
+    due_at: nextDue,
+    end_at: nextEnd,
+    checklist,
+    status: "active",
+    snoozed_until: null,
+    created_at: now,
+    updated_at: now,
+    completed_at: null,
+  };
+
+  await db.execute({
+    sql: `INSERT INTO tasks
+      (id, user_id, capture_id, category, title, detail, due_at, due_type, end_at,
+       amount, currency, location, life_area, checklist, status, confidence,
+       source_excerpt, snoozed_until, household_id, assignee_id, recurrence,
+       created_at, updated_at, completed_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    args: [
+      next.id, next.user_id, next.capture_id, next.category, next.title,
+      next.detail, next.due_at, next.due_type, next.end_at, next.amount,
+      next.currency, next.location, next.life_area,
+      checklist ? JSON.stringify(checklist) : null, next.status, next.confidence,
+      next.source_excerpt, null, next.household_id, next.assignee_id,
+      JSON.stringify(next.recurrence), next.created_at, next.updated_at, null,
+    ],
+  });
+  await generateRemindersForTask(next);
+  return next;
 }
 
 /** Promote a review-tray item to the live timeline (SPEC §10 confirm). */

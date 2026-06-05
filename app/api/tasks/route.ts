@@ -37,6 +37,7 @@ export async function POST(req: Request) {
     currency: typeof body.currency === "string" ? body.currency : null,
     location: typeof body.location === "string" ? body.location : null,
     life_area: typeof body.life_area === "string" ? body.life_area : null,
+    recurrence: body.recurrence ?? null,
   });
   return NextResponse.json(task, { status: 201 });
 }
