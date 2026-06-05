@@ -77,4 +77,17 @@ async function applyAdditiveMigrations(): Promise<void> {
       if (!msg.includes("duplicate column")) throw err;
     }
   }
+
+  // Indexes on columns added above must run AFTER the ALTERs, since on a
+  // pre-existing database the column doesn't exist until the migration applies.
+  const indexes = [
+    "CREATE INDEX IF NOT EXISTS idx_tasks_household ON tasks(household_id, status)",
+  ];
+  for (const stmt of indexes) {
+    try {
+      await db.execute(stmt);
+    } catch {
+      /* index already exists or column not yet present — safe to skip */
+    }
+  }
 }
