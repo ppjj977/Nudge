@@ -984,10 +984,44 @@ button.recording {
   font-size: 18px;
   font-weight: 700;
 }
-.cal-grid {
+.cal-dow-row,
+.cal-week-cells {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
+}
+.cal-week {
+  position: relative;
+  margin-bottom: 4px;
+}
+.cal-week-bars {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+.cal-bar {
+  position: absolute;
+  height: 17px;
+  line-height: 17px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #2f5a45;
+  background: var(--mint);
+  padding: 0 6px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cal-bar.is-start {
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+}
+.cal-bar.is-end {
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
 }
 .cal-dow {
   text-align: center;
@@ -998,6 +1032,7 @@ button.recording {
   padding-bottom: 2px;
 }
 .cal-cell {
+  position: relative;
   min-height: 76px;
   display: flex;
   flex-direction: column;
@@ -1008,6 +1043,7 @@ button.recording {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 4px;
+  padding-top: calc(22px + var(--lanes, 0) * 19px);
   overflow: hidden;
   cursor: pointer;
   font-weight: 400;
@@ -1023,7 +1059,9 @@ button.recording {
   box-shadow: 0 0 0 2px var(--teal);
 }
 .cal-date {
-  display: block;
+  position: absolute;
+  top: 4px;
+  left: 6px;
 }
 .day-panel {
   margin-top: 18px;

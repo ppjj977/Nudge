@@ -20,9 +20,64 @@ const ICON: Record<string, string> = {
   prepare: "🎒",
   send: "✉️",
   renew: "🔁",
+  trip: "🧳",
   reminder: "⏰",
   fyi: "📄",
 };
+
+/** A task is a multi-day span when it has an end date on a different day. */
+function isSpan(t: TaskView): boolean {
+  return Boolean(
+    t.end_at && t.due_at && t.end_at.slice(0, 10) !== t.due_at.slice(0, 10),
+  );
+}
+
+interface Bar {
+  task: TaskView;
+  startCol: number; // 0..6 within the week
+  endCol: number; // 0..6 within the week
+  lane: number;
+  roundedLeft: boolean; // span actually starts in this week
+  roundedRight: boolean; // span actually ends in this week
+}
+
+/** Lay out the spans that overlap a week into stacked lanes of bar segments. */
+function weekBars(week: CalDay[], spans: TaskView[]): { bars: Bar[]; lanes: number } {
+  const weekStart = week[0].key;
+  const weekEnd = week[6].key;
+  const overlapping = spans
+    .filter((t) => {
+      const s = t.due_at!.slice(0, 10);
+      const e = t.end_at!.slice(0, 10);
+      return s <= weekEnd && e >= weekStart;
+    })
+    .sort((a, b) => a.due_at!.localeCompare(b.due_at!));
+
+  const laneEndCol: number[] = [];
+  const bars: Bar[] = [];
+  for (const t of overlapping) {
+    const s = t.due_at!.slice(0, 10);
+    const e = t.end_at!.slice(0, 10);
+    const startCol = s < weekStart ? 0 : week.findIndex((d) => d.key === s);
+    const endCol = e > weekEnd ? 6 : week.findIndex((d) => d.key === e);
+    let lane = laneEndCol.findIndex((end) => end < startCol);
+    if (lane === -1) {
+      lane = laneEndCol.length;
+      laneEndCol.push(endCol);
+    } else {
+      laneEndCol[lane] = endCol;
+    }
+    bars.push({
+      task: t,
+      startCol,
+      endCol,
+      lane,
+      roundedLeft: s >= weekStart,
+      roundedRight: e <= weekEnd,
+    });
+  }
+  return { bars, lanes: laneEndCol.length };
+}
 
 export default function CalendarMonth({
   days,
@@ -47,6 +102,13 @@ export default function CalendarMonth({
   const selectedDay = days.find((d) => d.key === selected) ?? null;
   const dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+  // Unique multi-day spans across the grid, drawn as continuous bars.
+  const spanMap = new Map<string, TaskView>();
+  for (const d of days) for (const t of d.tasks) if (isSpan(t)) spanMap.set(t.id, t);
+  const spans = [...spanMap.values()];
+  const weeks: CalDay[][] = [];
+  for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
+
   async function addNudge() {
     if (!selected || title.trim() === "") return;
     setSaving(true);
@@ -68,32 +130,67 @@ export default function CalendarMonth({
 
   return (
     <>
-      <div className="cal-grid">
+      <div className="cal-dow-row">
         {dow.map((d) => (
           <div key={d} className="cal-dow">
             {d}
           </div>
         ))}
-        {days.map((d) => (
-          <button
-            key={d.key}
-            className={`cal-cell ${d.out ? "out" : ""} ${d.today ? "today" : ""} ${
-              d.key === selected ? "selected" : ""
-            }`}
-            onClick={() => setSelected(d.key)}
-          >
-            <span className="cal-date">{d.day}</span>
-            {d.tasks.slice(0, 2).map((t) => (
-              <span key={t.id} className="cal-pill" title={t.title}>
-                {ICON[t.category] ?? "•"} {t.title}
-              </span>
-            ))}
-            {d.tasks.length > 2 && (
-              <span className="cal-more">+{d.tasks.length - 2} more</span>
-            )}
-          </button>
-        ))}
       </div>
+
+      {weeks.map((week, wi) => {
+        const { bars, lanes } = weekBars(week, spans);
+        return (
+          <div
+            key={wi}
+            className="cal-week"
+            style={{ "--lanes": lanes } as React.CSSProperties}
+          >
+            <div className="cal-week-cells">
+              {week.map((d) => {
+                const singles = d.tasks.filter((t) => !isSpan(t));
+                return (
+                  <button
+                    key={d.key}
+                    className={`cal-cell ${d.out ? "out" : ""} ${
+                      d.today ? "today" : ""
+                    } ${d.key === selected ? "selected" : ""}`}
+                    onClick={() => setSelected(d.key)}
+                  >
+                    <span className="cal-date">{d.day}</span>
+                    {singles.slice(0, 2).map((t) => (
+                      <span key={t.id} className="cal-pill" title={t.title}>
+                        {ICON[t.category] ?? "•"} {t.title}
+                      </span>
+                    ))}
+                    {singles.length > 2 && (
+                      <span className="cal-more">+{singles.length - 2} more</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="cal-week-bars" aria-hidden="true">
+              {bars.map((b) => (
+                <span
+                  key={b.task.id}
+                  className={`cal-bar ${b.roundedLeft ? "is-start" : ""} ${
+                    b.roundedRight ? "is-end" : ""
+                  }`}
+                  title={b.task.title}
+                  style={{
+                    left: `calc(${b.startCol} / 7 * 100%)`,
+                    width: `calc(${b.endCol - b.startCol + 1} / 7 * 100%)`,
+                    top: `${b.lane * 19}px`,
+                  }}
+                >
+                  {b.roundedLeft ? `${ICON[b.task.category] ?? ""} ${b.task.title}` : "…"}
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
 
       {selectedDay && (
         <div className="day-panel">
