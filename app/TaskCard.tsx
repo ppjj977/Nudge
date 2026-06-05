@@ -94,6 +94,7 @@ export default function TaskCard({
   ownerName = null,
   members = [],
   assignable = false,
+  onActioned,
 }: {
   task: TaskView;
   review?: boolean;
@@ -109,6 +110,9 @@ export default function TaskCard({
   members?: Member[];
   /** Show the "assigned to" picker (family view of a shared task). */
   assignable?: boolean;
+  /** Called after a terminal action (done/dismiss/confirm/edit) — lets a
+   *  caller drop this card from a local snapshot list (e.g. capture verify). */
+  onActioned?: () => void;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -116,21 +120,27 @@ export default function TaskCard({
   const [snoozing, setSnoozing] = useState(false);
   const mode: Mode = done ? "done" : review ? "review" : "active";
 
-  async function call(url: string, method: string, body?: object) {
+  async function call(url: string, method: string, body?: object, terminal = false) {
     await fetch(url, {
       method,
       headers: body ? { "content-type": "application/json" } : undefined,
       body: body ? JSON.stringify(body) : undefined,
     });
+    // Terminal actions remove the task from the active view; let a snapshot
+    // caller drop it too (otherwise it lingers in the capture-verify list).
+    if (terminal) onActioned?.();
     startTransition(() => router.refresh());
   }
 
   const complete = () =>
-    call(`/api/tasks/${task.id}`, "PATCH", {
-      status: task.category === "pay" ? "paid" : "done",
-    });
-  const dismiss = () => call(`/api/tasks/${task.id}`, "DELETE");
-  const confirm = () => call(`/api/tasks/${task.id}/confirm`, "POST");
+    call(
+      `/api/tasks/${task.id}`,
+      "PATCH",
+      { status: task.category === "pay" ? "paid" : "done" },
+      true,
+    );
+  const dismiss = () => call(`/api/tasks/${task.id}`, "DELETE", undefined, true);
+  const confirm = () => call(`/api/tasks/${task.id}/confirm`, "POST", undefined, true);
   const toggleShare = () =>
     call(`/api/tasks/${task.id}/share`, "POST", { share: !task.household_id });
   const assign = (assignee_id: string) =>
@@ -159,6 +169,7 @@ export default function TaskCard({
         onCancel={() => setEditing(false)}
         onSaved={() => {
           setEditing(false);
+          onActioned?.();
           startTransition(() => router.refresh());
         }}
       />

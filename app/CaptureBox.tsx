@@ -222,6 +222,9 @@ export default function CaptureBox({
                   task={t}
                   review={t.status === "review"}
                   lifeAreas={lifeAreas}
+                  onActioned={() =>
+                    setCreated((prev) => prev.filter((x) => x.id !== t.id))
+                  }
                 />
               ))}
             </div>
