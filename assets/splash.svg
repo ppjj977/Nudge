@@ -1,0 +1,14 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Light splash: brand-cream background, logo centred. -->
+  <rect width="512" height="512" fill="#F8F7F4"/>
+  <g transform="translate(176 176) scale(1.6)">
+    <rect width="100" height="100" rx="22" fill="#7BAA94"/>
+    <path d="M32.4 75.8 A29 29 0 1 1 65.6 75.8" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <circle cx="49" cy="56" r="8" fill="#F5B52E"/>
+    <g stroke="#F5B52E" stroke-width="4.2" stroke-linecap="round">
+      <path d="M70 30 L75 18"/>
+      <path d="M78 27 L84 14"/>
+      <path d="M85 32 L95 25"/>
+    </g>
+  </g>
+</svg>
