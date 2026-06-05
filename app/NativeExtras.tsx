@@ -9,37 +9,67 @@ import { useEffect } from "react";
  *  - Widget sync: cache today's nudges in Preferences for the home-screen widget.
  * In a normal browser this is a no-op.
  */
+type SharedIntent = {
+  title?: string;
+  description?: string;
+  type?: string;
+  url?: string;
+};
 type Cap = {
   isNativePlatform?: () => boolean;
   Plugins?: {
-    SendIntent?: {
-      checkSendIntentReceived: () => Promise<{
-        title?: string;
-        description?: string;
-        url?: string;
-      }>;
-    };
+    SendIntent?: { checkSendIntentReceived: () => Promise<SharedIntent> };
+    Filesystem?: { readFile: (o: { path: string }) => Promise<{ data: string }> };
     Preferences?: { set: (o: { key: string; value: string }) => Promise<void> };
   };
 };
+
+/** Decode a base64 string into a Blob of the given mime type. */
+function base64ToBlob(b64: string, mime: string): Blob {
+  const clean = b64.includes(",") ? b64.split(",")[1] : b64;
+  const bytes = atob(clean);
+  const arr = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
 
 export default function NativeExtras() {
   useEffect(() => {
     const cap = (window as unknown as { Capacitor?: Cap }).Capacitor;
     if (!cap?.isNativePlatform?.()) return;
 
-    // --- Share-target: forward shared text into the capture pipeline. ---
+    // --- Share-target: forward shared text OR an image into capture. ---
     (async () => {
       try {
         const SendIntent = cap.Plugins?.SendIntent;
         if (!SendIntent) return;
         const r = await SendIntent.checkSendIntentReceived();
-        const parts = [r?.title, r?.description, r?.url].filter(
+        if (!r) return;
+
+        const isImage =
+          (r.type && r.type.startsWith("image")) ||
+          (typeof r.url === "string" && r.url.startsWith("content://"));
+
+        // Shared image: read its bytes and run them through OCR/vision.
+        if (isImage && r.url && cap.Plugins?.Filesystem) {
+          const read = await cap.Plugins.Filesystem.readFile({
+            path: decodeURIComponent(r.url),
+          });
+          const blob = base64ToBlob(read.data, r.type || "image/jpeg");
+          const fd = new FormData();
+          fd.append("file", blob, "shared.jpg");
+          await fetch("/share", { method: "POST", body: fd });
+          window.location.href = "/?shared=added";
+          return;
+        }
+
+        // Shared text / link.
+        const parts = [r.title, r.description, r.url].filter(
           (s): s is string =>
             typeof s === "string" && s.trim().length > 0 && !s.startsWith("content://"),
         );
         const text = parts.join("\n").trim();
-        if (!text) return; // image/file shares handled in a later pass
+        if (!text) return;
         const fd = new FormData();
         fd.append("text", text);
         await fetch("/share", { method: "POST", body: fd });
