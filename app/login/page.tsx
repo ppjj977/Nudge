@@ -13,11 +13,11 @@ const ERRORS: Record<string, string> = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string }>;
 }) {
   const user = await getCurrentUser();
   if (user) redirect("/");
-  const { error } = await searchParams;
+  const { error, next } = await searchParams;
 
   return (
     <div className="auth-wrap">
@@ -29,6 +29,7 @@ export default async function LoginPage({
         mode="signin"
         googleEnabled={googleEnabled()}
         initialMessage={error ? (ERRORS[error] ?? null) : null}
+        next={next}
       />
     </div>
   );

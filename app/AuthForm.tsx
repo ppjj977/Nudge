@@ -7,16 +7,21 @@ export default function AuthForm({
   mode,
   googleEnabled,
   initialMessage,
+  next,
 }: {
   mode: "signin" | "signup";
   googleEnabled: boolean;
   initialMessage?: string | null;
+  next?: string;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState<string | null>(initialMessage ?? null);
   const [busy, setBusy] = useState(false);
+
+  // Only honour internal paths (avoid open-redirects).
+  const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
 
   async function post(url: string, body: object) {
     setBusy(true);
@@ -33,7 +38,7 @@ export default function AuthForm({
 
   async function signin() {
     const { ok, d } = await post("/api/auth/login", { email, password });
-    if (ok) location.href = "/";
+    if (ok) location.href = dest;
     else setMsg(d.error || "Sign in failed");
   }
   async function signup() {
@@ -42,7 +47,7 @@ export default function AuthForm({
       return;
     }
     const { ok, d } = await post("/api/auth/register", { name, email, password });
-    if (ok) location.href = "/";
+    if (ok) location.href = dest;
     else setMsg(d.error || "Could not create account");
   }
   async function magic() {

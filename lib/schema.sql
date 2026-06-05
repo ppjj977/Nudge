@@ -35,6 +35,33 @@ CREATE TABLE IF NOT EXISTS auth_tokens (
   used_at    TEXT
 );
 
+-- Households (Nudge Family). A user belongs to at most one household in v1.
+CREATE TABLE IF NOT EXISTS households (
+  id         TEXT PRIMARY KEY,
+  name       TEXT NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id),
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS household_members (
+  household_id TEXT NOT NULL REFERENCES households(id),
+  user_id      TEXT NOT NULL REFERENCES users(id),
+  role         TEXT NOT NULL DEFAULT 'member', -- 'owner' | 'member'
+  created_at   TEXT NOT NULL,
+  PRIMARY KEY (household_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS household_invites (
+  id           TEXT PRIMARY KEY,
+  household_id TEXT NOT NULL REFERENCES households(id),
+  email        TEXT NOT NULL,
+  token_hash   TEXT NOT NULL,        -- sha256 of the emailed token
+  invited_by   TEXT NOT NULL REFERENCES users(id),
+  expires_at   TEXT NOT NULL,
+  accepted_at  TEXT,
+  created_at   TEXT NOT NULL
+);
+
 -- Raw inbound, kept for audit and reprocessing. raw_content is purged per
 -- retention setting (SPEC §5 Privacy / retention) while the task survives.
 CREATE TABLE IF NOT EXISTS captures (
@@ -66,6 +93,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   confidence     REAL NOT NULL DEFAULT 1.0, -- 0.0 .. 1.0
   source_excerpt TEXT,                      -- short quote justifying the task
   snoozed_until  TEXT,                       -- ISO 8601 UTC of the next manual nudge
+  household_id   TEXT REFERENCES households(id), -- shared to a family when set
   created_at     TEXT NOT NULL,
   updated_at     TEXT NOT NULL,
   completed_at   TEXT
@@ -109,4 +137,7 @@ CREATE INDEX IF NOT EXISTS idx_reminders_task        ON reminders(task_id, statu
 CREATE INDEX IF NOT EXISTS idx_push_user             ON push_subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_user         ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_hash      ON auth_tokens(token_hash);
+CREATE INDEX IF NOT EXISTS idx_hh_members_user       ON household_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_hh_invites_hash       ON household_invites(token_hash);
+CREATE INDEX IF NOT EXISTS idx_tasks_household        ON tasks(household_id, status);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_digest_per_day ON digest_log(user_id, sent_for);
