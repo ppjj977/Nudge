@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { DateTime } from "luxon";
 import { getCurrentUser } from "@/lib/auth";
-import { getTask, setSnoozedUntil } from "@/lib/tasks";
+import { getAccessibleTask, setSnoozedUntil } from "@/lib/tasks";
 import { snoozeTask } from "@/lib/reminders";
 
 export const runtime = "nodejs";
@@ -35,7 +35,7 @@ export async function POST(
     );
   }
 
-  const task = await getTask(user.id, id);
+  const task = await getAccessibleTask(user.id, id);
   if (!task) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const fireUtc = local.toUTC().toISO()!;

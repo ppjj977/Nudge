@@ -157,11 +157,26 @@ export async function cancelRemindersForTask(taskId: string): Promise<void> {
  * date & time" action.
  */
 export async function snoozeTask(task: Task, fireAtUtcISO: string): Promise<void> {
-  await db.execute({
-    sql: `INSERT INTO reminders (id, task_id, user_id, fire_at, channel, status, sent_at)
-          VALUES (?,?,?,?,?,?,?)`,
-    args: [newId("rem"), task.id, task.user_id, fireAtUtcISO, "all", "pending", null],
-  });
+  for (const uid of await reminderTargets(task)) {
+    await db.execute({
+      sql: `INSERT INTO reminders (id, task_id, user_id, fire_at, channel, status, sent_at)
+            VALUES (?,?,?,?,?,?,?)`,
+      args: [newId("rem"), task.id, uid, fireAtUtcISO, "all", "pending", null],
+    });
+  }
+}
+
+/**
+ * Who gets reminded for a task: the whole family for a shared task, otherwise
+ * just the owner. (The assignee is shown as a label; per the family's choice
+ * everyone is still nudged for shared tasks.)
+ */
+export async function reminderTargets(task: Task): Promise<string[]> {
+  if (task.household_id) {
+    const members = await memberIds(task.household_id);
+    if (members.length > 0) return members;
+  }
+  return [task.user_id];
 }
 
 /**
@@ -180,12 +195,7 @@ export async function generateRemindersForTask(task: Task): Promise<void> {
   const catRules = rules[task.category] ?? [];
   const fires = computeFireTimes(task, catRules, user.timezone);
 
-  // Shared tasks nudge the whole family; private tasks nudge just the owner.
-  let targets = [task.user_id];
-  if (task.household_id) {
-    const members = await memberIds(task.household_id);
-    if (members.length > 0) targets = members;
-  }
+  const targets = await reminderTargets(task);
 
   for (const fireAt of fires) {
     for (const uid of targets) {

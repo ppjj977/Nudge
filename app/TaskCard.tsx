@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CATEGORIES } from "@/lib/categories";
+import type { Member } from "@/lib/households";
 
 export interface ChecklistItem {
   text: string;
@@ -26,6 +27,7 @@ export interface TaskView {
   source_excerpt: string | null;
   snoozed_until: string | null;
   household_id: string | null;
+  assignee_id: string | null;
 }
 
 const CATEGORY_ICON: Record<string, string> = {
@@ -80,6 +82,8 @@ export default function TaskCard({
   inHousehold = false,
   readOnly = false,
   ownerName = null,
+  members = [],
+  assignable = false,
 }: {
   task: TaskView;
   review?: boolean;
@@ -91,6 +95,10 @@ export default function TaskCard({
   readOnly?: boolean;
   /** Owner's name, shown as a chip in the family view. */
   ownerName?: string | null;
+  /** Household members, to populate the assignee picker. */
+  members?: Member[];
+  /** Show the "assigned to" picker (family view of a shared task). */
+  assignable?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -115,6 +123,14 @@ export default function TaskCard({
   const confirm = () => call(`/api/tasks/${task.id}/confirm`, "POST");
   const toggleShare = () =>
     call(`/api/tasks/${task.id}/share`, "POST", { share: !task.household_id });
+  const assign = (assignee_id: string) =>
+    call(`/api/tasks/${task.id}`, "PATCH", { assignee_id: assignee_id || null });
+  const assigneeName =
+    task.assignee_id != null
+      ? (members.find((m) => m.id === task.assignee_id)?.name ??
+        members.find((m) => m.id === task.assignee_id)?.email ??
+        null)
+      : null;
   const undo = () => call(`/api/tasks/${task.id}`, "PATCH", { status: "active" });
 
   const toggleItem = (index: number) => {
@@ -175,6 +191,7 @@ export default function TaskCard({
           {!ownerName && task.household_id && (
             <span className="chip owner">shared</span>
           )}
+          {assigneeName && <span className="chip assignee">for {assigneeName}</span>}
           {lowConfidence && (
             <span className="chip low-conf">
               ~{Math.round(task.confidence * 100)}% sure
@@ -204,6 +221,24 @@ export default function TaskCard({
           <div className="excerpt">“{task.source_excerpt}”</div>
         )}
       </div>
+
+      {assignable && members.length > 0 && (
+        <div className="assign-row">
+          <span>Assigned to</span>
+          <select
+            value={task.assignee_id ?? ""}
+            onChange={(e) => assign(e.target.value)}
+            disabled={pending}
+          >
+            <option value="">Anyone</option>
+            {members.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name || m.email}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {!readOnly && (
         <div className="actions">
