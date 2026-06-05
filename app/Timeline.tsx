@@ -3,6 +3,7 @@
 import { useState } from "react";
 import TaskCard, { type TaskView } from "./TaskCard";
 import type { FamilyTask } from "@/lib/tasks";
+import type { Member } from "@/lib/households";
 
 type Tab = "today" | "week" | "later" | "family" | "money" | "review";
 
@@ -21,6 +22,7 @@ export default function Timeline({
   later,
   review,
   family,
+  members,
   lifeAreas,
   inHousehold,
   meId,
@@ -30,6 +32,7 @@ export default function Timeline({
   later: TaskView[];
   review: TaskView[];
   family: FamilyTask[];
+  members: Member[];
   lifeAreas: string[];
   inHousehold: boolean;
   meId: string;
@@ -98,8 +101,8 @@ export default function Timeline({
       )}
       {tab === "family" && (
         <p className="note family-note">
-          Shared with your family — everyone gets the nudge. Manage your own from
-          the other tabs.
+          Shared with your family — anyone can tick these off, and everyone gets
+          the nudge. Use “Assigned to” to say who’s on it.
         </p>
       )}
 
@@ -111,8 +114,9 @@ export default function Timeline({
             <TaskCard
               key={t.id}
               task={t as unknown as TaskView}
-              readOnly
               ownerName={t.user_id === meId ? "you" : t.owner_name || t.owner_email}
+              members={members}
+              assignable
               lifeAreas={lifeAreas}
             />
           ))

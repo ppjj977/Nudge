@@ -31,6 +31,7 @@ export interface Task {
   source_excerpt: string | null;
   snoozed_until: string | null;
   household_id: string | null;
+  assignee_id: string | null;
   created_at: string;
   updated_at: string;
   completed_at: string | null;
@@ -124,6 +125,7 @@ export async function insertTasksFromExtraction(
       source_excerpt: item.source_excerpt,
       snoozed_until: null,
       household_id: null,
+      assignee_id: null,
       created_at: now,
       updated_at: now,
       completed_at: null,
@@ -265,6 +267,7 @@ export async function createManualTask(
     source_excerpt: null,
     snoozed_until: null,
     household_id: null,
+    assignee_id: null,
     created_at: now,
     updated_at: now,
     completed_at: null,
@@ -338,7 +341,29 @@ const EDITABLE_FIELDS = new Set([
   "category",
   "checklist",
   "status",
+  "assignee_id",
 ]);
+
+/**
+ * The task if the user owns it OR it's shared with a household they belong to.
+ * Lets any family member act on shared tasks (complete, snooze, edit, dismiss).
+ */
+export async function getAccessibleTask(
+  userId: string,
+  id: string,
+): Promise<Task | null> {
+  const task = await getTaskByIdAny(id);
+  if (!task) return null;
+  if (task.user_id === userId) return task;
+  if (task.household_id) {
+    const m = await db.execute({
+      sql: "SELECT 1 FROM household_members WHERE household_id = ? AND user_id = ? LIMIT 1",
+      args: [task.household_id, userId],
+    });
+    if (m.rows.length) return task;
+  }
+  return null;
+}
 
 /**
  * Patch a task. Sets completed_at when moving to a terminal done/paid status.
@@ -349,7 +374,8 @@ export async function updateTask(
   id: string,
   patch: Record<string, unknown>,
 ): Promise<Task | null> {
-  const existing = await getTask(userId, id);
+  // Household-aware: the owner OR any member of the task's family may edit it.
+  const existing = await getAccessibleTask(userId, id);
   if (!existing) return null;
 
   const sets: string[] = [];
@@ -379,13 +405,13 @@ export async function updateTask(
 
   if (sets.length === 1) return existing; // only updated_at -> nothing changed
 
-  args.push(id, userId);
+  args.push(id);
   await db.execute({
-    sql: `UPDATE tasks SET ${sets.join(", ")} WHERE id = ? AND user_id = ?`,
+    sql: `UPDATE tasks SET ${sets.join(", ")} WHERE id = ?`,
     args: args as never[],
   });
 
-  const updated = await getTask(userId, id);
+  const updated = await getTaskByIdAny(id);
 
   // Reconcile reminders when a relevant field changed. generateRemindersForTask
   // cancels pending rows first, and is a no-op (just a cancel) for non-active
@@ -421,13 +447,17 @@ export async function setTaskHousehold(
 export interface FamilyTask extends Task {
   owner_name: string | null;
   owner_email: string;
+  assignee_name: string | null;
 }
 
 /** Active tasks shared to a household, with each task's owner for attribution. */
 export async function getFamilyTasks(householdId: string): Promise<FamilyTask[]> {
   const res = await db.execute({
-    sql: `SELECT t.*, u.name AS owner_name, u.email AS owner_email
-          FROM tasks t JOIN users u ON u.id = t.user_id
+    sql: `SELECT t.*, u.name AS owner_name, u.email AS owner_email,
+                 a.name AS assignee_name
+          FROM tasks t
+          JOIN users u ON u.id = t.user_id
+          LEFT JOIN users a ON a.id = t.assignee_id
           WHERE t.household_id = ? AND t.status IN ('active','paid')
           ORDER BY (t.due_at IS NULL), t.due_at ASC, t.created_at DESC`,
     args: [householdId],
@@ -438,6 +468,7 @@ export async function getFamilyTasks(householdId: string): Promise<FamilyTask[]>
       ...mapTaskRow(r),
       owner_name: (r.owner_name as string | null) ?? null,
       owner_email: r.owner_email as string,
+      assignee_name: (r.assignee_name as string | null) ?? null,
     };
   });
 }
@@ -448,9 +479,11 @@ export async function setSnoozedUntil(
   id: string,
   isoUtc: string,
 ): Promise<void> {
+  // id-scoped: access is verified by the route via getAccessibleTask.
+  void userId;
   await db.execute({
-    sql: "UPDATE tasks SET snoozed_until = ?, updated_at = ? WHERE id = ? AND user_id = ?",
-    args: [isoUtc, new Date().toISOString(), id, userId],
+    sql: "UPDATE tasks SET snoozed_until = ?, updated_at = ? WHERE id = ?",
+    args: [isoUtc, new Date().toISOString(), id],
   });
 }
 

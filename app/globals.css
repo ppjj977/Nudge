@@ -1420,3 +1420,27 @@ button.snoozed {
 .family-note {
   margin: 0 0 14px;
 }
+
+/* assignee picker + chip on shared/family cards */
+.assign-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.assign-row select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 9px;
+  font: inherit;
+  color: var(--text);
+}
+.chip.assignee {
+  background: rgba(245, 181, 46, 0.18);
+  color: #6b4e00;
+  border-color: transparent;
+  text-transform: none;
+  letter-spacing: 0;
+}

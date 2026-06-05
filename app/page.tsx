@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { getUserLifeAreas, ensureInboundAddress } from "@/lib/users";
 import { getCurrentUser } from "@/lib/auth";
-import { getMembershipForUser } from "@/lib/households";
+import { getMembershipForUser, getMembers } from "@/lib/households";
 import { getTimeline, getFamilyTasks, type Task } from "@/lib/tasks";
 import CaptureBox from "./CaptureBox";
 import ManualAdd from "./ManualAdd";
@@ -44,6 +44,7 @@ export default async function Dashboard({
   const inboundAddress = await ensureInboundAddress(user);
   const membership = await getMembershipForUser(user.id);
   const family = membership ? await getFamilyTasks(membership.household.id) : [];
+  const members = membership ? await getMembers(membership.household.id) : [];
   const now = DateTime.now().setZone(user.timezone);
   const { shared } = await searchParams;
   const sharedMsg = shared ? SHARED_MESSAGES[shared] : null;
@@ -68,6 +69,7 @@ export default async function Dashboard({
         later={timeline.later.map(toView)}
         review={timeline.review.map(toView)}
         family={family}
+        members={members}
         inHousehold={Boolean(membership)}
         meId={user.id}
         lifeAreas={lifeAreas}
