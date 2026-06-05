@@ -1484,6 +1484,10 @@ button.snoozed {
 .member-name {
   font-weight: 600;
   color: var(--navy);
+  flex: 1;
+}
+.member-remove {
+  flex-shrink: 0;
 }
 
 /* family timeline */

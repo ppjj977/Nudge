@@ -22,6 +22,7 @@ export default async function FamilyPage() {
         household={membership?.household ?? null}
         members={members}
         meId={user.id}
+        isOwner={membership?.role === "owner"}
       />
     </>
   );

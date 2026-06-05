@@ -7,10 +7,12 @@ export default function FamilyManager({
   household,
   members,
   meId,
+  isOwner = false,
 }: {
   household: Household | null;
   members: Member[];
   meId: string;
+  isOwner?: boolean;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,6 +52,26 @@ export default function FamilyManager({
     } else {
       setMsg(d.error || "Couldn't send the invite.");
     }
+  }
+
+  async function remove(member: Member) {
+    if (
+      !confirm(
+        `Remove ${member.name || member.email} from the family? Their shared tasks become private again.`,
+      )
+    ) {
+      return;
+    }
+    setBusy(true);
+    setMsg(null);
+    const r = await fetch("/api/family/remove", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ userId: member.id }),
+    });
+    setBusy(false);
+    if (r.ok) location.reload();
+    else setMsg("Couldn't remove that member.");
   }
 
   async function leave() {
@@ -100,6 +122,15 @@ export default function FamilyManager({
                 {m.id === meId ? " (you)" : ""}
               </span>
               <span className="chip">{m.role}</span>
+              {isOwner && m.id !== meId && (
+                <button
+                  className="link danger member-remove"
+                  disabled={busy}
+                  onClick={() => remove(m)}
+                >
+                  Remove
+                </button>
+              )}
             </li>
           ))}
         </ul>
