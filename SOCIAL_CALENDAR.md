@@ -42,6 +42,24 @@ sign-up is closed and the goal is **register-interest sign-ups**.
 capture flow on the phone. Film the messy input (a school letter / a bill /
 a voice note) → the tasks appearing → a reminder firing. 9–15s is plenty.
 
+## Channel setup (do this once)
+
+**Profile picture:** `public/social/tiktok-avatar.png` (circle-safe — the app
+icon's nudge-lines clip under TikTok's circle crop; this one doesn't).
+
+**TikTok**
+- Handle: `@nudgelive` (fallbacks `@nudge.live`, `@getnudge`).
+- Display name: `Nudge · your life-admin brain`.
+- Bio (≤80 chars): `Snap the chaos → reminders before things slip. For brains that forget 🧠`
+- Switch to a **Business Account** (free) to unlock the website link + analytics; category **Apps**.
+- Website link: `https://nudgelive.co.uk/register-interest` (the waitlist, not the homepage).
+- Pin 3 videos once live: Day 1, Day 5 (promo), and a strong feature demo.
+- Public contact: `hello@nudgelive.co.uk`.
+
+**Facebook Page**
+- Same avatar; Page name `Nudge`; category `App Page`; cover = `public/marketing/feature-graphic.png`.
+- Intro one-liner + website = the register-interest link.
+
 ## Posting cadence
 
 - **TikTok:** daily, 7–15s, vertical 9:16, trending audio, big on-screen captions.
@@ -63,29 +81,40 @@ a voice note) → the tasks appearing → a reminder firing. 9–15s is plenty.
 - CTA: "First 10 to register interest get it FREE for life. Link in bio."
 - Caption (paste): *"Me: I'll remember that. The letter: gone for 3 days. Nudge: 🫡 sorted. Snap the mess → it pulls out the dates, times & payments. 🎁 First 10 to register interest get Pro free for life → nudgelive.co.uk #lifeadmin #adhdtok #mentalload #momlife #schoolrun"*
 
+> **Assets for Days 2–7 are pre-built** in `public/social/` — each day has an
+> animated `dayNN-<slug>.svg` (screen-record full-screen on a phone for the
+> TikTok/Reel) and a static `dayNN-cover.png` (Facebook image / TikTok cover).
+> Regenerate or tweak copy via `npx tsx scripts/gen-social.ts`.
+
 **Day 2 — TikTok**
-- Hook: "Things my brain refuses to remember 🧠❌" (rapid list: bin day, the dentist, the birthday, the bill).
-- End on Nudge timeline screenshot. "Now I just send Nudge the mess."
+- Hook: "Things my brain refuses to remember." Rapid list (bin day, dentist, birthday, bill) → tasks land in Nudge.
+- Assets: `day02-brain-forgets.svg` · `day02-cover.png`
+- Caption: *"My brain at 9pm: a junk drawer. Now I just dump it on Nudge and get a nudge before each one. 🎁 First 10 to register interest = Pro free for life → nudgelive.co.uk #adhdtok #lifeadmin #mentalload"*
 
 **Day 3 — TikTok + 🅵**
-- Hook: "Screenshot graveyard 📵" — scroll a camera roll full of screenshots.
-- Punchline: "Nudge actually reads them and reminds you." Show `review.png`.
-- FB version: carousel of 3 screenshots (screenshot → extracted task → reminder).
+- Hook: "Your camera roll is a to-do list in disguise." Screenshots → Nudge reads them.
+- Assets: `day03-screenshot-graveyard.svg` · `day03-cover.png` (FB: carousel screenshot → task → reminder)
+- Caption: *"237 screenshots I'll 'deal with later' 📵 Nudge actually reads them and turns them into reminders. Register your interest → nudgelive.co.uk #screenshot #adhd #organised"*
 
 **Day 4 — TikTok**
-- Hook: "The mental load is invisible until you write it ALL down."
-- Show timeline filling up. Soft, relatable tone. Trending sad-to-relieved audio.
+- Hook: "The mental load is invisible until you write it ALL down." Soft, relatable, sad-to-relieved audio.
+- Assets: `day04-mental-load.svg` · `day04-cover.png`
+- Caption: *"The mental load isn't lazy — it's invisible. Nudge holds it so your brain doesn't have to. First 10 to register = Pro free for life → nudgelive.co.uk #mentalload #momlife #adhdtok"*
 
 **Day 5 — TikTok + 🅵**
-- Promo spotlight: "We're opening Nudge soon. First 10 on the waitlist = Pro free for LIFE."
-- Asset: `promo.png` with a "X spots left" caption (update the number from /admin).
+- Promo spotlight: "We're opening Nudge soon. First 10 = Pro free for LIFE; everyone else who joins now = 3 months free."
+- Assets: `day05-promo.svg` · `day05-cover.png` (update "[N] spots left" from /admin)
+- Caption: *"⏳ Only [N] free-for-life spots left. Nudge opens soon — register your interest now → nudgelive.co.uk #nudge #lifeadmin #earlybird"*
 
 **Day 6 — TikTok**
-- Hook: "Forward your chaos to a robot, challenge." Forward a confirmation email → task appears.
+- Hook: "Forward your chaos to a robot. Watch." Forward a confirmation email → task appears.
+- Assets: `day06-forward-email.svg` · `day06-cover.png`
+- Caption: *"Forward ANY confirmation email to Nudge and it pulls out the what, when & where. No typing it twice. Register your interest → nudgelive.co.uk #lifehack #productivity #organised"*
 
 **Day 7 — TikTok + 🅵**
-- Week-1 recap / social proof: "X people joined the waitlist this week." Re-share best comment.
-- FB: text post asking "What's the ONE thing you always forget?" (engagement bait, seeds future content).
+- Engagement: "What's the ONE thing you always forget?" Invite comments; reply with the Nudge for each.
+- Assets: `day07-one-thing.svg` · `day07-cover.png`
+- Caption: *"What's the ONE thing you ALWAYS forget? 👇 Comment it and I'll show you the Nudge for it. (First 10 to register interest get Pro free for life → nudgelive.co.uk) #adhdtok #lifeadmin"*
 
 ---
 
