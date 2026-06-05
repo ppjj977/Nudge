@@ -30,6 +30,7 @@ export interface Task {
   confidence: number;
   source_excerpt: string | null;
   snoozed_until: string | null;
+  household_id: string | null;
   created_at: string;
   updated_at: string;
   completed_at: string | null;
@@ -122,6 +123,7 @@ export async function insertTasksFromExtraction(
       confidence: item.confidence,
       source_excerpt: item.source_excerpt,
       snoozed_until: null,
+      household_id: null,
       created_at: now,
       updated_at: now,
       completed_at: null,
@@ -262,6 +264,7 @@ export async function createManualTask(
     confidence: 1,
     source_excerpt: null,
     snoozed_until: null,
+    household_id: null,
     created_at: now,
     updated_at: now,
     completed_at: null,
@@ -400,6 +403,43 @@ export async function confirmTask(
   id: string,
 ): Promise<Task | null> {
   return updateTask(userId, id, { status: "active" });
+}
+
+/** Share a task with (or remove it from) a household; returns the updated row. */
+export async function setTaskHousehold(
+  userId: string,
+  id: string,
+  householdId: string | null,
+): Promise<Task | null> {
+  await db.execute({
+    sql: "UPDATE tasks SET household_id = ?, updated_at = ? WHERE id = ? AND user_id = ?",
+    args: [householdId, new Date().toISOString(), id, userId],
+  });
+  return getTask(userId, id);
+}
+
+export interface FamilyTask extends Task {
+  owner_name: string | null;
+  owner_email: string;
+}
+
+/** Active tasks shared to a household, with each task's owner for attribution. */
+export async function getFamilyTasks(householdId: string): Promise<FamilyTask[]> {
+  const res = await db.execute({
+    sql: `SELECT t.*, u.name AS owner_name, u.email AS owner_email
+          FROM tasks t JOIN users u ON u.id = t.user_id
+          WHERE t.household_id = ? AND t.status IN ('active','paid')
+          ORDER BY (t.due_at IS NULL), t.due_at ASC, t.created_at DESC`,
+    args: [householdId],
+  });
+  return res.rows.map((row) => {
+    const r = row as Record<string, unknown>;
+    return {
+      ...mapTaskRow(r),
+      owner_name: (r.owner_name as string | null) ?? null,
+      owner_email: r.owner_email as string,
+    };
+  });
 }
 
 /** Record when a task was snoozed to, so the card can show it persistently. */

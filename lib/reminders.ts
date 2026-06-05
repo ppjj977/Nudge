@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { db } from "./db";
 import { newId } from "./ids";
 import { getUserById, type User } from "./users";
+import { memberIds } from "./households";
 import type { Category } from "./categories";
 import type { Task } from "./tasks";
 
@@ -179,12 +180,21 @@ export async function generateRemindersForTask(task: Task): Promise<void> {
   const catRules = rules[task.category] ?? [];
   const fires = computeFireTimes(task, catRules, user.timezone);
 
+  // Shared tasks nudge the whole family; private tasks nudge just the owner.
+  let targets = [task.user_id];
+  if (task.household_id) {
+    const members = await memberIds(task.household_id);
+    if (members.length > 0) targets = members;
+  }
+
   for (const fireAt of fires) {
-    await db.execute({
-      sql: `INSERT INTO reminders (id, task_id, user_id, fire_at, channel, status, sent_at)
-            VALUES (?,?,?,?,?,?,?)`,
-      args: [newId("rem"), task.id, task.user_id, fireAt, "all", "pending", null],
-    });
+    for (const uid of targets) {
+      await db.execute({
+        sql: `INSERT INTO reminders (id, task_id, user_id, fire_at, channel, status, sent_at)
+              VALUES (?,?,?,?,?,?,?)`,
+        args: [newId("rem"), task.id, uid, fireAt, "all", "pending", null],
+      });
+    }
   }
 }
 
