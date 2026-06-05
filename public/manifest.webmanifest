@@ -43,6 +43,29 @@
       "url": "/calendar"
     }
   ],
+  "screenshots": [
+    {
+      "src": "/screenshots/timeline.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Your timeline — capture anything and get nudged"
+    },
+    {
+      "src": "/screenshots/calendar.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "A calendar that blocks out multi-day plans"
+    },
+    {
+      "src": "/screenshots/review.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "A review tray for anything nudge wasn't sure about"
+    }
+  ],
   "share_target": {
     "action": "/share",
     "method": "POST",
