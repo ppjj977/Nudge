@@ -207,6 +207,10 @@ export async function runDigest(
     const local = now.setZone(user.timezone);
     if (local.hour !== user.digest_hour) continue;
 
+    // The digest is its own opt-in (default on), separate from email reminders.
+    const { digest } = parseUserSettings(user);
+    if (!digest || !user.email) continue;
+
     const sentFor = local.toFormat("yyyy-LL-dd");
     const already = await db.execute({
       sql: "SELECT 1 FROM digest_log WHERE user_id = ? AND sent_for = ? LIMIT 1",
@@ -224,11 +228,8 @@ export async function runDigest(
     });
 
     if (composed) {
-      const { channels } = parseUserSettings(user);
-      if (channels.email && user.email) {
-        await sendEmail({ to: user.email, ...composed });
-        sent++;
-      }
+      await sendEmail({ to: user.email, ...composed });
+      sent++;
     }
   }
   return { considered: users.length, sent };

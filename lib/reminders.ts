@@ -29,6 +29,9 @@ export interface ReminderSettings {
    *  explicit empty array means "no reminders for this category". */
   rules: Partial<Record<Category, ReminderRule[]>>;
   channels: UserChannels;
+  /** Whether the once-a-day digest email is sent. Independent of the email
+   *  reminder channel above; defaults on. */
+  digest: boolean;
 }
 
 /** SPEC §8 defaults, expressed in the (daysBefore, localTime) model. */
@@ -71,6 +74,9 @@ export const DEFAULT_REMINDER_RULES: Record<Category, ReminderRule[]> = {
 // invites, password resets and magic links are always sent by email.
 export const DEFAULT_CHANNELS: UserChannels = { email: false, push: true };
 
+// The daily digest email is on by default (a gentle morning summary).
+export const DEFAULT_DIGEST = true;
+
 const TIME_RE = /^([01]?\d|2[0-3]):([0-5]\d)$/;
 
 export function isValidRule(r: unknown): r is ReminderRule {
@@ -86,7 +92,8 @@ export function isValidRule(r: unknown): r is ReminderRule {
 
 /** Resolve a user's effective settings, merging stored prefs over defaults. */
 export function parseUserSettings(user: Pick<User, "settings">): ReminderSettings {
-  let stored: { reminderRules?: unknown; channels?: unknown } = {};
+  let stored: { reminderRules?: unknown; channels?: unknown; digest?: unknown } =
+    {};
   if (user.settings) {
     try {
       stored = JSON.parse(user.settings) ?? {};
@@ -113,7 +120,9 @@ export function parseUserSettings(user: Pick<User, "settings">): ReminderSetting
     push: typeof ch.push === "boolean" ? ch.push : DEFAULT_CHANNELS.push,
   };
 
-  return { rules, channels };
+  const digest = typeof stored.digest === "boolean" ? stored.digest : DEFAULT_DIGEST;
+
+  return { rules, channels, digest };
 }
 
 /**

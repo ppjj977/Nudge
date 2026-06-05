@@ -49,6 +49,7 @@ export default function SettingsForm({
   initialRules,
   defaults,
   initialChannels,
+  initialDigest,
   initialDigestHour,
   initialLifeAreas,
   defaultLifeAreas,
@@ -57,6 +58,7 @@ export default function SettingsForm({
   initialRules: Rules;
   defaults: Rules;
   initialChannels: Channels;
+  initialDigest: boolean;
   initialDigestHour: number;
   initialLifeAreas: string[];
   defaultLifeAreas: string[];
@@ -64,6 +66,7 @@ export default function SettingsForm({
 }) {
   const [rules, setRules] = useState<Rules>(structuredClone(initialRules));
   const [channels, setChannels] = useState<Channels>(initialChannels);
+  const [digest, setDigest] = useState(initialDigest);
   const [digestHour, setDigestHour] = useState(initialDigestHour);
   const [lifeAreas, setLifeAreas] = useState<string[]>([...initialLifeAreas]);
   const [saving, setSaving] = useState(false);
@@ -120,6 +123,7 @@ export default function SettingsForm({
         body: JSON.stringify({
           reminderRules: rules,
           channels,
+          digest,
           digestHour,
           lifeAreas: cleanedAreas,
         }),
@@ -228,9 +232,18 @@ export default function SettingsForm({
       <section className="panel">
         <h2>Daily digest</h2>
         <label className="row">
+          <input
+            type="checkbox"
+            checked={digest}
+            onChange={(e) => setDigest(e.target.checked)}
+          />
+          <span>Email me a daily digest</span>
+        </label>
+        <label className="row">
           <span>Send my morning digest at</span>
           <select
             value={digestHour}
+            disabled={!digest}
             onChange={(e) => setDigestHour(Number(e.target.value))}
           >
             {Array.from({ length: 24 }, (_, h) => (

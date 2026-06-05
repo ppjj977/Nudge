@@ -18,10 +18,11 @@ export const runtime = "nodejs";
 export async function GET() {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { rules, channels } = parseUserSettings(user);
+  const { rules, channels, digest } = parseUserSettings(user);
   return NextResponse.json({
     reminderRules: rules,
     channels,
+    digest,
     digestHour: user.digest_hour,
     lifeAreas: getUserLifeAreas(user),
     defaults: DEFAULT_REMINDER_RULES,
@@ -33,6 +34,7 @@ export async function GET() {
 interface SettingsBody {
   reminderRules?: Record<string, unknown>;
   channels?: { email?: unknown; push?: unknown };
+  digest?: unknown;
   digestHour?: unknown;
   lifeAreas?: unknown;
 }
@@ -66,6 +68,10 @@ export async function PUT(req: Request) {
     push: Boolean(body.channels?.push),
   };
 
+  // Daily digest opt-in (separate from the email reminder channel). Default on
+  // when the client omits it.
+  const digest = body.digest === undefined ? true : Boolean(body.digest);
+
   let digestHour: number | undefined;
   if (typeof body.digestHour === "number") {
     digestHour = Math.min(23, Math.max(0, Math.trunc(body.digestHour)));
@@ -88,7 +94,7 @@ export async function PUT(req: Request) {
 
   await updateUserSettings(
     user.id,
-    { reminderRules, channels, lifeAreas },
+    { reminderRules, channels, digest, lifeAreas },
     digestHour,
   );
 
