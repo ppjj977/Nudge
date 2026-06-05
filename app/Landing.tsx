@@ -5,88 +5,93 @@ import LogoMark from "./LogoMark";
 export default function Landing() {
   return (
     <div className="landing">
+      {/* ---- hero ---- */}
       <section className="hero">
-        <LogoMark size={56} />
-        <h1>
-          Capture anything.
-          <br />
-          Get nudged at the right time.
-        </h1>
+        <LogoMark size={52} />
+        <h1>a gentle nudge for everything that matters</h1>
         <p className="hero-sub">
-          nudge turns the chaos in your head — texts, photos, voice notes,
-          forwarded emails — into a calm, organised timeline that reminds you
-          before things slip.
+          Send Nudge the messy stuff. It pulls out what matters and reminds you
+          before it slips.
         </p>
         <div className="hero-cta">
           <Link href="/signup" className="btn-primary-lg">
-            Get started — it&apos;s free
+            Get started free
           </Link>
-          <Link href="/login" className="btn-ghost-lg">
-            Sign in
-          </Link>
+          <a href="#how" className="btn-ghost-lg">
+            See how it works
+          </a>
+        </div>
+
+        <Mockup />
+      </section>
+
+      {/* ---- how it works ---- */}
+      <section id="how" className="how">
+        <h2 className="landing-h2">How it works</h2>
+        <div className="how-grid">
+          {STEPS.map((s) => (
+            <div className="step-card" key={s.n}>
+              <div className="step-num">{s.n}</div>
+              <div>
+                <h3>{s.t}</h3>
+                <p>{s.d}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="features">
-        <h2 className="landing-h2">Everything in, sorted out</h2>
-        <div className="feature-grid">
-          <Feature
-            title="Capture any way you like"
-            body="Type it, snap a photo of a letter or whiteboard, record a voice note, or forward an email. nudge reads it all."
-          />
-          <Feature
-            title="It figures out the task"
-            body="Dates, times, amounts and what matters get pulled out automatically and dropped onto your timeline — no forms."
-          />
-          <Feature
-            title="Nudges, not nagging"
-            body="Gentle reminders at the right moment, plus a once-a-day digest so nothing important quietly slips away."
-          />
-          <Feature
-            title="See money & dates clearly"
-            body="Bills and payments roll up into a money view; everything with a date lands on a simple calendar."
-          />
+      {/* ---- before / after ---- */}
+      <section className="demo">
+        <h2 className="landing-h2">Messy in, sorted out</h2>
+        <div className="example-list">
+          {EXAMPLES.map((ex) => (
+            <div className="example-card" key={ex.from}>
+              <div className="example-from">{ex.from}</div>
+              <div className="example-arrow">becomes</div>
+              <div className="example-tasks">
+                {ex.tasks.map((t) => (
+                  <span className="task-pill" key={t}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="who">
-        <h2 className="landing-h2">Who it&apos;s for</h2>
-        <ul className="who-list">
-          <li>Busy people juggling work, home and life admin in one head.</li>
-          <li>
-            Anyone with ADHD or a memory like a sieve who needs a safety net,
-            not another rigid to-do app.
-          </li>
-          <li>
-            People drowning in screenshots, half-written notes and &ldquo;I&apos;ll
-            remember that&rdquo; moments.
-          </li>
+      {/* ---- trust ---- */}
+      <section className="trust">
+        <h2 className="landing-h2">Built to be trusted</h2>
+        <ul className="trust-list">
+          {TRUST.map((t) => (
+            <li className="trust-item" key={t}>
+              {t}
+            </li>
+          ))}
         </ul>
       </section>
 
-      <section className="why">
-        <h2 className="landing-h2">Why people love it</h2>
+      {/* ---- audience ---- */}
+      <section className="who">
+        <h2 className="landing-h2">{"Who it's for"}</h2>
         <div className="feature-grid">
-          <Feature
-            title="Zero friction"
-            body="Capture in two seconds, however the thought arrives. The work of organising happens for you."
-          />
-          <Feature
-            title="It catches the low-confidence stuff"
-            body="Unsure items go to a review tray instead of being lost or guessed — you stay in control."
-          />
-          <Feature
-            title="Private & yours"
-            body="Your own account, your own data, your own forwarding address. No noisy feeds, no clutter."
-          />
+          {AUDIENCE.map((a) => (
+            <div className="feature-card" key={a.t}>
+              <h3>{a.t}</h3>
+              <p>{a.d}</p>
+            </div>
+          ))}
         </div>
       </section>
 
+      {/* ---- final CTA ---- */}
       <section className="landing-final">
-        <h2 className="landing-h2">Ready to stop forgetting things?</h2>
+        <h2 className="landing-h2">Give Nudge one messy thing. See what it catches.</h2>
         <div className="hero-cta">
           <Link href="/signup" className="btn-primary-lg">
-            Create your account
+            Get started free
           </Link>
           <Link href="/faq" className="btn-ghost-lg">
             Read the FAQs
@@ -97,11 +102,101 @@ export default function Landing() {
   );
 }
 
-function Feature({ title, body }: { title: string; body: string }) {
+/** Stylised before→after mockup: messy input on the left, clean timeline right. */
+function Mockup() {
   return (
-    <div className="feature-card">
-      <h3>{title}</h3>
-      <p>{body}</p>
+    <div className="mockup" aria-hidden="true">
+      <div className="mock-panel mock-in">
+        <div className="mock-label">messy in</div>
+        <div className="mock-note">
+          Fwd: Oakwood Primary newsletter — PE kits needed this Friday, museum
+          trip £15 due by 15th June, parents&apos; evening booking now open…
+        </div>
+        <div className="mock-chips">
+          <span>✉️ email</span>
+          <span>📷 photo</span>
+          <span>🎤 voice</span>
+        </div>
+      </div>
+
+      <div className="mock-arrow">→</div>
+
+      <div className="mock-panel mock-out">
+        <div className="mock-label">clean timeline</div>
+        <div className="mock-task">
+          <span>Bring PE kit</span>
+          <b>Fri</b>
+        </div>
+        <div className="mock-task">
+          <span>Pay £15 trip</span>
+          <b>15 Jun</b>
+        </div>
+        <div className="mock-task">
+          <span>Parents&apos; evening — book</span>
+          <b>soon</b>
+        </div>
+      </div>
     </div>
   );
 }
+
+const STEPS = [
+  {
+    n: 1,
+    t: "Capture anything",
+    d: "Type it, snap it, speak it, or forward an email. However the thought arrives.",
+  },
+  {
+    n: 2,
+    t: "Nudge extracts the tasks",
+    d: "It reads the mess and pulls out the action, dates, times and amounts.",
+  },
+  {
+    n: 3,
+    t: "You review anything uncertain",
+    d: "Low-confidence guesses wait in a review tray — never lost, never assumed.",
+  },
+  {
+    n: 4,
+    t: "Get reminded at the right time",
+    d: "Gentle nudges before things slip, plus a once-a-day digest.",
+  },
+];
+
+const EXAMPLES = [
+  {
+    from: "School newsletter",
+    tasks: ["Bring PE kit — Friday", "Pay £15 trip — by 15 June"],
+  },
+  {
+    from: "Screenshot of an appointment",
+    tasks: ["Attend dentist — Tuesday 9:30"],
+  },
+  {
+    from: "Photo of a bill",
+    tasks: ["Pay water bill £42.18 — by 28 June"],
+  },
+];
+
+const TRUST = [
+  "Raw captures are temporary.",
+  "Low-confidence guesses go to review.",
+  "You stay in control.",
+  "No noisy feeds. No social layer. No productivity theatre.",
+];
+
+const AUDIENCE = [
+  { t: "Parents", d: "Juggling school admin, letters and trip payments." },
+  {
+    t: "Life-admin jugglers",
+    d: "Managing bills, appointments and renewals in one head.",
+  },
+  {
+    t: "ADHD & forgetful",
+    d: "Anyone who needs a safety net, not another rigid to-do app.",
+  },
+  {
+    t: "Screenshot hoarders",
+    d: "Anyone who screenshots things and then forgets them.",
+  },
+];
