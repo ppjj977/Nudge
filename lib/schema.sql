@@ -139,5 +139,6 @@ CREATE INDEX IF NOT EXISTS idx_sessions_user         ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_hash      ON auth_tokens(token_hash);
 CREATE INDEX IF NOT EXISTS idx_hh_members_user       ON household_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_hh_invites_hash       ON household_invites(token_hash);
-CREATE INDEX IF NOT EXISTS idx_tasks_household        ON tasks(household_id, status);
+-- NOTE: idx_tasks_household is created in applyAdditiveMigrations (db.ts) because
+-- tasks.household_id is added by an ALTER on pre-existing databases.
 CREATE UNIQUE INDEX IF NOT EXISTS uq_digest_per_day ON digest_log(user_id, sent_for);
