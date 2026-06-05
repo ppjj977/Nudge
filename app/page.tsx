@@ -70,7 +70,7 @@ export default async function Dashboard({
       </div>
 
       <PushPrompt available={pushEnabled()} />
-      <CaptureBox inboundAddress={inboundAddress} />
+      <CaptureBox inboundAddress={inboundAddress} lifeAreas={lifeAreas} />
       {sharedMsg && <div className="toast">{sharedMsg}</div>}
       <ManualAdd />
 
