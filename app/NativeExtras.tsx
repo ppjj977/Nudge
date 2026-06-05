@@ -29,32 +29,31 @@ type Cap = {
   };
 };
 
-/** Read a shared image into a Blob, trying Filesystem then a fetch fallback. */
+/**
+ * Read a shared image into a Blob. The send-intent plugin copies the shared
+ * file into our app's files dir and gives a `file://` path, so Filesystem can
+ * read it directly. We try a few path forms because the plugin's exact
+ * expectation varies. Returns the blob, or an error string for diagnostics.
+ */
 async function readSharedImage(
   cap: Cap,
   url: string,
   mime: string,
-): Promise<Blob | null> {
-  const path = decodeURIComponent(url);
-  try {
-    const fs = cap.Plugins?.Filesystem;
-    if (fs) {
+): Promise<{ blob: Blob | null; error?: string }> {
+  const fs = cap.Plugins?.Filesystem;
+  if (!fs) return { blob: null, error: "Filesystem plugin missing" };
+  const decoded = decodeURIComponent(url);
+  const candidates = [decoded, decoded.replace(/^file:\/\//, "")];
+  let lastErr = "";
+  for (const path of candidates) {
+    try {
       const read = await fs.readFile({ path });
-      if (read?.data) return base64ToBlob(read.data, mime);
+      if (read?.data) return { blob: base64ToBlob(read.data, mime) };
+    } catch (e) {
+      lastErr = (e as Error).message;
     }
-  } catch {
-    /* fall through to fetch */
   }
-  try {
-    const src = cap.convertFileSrc?.(url);
-    if (src) {
-      const res = await fetch(src);
-      if (res.ok) return await res.blob();
-    }
-  } catch {
-    /* give up */
-  }
-  return null;
+  return { blob: null, error: lastErr || "empty file" };
 }
 
 /** Decode a base64 string into a Blob of the given mime type. */
@@ -66,14 +65,28 @@ function base64ToBlob(b64: string, mime: string): Blob {
   return new Blob([arr], { type: mime });
 }
 
-/** POST shared text or an image file to the capture pipeline; return the
- *  timeline URL with the outcome toast. */
-async function postShare(content: Blob | string): Promise<string> {
+/** Map an ingest API response to a timeline outcome toast. */
+function outcomeUrl(ok: boolean, data: { status?: string; nothingActionable?: boolean }): string {
+  if (!ok || data.status === "failed") return "/?shared=failed";
+  return data.nothingActionable ? "/?shared=nothing" : "/?shared=added";
+}
+
+/** Send a shared image through the same ingest endpoint the Upload button uses. */
+async function ingestImage(blob: Blob): Promise<string> {
   const fd = new FormData();
-  if (typeof content === "string") fd.append("text", content);
-  else fd.append("file", content, "shared.jpg");
-  const res = await fetch("/share", { method: "POST", body: fd });
-  return res.ok ? "/?shared=added" : "/?shared=failed";
+  fd.append("file", blob, "shared.jpg");
+  const res = await fetch("/api/ingest/image", { method: "POST", body: fd });
+  return outcomeUrl(res.ok, await res.json().catch(() => ({})));
+}
+
+/** Send shared text/links through the text ingest endpoint. */
+async function ingestText(text: string): Promise<string> {
+  const res = await fetch("/api/ingest/text", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  return outcomeUrl(res.ok, await res.json().catch(() => ({})));
 }
 
 export default function NativeExtras() {
@@ -116,9 +129,18 @@ export default function NativeExtras() {
 
         // Shared image: read its bytes and run them through OCR/vision.
         if (isImage && r.url) {
-          const blob = await readSharedImage(cap!, r.url, r.type || "image/jpeg");
-          if (!blob) dbg("could not read the image bytes");
-          window.location.href = blob ? await postShare(blob) : "/?shared=failed";
+          const { blob, error } = await readSharedImage(cap!, r.url, r.type || "image/jpeg");
+          if (!blob) {
+            dbg("read failed: " + error);
+            window.location.href = "/?shared=failed";
+            return;
+          }
+          try {
+            window.location.href = await ingestImage(blob);
+          } catch (e) {
+            dbg("upload failed: " + (e as Error).message);
+            window.location.href = "/?shared=failed";
+          }
           return;
         }
 
@@ -129,7 +151,12 @@ export default function NativeExtras() {
         );
         const text = parts.join("\n").trim();
         if (!text) return;
-        window.location.href = await postShare(text);
+        try {
+          window.location.href = await ingestText(text);
+        } catch (e) {
+          dbg("upload failed: " + (e as Error).message);
+          window.location.href = "/?shared=failed";
+        }
       } catch (e) {
         dbg("error: " + (e as Error).message);
       }
