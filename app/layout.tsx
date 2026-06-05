@@ -4,6 +4,7 @@ import Link from "next/link";
 import LogoMark from "./LogoMark";
 import SWRegister from "./SWRegister";
 import NativePush from "./NativePush";
+import NativeExtras from "./NativeExtras";
 import Menu from "./Menu";
 import { getCurrentUser } from "@/lib/auth";
 import "./globals.css";
@@ -43,6 +44,7 @@ export default async function RootLayout({
       <body>
         <SWRegister />
         {user && <NativePush />}
+        {user && <NativeExtras />}
         <header className="topbar">
           <Link href="/" className="brand">
             <LogoMark size={28} />
