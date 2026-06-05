@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { config } from "@/lib/config";
 import { planStats, listPromoCodes } from "@/lib/plan";
+import { listInterest, FREE_FOR_LIFE_COHORT } from "@/lib/interest";
 import AdminPanel from "../AdminPanel";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +13,11 @@ export default async function AdminPage() {
   if (!config.adminEmail || user.email.toLowerCase() !== config.adminEmail) {
     notFound();
   }
-  const [stats, codes] = await Promise.all([planStats(), listPromoCodes()]);
+  const [stats, codes, interest] = await Promise.all([
+    planStats(),
+    listPromoCodes(),
+    listInterest(),
+  ]);
 
   return (
     <>
@@ -39,6 +44,34 @@ export default async function AdminPage() {
           subscriber counts, revenue and churn — this panel covers comps and
           codes you grant directly.
         </p>
+      </section>
+
+      <section className="panel">
+        <h2 className="section">Waitlist · register interest ({interest.length})</h2>
+        {interest.length === 0 ? (
+          <p className="note">No sign-ups yet. Share the /register-interest link.</p>
+        ) : (
+          <>
+            <p className="note">
+              First {FREE_FOR_LIFE_COHORT} (highlighted) are owed Pro free for life at
+              launch.
+            </p>
+            <ul className="code-list interest-list">
+              {interest.map((i) => (
+                <li key={i.id} className={i.position <= FREE_FOR_LIFE_COHORT ? "free-life" : ""}>
+                  <b>
+                    #{i.position} {i.name || "—"}
+                  </b>
+                  <span>
+                    {i.email}
+                    {i.note ? ` · ${i.note}` : ""}
+                    {i.position <= FREE_FOR_LIFE_COHORT ? " · 🎁 free for life" : ""}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </section>
 
       <AdminPanel

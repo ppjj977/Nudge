@@ -45,6 +45,8 @@ export const config = {
   supportEmail: env("SUPPORT_EMAIL") ?? "hello@nudgelive.co.uk",
   /** Email of the account allowed into /admin (subscriber stats, promo codes). */
   adminEmail: env("ADMIN_EMAIL")?.toLowerCase() ?? null,
+  /** When false (default), public sign-up is closed — show register-interest. */
+  registrationOpen: env("REGISTRATION_OPEN") === "true",
   /** Optional webhook (Slack/Discord/etc.) to alert on server errors. */
   errorWebhook: env("ERROR_WEBHOOK_URL"),
   /** RevenueCat: webhook auth header value + the entitlement that = Pro. */

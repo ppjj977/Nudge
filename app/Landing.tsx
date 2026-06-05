@@ -15,8 +15,8 @@ export default function Landing() {
           before it slips.
         </p>
         <div className="hero-cta">
-          <Link href="/signup" className="btn-primary-lg">
-            Get started free
+          <Link href="/register-interest" className="btn-primary-lg">
+            Register your interest
           </Link>
         </div>
         <a href="#how" className="hero-link">
@@ -105,8 +105,8 @@ export default function Landing() {
       <section className="landing-final">
         <h2 className="landing-h2">Give Nudge one messy thing. See what it catches.</h2>
         <div className="hero-cta">
-          <Link href="/signup" className="btn-primary-lg">
-            Get started free
+          <Link href="/register-interest" className="btn-primary-lg">
+            Register your interest
           </Link>
           <Link href="/faq" className="btn-ghost-lg">
             Read the FAQs
@@ -114,16 +114,16 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ---- footer: get the Android app ----
-          Always serves the newest signed APK from the latest GitHub Release. */}
+      {/* ---- footer: Play Store coming soon ---- */}
       <footer className="landing-foot">
-        <a
-          href="https://github.com/ppjj977/Nudge/releases/latest/download/nudge.apk"
-          className="foot-apk"
-        >
-          📱 Download the Android app
-        </a>
-        <span>· APK, ~5&nbsp;MB · allow “install from unknown sources”</span>
+        <span className="foot-soon">📱 Coming soon to Google Play</span>
+        <span>
+          ·{" "}
+          <Link href="/register-interest" className="foot-apk">
+            Register your interest
+          </Link>{" "}
+          to be first in
+        </span>
       </footer>
     </div>
   );

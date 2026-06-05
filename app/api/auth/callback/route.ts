@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { consumeMagicToken, provisionUser, createSession } from "@/lib/auth";
+import {
+  consumeMagicToken,
+  provisionUser,
+  createSession,
+  RegistrationClosedError,
+} from "@/lib/auth";
 import { config } from "@/lib/config";
 
 export const runtime = "nodejs";
@@ -14,7 +19,14 @@ export async function GET(req: Request) {
   if (!email) {
     return NextResponse.redirect(`${base}/login?error=expired`, 303);
   }
-  const user = await provisionUser(email);
-  await createSession(user.id);
-  return NextResponse.redirect(`${base}/`, 303);
+  try {
+    const user = await provisionUser(email);
+    await createSession(user.id);
+    return NextResponse.redirect(`${base}/`, 303);
+  } catch (e) {
+    if (e instanceof RegistrationClosedError) {
+      return NextResponse.redirect(`${base}/register-interest?closed=1`, 303);
+    }
+    throw e;
+  }
 }
