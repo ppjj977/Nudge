@@ -94,12 +94,13 @@ export interface DispatchResult {
 }
 
 /**
- * How far ahead each tick looks for reminders. Set to the cron cadence so a
- * reminder due any time before the next tick is sent on this one — i.e. it
- * arrives at or slightly before its due time, never after. Keep this in sync
- * with the schedule in .github/workflows/cron.yml (currently every 5 minutes).
+ * How far ahead each tick looks for reminders. Set to the (primary) cron
+ * cadence so a reminder due any time before the next tick is sent on this one —
+ * i.e. it arrives at or slightly before its due time, never after. The primary
+ * scheduler is cron-job.org running every minute, so 1 minute keeps reminders
+ * within ~60s of their exact time.
  */
-const DISPATCH_LOOKAHEAD_MINUTES = 5;
+const DISPATCH_LOOKAHEAD_MINUTES = 1;
 
 export async function runDispatch(
   now: DateTime = DateTime.now(),
@@ -135,24 +136,48 @@ export async function runDispatch(
       continue;
     }
 
-    const { channels } = parseUserSettings(user);
-    if (channels.email && user.email) {
-      const msg = reminderEmail(task, user.timezone);
-      await sendEmail({ to: user.email, ...msg });
+    // Atomically claim the reminder before sending so two overlapping dispatch
+    // runs (e.g. the every-minute cron-job.org tick and the GitHub backup) can
+    // never both send it: only the run whose UPDATE flips pending->sent wins.
+    if (!(await claimReminder(r.id, now))) continue;
+
+    try {
+      const { channels } = parseUserSettings(user);
+      if (channels.email && user.email) {
+        const msg = reminderEmail(task, user.timezone);
+        await sendEmail({ to: user.email, ...msg });
+      }
+      if (channels.push) {
+        const payload = {
+          title: `⏰ ${task.title}`,
+          body: task.detail ?? "Tap to open nudge",
+          url: config.appBaseUrl,
+        };
+        await sendPushToUser(user.id, payload); // web push (PWA / desktop)
+        await sendFcmToUser(user.id, payload); // native push (Android app)
+      }
+      sent++;
+    } catch (err) {
+      // Delivery failed after claiming — return it to pending so a later tick
+      // retries, then surface the error.
+      await markReminder(r.id, "pending", null);
+      throw err;
     }
-    if (channels.push) {
-      const payload = {
-        title: `⏰ ${task.title}`,
-        body: task.detail ?? "Tap to open nudge",
-        url: config.appBaseUrl,
-      };
-      await sendPushToUser(user.id, payload); // web push (PWA / desktop)
-      await sendFcmToUser(user.id, payload); // native push (Android app)
-    }
-    await markReminder(r.id, "sent", now.toUTC().toISO());
-    sent++;
   }
   return { due: rows.length, sent, cancelled };
+}
+
+/**
+ * Claim a pending reminder for this run by flipping it to 'sent' atomically.
+ * Returns true only if this run actually claimed it (rowsAffected === 1); a
+ * concurrent run that already claimed it yields false, so we skip it.
+ */
+async function claimReminder(id: string, now: DateTime): Promise<boolean> {
+  const res = await db.execute({
+    sql: "UPDATE reminders SET status = 'sent', sent_at = ? WHERE id = ? AND status = 'pending'",
+    args: [now.toUTC().toISO(), id],
+  });
+  return res.rowsAffected === 1;
 }
 
 async function markReminder(id: string, status: string, sentAt?: string | null) {
