@@ -47,6 +47,11 @@ export const config = {
   adminEmail: env("ADMIN_EMAIL")?.toLowerCase() ?? null,
   /** Optional webhook (Slack/Discord/etc.) to alert on server errors. */
   errorWebhook: env("ERROR_WEBHOOK_URL"),
+  /** RevenueCat: webhook auth header value + the entitlement that = Pro. */
+  revenuecat: {
+    webhookAuth: env("REVENUECAT_WEBHOOK_AUTH"),
+    entitlement: env("REVENUECAT_ENTITLEMENT") ?? "pro",
+  },
   /** Email-in (SPEC §3): inbound capture via Resend's receiving webhook. */
   inbound: {
     /** Domain new per-user addresses are shown on, e.g. "in.nudgelive.co.uk". */
