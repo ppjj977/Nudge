@@ -5,13 +5,21 @@ import { parseUserSettings, DEFAULT_REMINDER_RULES } from "@/lib/reminders";
 import { DEFAULT_LIFE_AREAS } from "@/lib/categories";
 import { pushEnabled } from "@/lib/push";
 import { isPro } from "@/lib/plan";
+import { config } from "@/lib/config";
+import { getOrCreateLinkCode, linkDeepLink } from "@/lib/whatsapp";
 import SettingsForm from "../SettingsForm";
+import WhatsAppConnect from "../WhatsAppConnect";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
   const user = await requireUser();
   const { rules, channels, digest } = parseUserSettings(user);
+
+  // WhatsApp capture appears once a Nudge business number is configured.
+  const waEnabled = Boolean(config.whatsapp.displayNumber);
+  const waCode = waEnabled ? await getOrCreateLinkCode(user) : "";
+  const waMasked = user.whatsapp_number ? `••• ${user.whatsapp_number.slice(-4)}` : null;
 
   return (
     <>
@@ -32,6 +40,15 @@ export default async function SettingsPage() {
         pushAvailable={pushEnabled()}
         pro={isPro(user)}
       />
+      {waEnabled && (
+        <WhatsAppConnect
+          connected={Boolean(user.whatsapp_number)}
+          maskedNumber={waMasked}
+          code={waCode}
+          deepLink={linkDeepLink(waCode)}
+          displayNumber={config.whatsapp.displayNumber ?? null}
+        />
+      )}
     </>
   );
 }

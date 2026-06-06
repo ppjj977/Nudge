@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS users (
   plan            TEXT NOT NULL DEFAULT 'free',           -- 'free' | 'pro'
   plan_until      TEXT,                                   -- ISO; null = perpetual pro
   plan_source     TEXT,                                   -- 'play' | 'stripe' | 'comp' | 'promo:CODE'
+  whatsapp_number   TEXT,                                 -- verified sender (E.164 digits) for WhatsApp capture
+  whatsapp_link_code TEXT,                                -- one-time code the user sends to link their number
   created_at      TEXT NOT NULL
 );
 

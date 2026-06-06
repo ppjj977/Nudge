@@ -878,6 +878,36 @@ button.recording {
   border-left: 3px solid var(--teal);
   padding-left: 8px;
 }
+/* ---- WhatsApp connect ---- */
+.wa-connect {
+  margin-top: 16px;
+}
+.wa-steps {
+  margin: 10px 0 14px;
+  padding-left: 20px;
+  color: var(--text);
+  font-size: 14px;
+}
+.wa-steps li {
+  margin-bottom: 6px;
+}
+.wa-code {
+  display: inline-block;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1px 7px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.wa-cta {
+  display: inline-block;
+  margin-top: 4px;
+}
+.wa-disconnect {
+  margin-top: 8px;
+  color: var(--danger);
+}
 /* ---- profile ---- */
 .profile-form {
   display: flex;
