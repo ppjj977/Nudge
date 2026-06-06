@@ -128,38 +128,81 @@ icon's nudge-lines clip under TikTok's circle crop; this one doesn't).
 ## Week 2 — Show the magic (capture methods)
 
 **Day 8 — TikTok + 🅵** — "Snap a bill 📸": photo of a bill → "Pay water bill £42.18 by 28 June."
+- Caption: *"Snap a bill 📸 → Nudge reads the amount AND the due date and reminds you before late fees hit. The lazy way to never miss a payment again. nudgelive.co.uk #lifeadmin #money #adulting #organised"*
+
 **Day 9 — TikTok** — "Voice note while driving 🎙️": speak "remind me to book the car in next Tuesday" → task.
+- Caption: *"Hands full? Just talk. 🎙️ 'Book the car in next Tuesday' → Nudge turns it into a reminder. Capture a thought the second it lands. nudgelive.co.uk #adhdtok #productivity #lifehack"*
+
 **Day 10 — TikTok + 🅵** — "Type it like a human": "dentist tues half 9" → "Attend dentist — Tuesday 9:30". Show it's not rigid.
+- Caption: *"No forms. No date-pickers. Type 'dentist tues half 9' like a human and Nudge sorts the rest. 🦷 nudgelive.co.uk #adhd #organised #reminders"*
+
 **Day 11 — TikTok** — "It asks instead of guessing": low-confidence item lands in review tray (`review.png`). Trust angle.
+- Caption: *"The thing I trust most about Nudge: when it's not sure, it ASKS instead of silently guessing. Nothing gets lost, nothing gets made up. nudgelive.co.uk #adhdtok #lifeadmin #trust"*
+
 **Day 12 — TikTok + 🅵** — "A day in my Nudge" GRWM-style: morning digest → reminders through the day.
+- Caption: *"A day run by Nudge ☀️ One morning digest, gentle nudges all day, nothing slips. POV: your brain finally gets a day off. nudgelive.co.uk #dayinmylife #adhdtok #lifeadmin"*
+
 **Day 13 — TikTok** — Duet/stitch bait: "Tell me the most unhinged thing in your notes app, I'll Nudge it."
-**Day 14 — TikTok + 🅵** — Promo check-in: "Only [N] free-for-life spots left." Countdown urgency. `promo.png`.
+- Caption: *"Stitch this with the most UNHINGED thing in your notes app 📝 I'll show you the Nudge for it. Go. nudgelive.co.uk #notesapp #adhdtok #stitch"*
+
+**Day 14 — TikTok + 🅵** — Promo check-in: "Only [N] free-for-life spots left." Countdown urgency. `day05-cover.png`.
+- Caption: *"⏳ Only [N] free-for-life spots left. First 10 to register interest get Nudge Pro free FOREVER — after that it's 3 months free. nudgelive.co.uk #earlybird #nudge #lifeadmin"*
 
 ---
 
 ## Week 3 — Who it's for + family (widen the net)
 
 **Day 15 — TikTok + 🅵** — "If you have ADHD, this is your external brain." Lean into `#adhdtok`. External-brain framing.
+- Caption: *"If you have ADHD, you don't need another to-do app that guilt-trips you. You need an external brain that catches things FOR you. That's Nudge. 🧠 nudgelive.co.uk #adhdtok #adhd #executivedysfunction #neurodivergent"*
+
 **Day 16 — TikTok** — "Parents: the term-time admin avalanche." School letters, trips, non-uniform days.
+- Caption: *"Parents in term time: the letters, the trips, the 'wear something yellow Thursday' 😭 Forward it all to Nudge and stop being the family calendar. nudgelive.co.uk #momlife #parentsoftiktok #schoolrun #mentalload"*
+
 **Day 17 — TikTok + 🅵** — Family share: shared shopping/packing list updates live across the house (`family-tab.png`).
+- Caption: *"One shared list the WHOLE house can update 🛒 Add milk from work, it shows up on their phone instantly. No more 'I thought you were getting it.' nudgelive.co.uk #familylife #organised #momlife"*
+
 **Day 18 — TikTok** — "Couple who never knows whose turn it is" — assign a shared task to a partner.
+- Caption: *"For the couple who NEVER knows whose turn it is 😅 Assign it in Nudge, it's official, no more silent scorekeeping. nudgelive.co.uk #couplestiktok #fairplay #mentalload"*
+
 **Day 19 — TikTok + 🅵** — Holiday/trip planning: multi-day plan on the calendar (`calendar.png`).
+- Caption: *"Planning a trip without 14 screenshots and a group chat meltdown ✈️ Multi-day plans live on one calendar in Nudge. nudgelive.co.uk #holiday #travelplanning #organised #familytravel"*
+
 **Day 20 — TikTok** — "Birthdays you forget every year 🎂": recurring celebrate reminder.
+- Caption: *"That birthday you panic-remember every single year 🎂 Set it once in Nudge, get nudged with enough time to actually buy a present. nudgelive.co.uk #birthday #lifeadmin #organised"*
+
 **Day 21 — TikTok + 🅵** — Testimonial/UGC: re-post an early tester quote (or stage a "my wife with ADHD tried it" story).
+- Caption: *"'I have ADHD and this is the first reminder app I haven't abandoned in a week.' 🥹 Real reaction from an early tester. Register your interest → nudgelive.co.uk #adhdtok #testimonial #lifeadmin"*
 
 ---
 
 ## Week 4 — Launch run-up (convert the list)
 
 **Day 22 — TikTok + 🅵** — "Nudge hits Google Play in [X] days." Build hype. `feature-graphic.png`.
+- Caption: *"Nudge lands on Google Play in [X] days 👀 Register your interest now so you're first in — first 10 still get Pro free for life. nudgelive.co.uk #launch #comingsoon #nudge #lifeadmin"*
+
 **Day 23 — TikTok** — "What makes Nudge different": no feeds, no streaks, no guilt. Anti-productivity-theatre manifesto.
+- Caption: *"No feeds. No streaks. No guilt. No productivity theatre. Just: send it the mess, get reminded before it slips. That's the whole app. nudgelive.co.uk #productivity #adhdtok #lifeadmin"*
+
 **Day 24 — TikTok + 🅵** — Behind the scenes / founder: why I built it (the real life-admin story). Authentic, face-to-camera.
+- Caption: *"I built Nudge because my wife has ADHD and our family admin lived in 6 different places. So I made one that just… catches it all. 🫶 Register your interest → nudgelive.co.uk #buildinpublic #founder #adhd #lifeadmin"*
+
 **Day 25 — TikTok** — "Last chance for free-for-life" if any of the 10 spots remain; else "3 months free for everyone who joins now."
+- Caption: *"🚨 LAST few free-for-life spots. First 10 to register interest get Nudge Pro free FOREVER. After that, 3 months free at launch. Don't sleep on it. nudgelive.co.uk #lastchance #earlybird #nudge"*
+
 **Day 26 — TikTok + 🅵** — Feature montage set to trending audio: capture → extract → review → remind. Fast cuts.
+- Caption: *"Everything Nudge does in 12 seconds ⚡ Capture → it extracts the task → you review → it reminds you. That's it. That's the magic. nudgelive.co.uk #app #productivity #lifeadmin #organised"*
+
 **Day 27 — TikTok** — FAQ in 15s: "Is it free? Is my data safe? Does it work for ADHD?" Point to `/faq` + `/privacy`.
+- Caption: *"Your top 3 Qs in 15s: Is it free? (yes, with Pro option) Is my data safe? (yes — raw captures are temporary) Does it help ADHD brains? (it's built for them) More at nudgelive.co.uk #faq #adhdtok #privacy"*
+
 **Day 28 — TikTok + 🅵** — "We're LIVE on Google Play 🎉" (or "T-minus 2 days"). Pin it. Repurpose as FB event.
+- Caption: *"WE'RE LIVE ON GOOGLE PLAY 🎉 Nudge is here. Send it your messiest thought and watch it become a reminder. Download → nudgelive.co.uk #launchday #nudge #newapp #lifeadmin"*
+
 **Day 29 — TikTok** — Onboarding tip for new users: "First thing to capture? The thing nagging you right now."
+- Caption: *"Just downloaded Nudge? Capture the ONE thing nagging you right now — the email, the bill, the appointment. That's all it takes to start. nudgelive.co.uk #onboarding #productivity #lifeadmin"*
+
 **Day 30 — TikTok + 🅵** — Thank-you + momentum: "[N] people joined. Pro promo for waitlisters ends [date]." Final CTA.
+- Caption: *"[N] of you have joined Nudge 🥹 thank you. Waitlister Pro perks end [date] — grab yours before then. nudgelive.co.uk #thankyou #community #nudge #lifeadmin"*
 
 ---
 
