@@ -35,6 +35,8 @@ export interface User {
   plan: string | null;
   plan_until: string | null;
   plan_source: string | null;
+  whatsapp_number: string | null;
+  whatsapp_link_code: string | null;
   created_at: string;
 }
 
@@ -145,6 +147,8 @@ export async function getOrCreateDefaultUser(): Promise<User> {
     plan: "free",
     plan_until: null,
     plan_source: null,
+    whatsapp_number: null,
+    whatsapp_link_code: null,
     created_at: now,
   };
 }

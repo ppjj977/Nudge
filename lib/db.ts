@@ -74,6 +74,8 @@ async function applyAdditiveMigrations(): Promise<void> {
     "ALTER TABLE users ADD COLUMN plan TEXT NOT NULL DEFAULT 'free'",
     "ALTER TABLE users ADD COLUMN plan_until TEXT",
     "ALTER TABLE users ADD COLUMN plan_source TEXT",
+    "ALTER TABLE users ADD COLUMN whatsapp_number TEXT",
+    "ALTER TABLE users ADD COLUMN whatsapp_link_code TEXT",
   ];
   for (const stmt of additions) {
     try {
@@ -88,6 +90,7 @@ async function applyAdditiveMigrations(): Promise<void> {
   // pre-existing database the column doesn't exist until the migration applies.
   const indexes = [
     "CREATE INDEX IF NOT EXISTS idx_tasks_household ON tasks(household_id, status)",
+    "CREATE INDEX IF NOT EXISTS idx_users_whatsapp ON users(whatsapp_number)",
   ];
   for (const stmt of indexes) {
     try {

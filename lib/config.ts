@@ -54,6 +54,24 @@ export const config = {
     webhookAuth: env("REVENUECAT_WEBHOOK_AUTH"),
     entitlement: env("REVENUECAT_ENTITLEMENT") ?? "pro",
   },
+  /**
+   * WhatsApp capture (Cloud API). Users forward messages/photos/voice notes to
+   * the Nudge business number; the webhook runs them through the same pipeline.
+   *  - verifyToken:  token you set in Meta's webhook config (GET challenge).
+   *  - appSecret:    Meta app secret, used to verify X-Hub-Signature-256.
+   *  - accessToken:  (system-user) token for the Graph API (send + media fetch).
+   *  - phoneNumberId: the WABA phone-number id messages are sent from.
+   *  - displayNumber: the human number in E.164 digits (e.g. 447700900123) for
+   *    the wa.me deep-link shown in Settings.
+   */
+  whatsapp: {
+    verifyToken: env("WHATSAPP_VERIFY_TOKEN"),
+    appSecret: env("WHATSAPP_APP_SECRET"),
+    accessToken: env("WHATSAPP_ACCESS_TOKEN"),
+    phoneNumberId: env("WHATSAPP_PHONE_NUMBER_ID"),
+    displayNumber: env("WHATSAPP_DISPLAY_NUMBER"),
+    graphVersion: env("WHATSAPP_GRAPH_VERSION") ?? "v21.0",
+  },
   /** Email-in (SPEC §3): inbound capture via Resend's receiving webhook. */
   inbound: {
     /** Domain new per-user addresses are shown on, e.g. "in.nudgelive.co.uk". */
