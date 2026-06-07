@@ -166,12 +166,14 @@ const REMINDER_RELEVANT = new Set([
   "location",
 ]);
 
-export type TimelineBucket = "today" | "week" | "later";
+export type TimelineBucket = "today" | "week" | "later" | "unscheduled";
 
 export interface Timeline {
   today: Task[];
   week: Task[];
   later: Task[];
+  /** Dateless to-dos — kept out of "Later", which is for dated-but-distant. */
+  unscheduled: Task[];
   review: Task[];
 }
 
@@ -183,9 +185,10 @@ export function bucketFor(
   task: Pick<Task, "due_at" | "due_type">,
   now: DateTime,
 ): TimelineBucket {
-  if (!task.due_at || task.due_type === "none") return "later";
+  // Dateless to-dos get their own bucket rather than cluttering "Later".
+  if (!task.due_at || task.due_type === "none") return "unscheduled";
   const due = DateTime.fromISO(task.due_at, { zone: now.zone });
-  if (!due.isValid) return "later";
+  if (!due.isValid) return "unscheduled";
 
   const endOfToday = now.endOf("day");
   // "This week" means the rest of the current calendar week, ending Sunday.
@@ -213,7 +216,7 @@ export async function getTimeline(
   const tasks = res.rows.map((r) => mapTaskRow(r as Record<string, unknown>));
   const now = DateTime.now().setZone(timezone);
 
-  const timeline: Timeline = { today: [], week: [], later: [], review: [] };
+  const timeline: Timeline = { today: [], week: [], later: [], unscheduled: [], review: [] };
   for (const t of tasks) {
     if (t.status === "review") {
       timeline.review.push(t);

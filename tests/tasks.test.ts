@@ -5,8 +5,8 @@ import { bucketFor } from "../lib/tasks";
 const now = DateTime.fromISO("2026-06-04T09:00:00", { zone: "Europe/London" });
 
 describe("bucketFor", () => {
-  it("puts undated tasks in 'later'", () => {
-    expect(bucketFor({ due_at: null, due_type: "none" }, now)).toBe("later");
+  it("puts undated tasks in 'unscheduled'", () => {
+    expect(bucketFor({ due_at: null, due_type: "none" }, now)).toBe("unscheduled");
   });
 
   it("puts tasks due today in 'today'", () => {
@@ -49,6 +49,6 @@ describe("bucketFor", () => {
   it("treats an unparseable date as undated", () => {
     expect(
       bucketFor({ due_at: "not-a-date", due_type: "date" }, now),
-    ).toBe("later");
+    ).toBe("unscheduled");
   });
 });
