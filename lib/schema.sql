@@ -134,8 +134,6 @@ CREATE TABLE IF NOT EXISTS tasks (
   assignee_id    TEXT REFERENCES users(id),      -- shared task assigned to a member
   recurrence     TEXT,                            -- json: {freq, interval} for repeating tasks
   estimate_minutes INTEGER,                        -- AI/user estimate of effort (ADHD time-blindness)
-  research       TEXT,                             -- json: AI research brief (Pro feature)
-  research_at    TEXT,                             -- when the research was last run
   place_id       TEXT,                             -- geofence: linked place (see places table)
   geo_trigger    TEXT,                             -- 'arrive' | 'leave' — when to alert at that place
   created_at     TEXT NOT NULL,

@@ -31,31 +31,8 @@ export interface TaskView {
   assignee_id: string | null;
   recurrence: { freq: string; interval: number } | null;
   estimate_minutes: number | null;
-  research: string | null;
   place_id: string | null;
   geo_trigger: string | null;
-}
-
-interface ResearchOption {
-  title: string;
-  note: string;
-  url?: string;
-}
-interface ResearchResult {
-  summary: string;
-  options: ResearchOption[];
-  next_steps: string[];
-  grounded: boolean;
-}
-function parseResearch(raw: string | null): ResearchResult | null {
-  if (!raw) return null;
-  try {
-    const r = JSON.parse(raw);
-    if (r && typeof r.summary === "string") return r as ResearchResult;
-  } catch {
-    /* ignore */
-  }
-  return null;
 }
 
 const CATEGORY_ICON: Record<string, string> = {
@@ -145,11 +122,6 @@ export default function TaskCard({
   const [editing, setEditing] = useState(false);
   const [snoozing, setSnoozing] = useState(false);
   const [breaking, setBreaking] = useState(false);
-  const [researching, setResearching] = useState(false);
-  const [research, setResearch] = useState<ResearchResult | null>(
-    parseResearch(task.research),
-  );
-  const [researchMsg, setResearchMsg] = useState<string | null>(null);
   const mode: Mode = done ? "done" : review ? "review" : "active";
 
   async function call(url: string, method: string, body?: object, terminal = false) {
@@ -190,38 +162,6 @@ export default function TaskCard({
     await fetch(`/api/tasks/${task.id}/breakdown`, { method: "POST" }).catch(() => {});
     setBreaking(false);
     startTransition(() => router.refresh());
-  };
-
-  const runResearch = async () => {
-    setResearching(true);
-    setResearchMsg(null);
-    try {
-      const r = await fetch(`/api/tasks/${task.id}/research`, { method: "POST" });
-      const d = await r.json().catch(() => ({}));
-      if (r.ok && d.research) {
-        setResearch(d.research as ResearchResult);
-      } else if (r.status === 402) {
-        setResearchMsg("Research is a Pro feature.");
-      } else {
-        setResearchMsg(d.error || "Couldn’t research that — try again.");
-      }
-    } catch {
-      setResearchMsg("Couldn’t research that — try again.");
-    }
-    setResearching(false);
-  };
-
-  const addResearchSteps = () => {
-    if (!research?.next_steps.length) return;
-    const existing = task.checklist ?? [];
-    const have = new Set(existing.map((c) => c.text.toLowerCase()));
-    const merged = [
-      ...existing,
-      ...research.next_steps
-        .filter((s) => !have.has(s.toLowerCase()))
-        .map((text) => ({ text, done: false })),
-    ];
-    call(`/api/tasks/${task.id}`, "PATCH", { checklist: merged });
   };
 
   const toggleItem = (index: number) => {
@@ -336,48 +276,6 @@ export default function TaskCard({
         {task.source_excerpt && (
           <div className="excerpt">“{task.source_excerpt}”</div>
         )}
-        {researchMsg && (
-          <div className="meta research-msg">
-            {researchMsg}{" "}
-            {researchMsg.includes("Pro") && <a href="/upgrade">Upgrade →</a>}
-          </div>
-        )}
-        {research && (
-          <div className="research-panel">
-            {research.summary && <p className="research-summary">{research.summary}</p>}
-            {research.options.length > 0 && (
-              <ul className="research-options">
-                {research.options.map((o, i) => (
-                  <li key={i}>
-                    {o.url ? (
-                      <a href={o.url} target="_blank" rel="noreferrer">
-                        {o.title}
-                      </a>
-                    ) : (
-                      <b>{o.title}</b>
-                    )}
-                    {o.note && <span> — {o.note}</span>}
-                  </li>
-                ))}
-              </ul>
-            )}
-            {research.next_steps.length > 0 && (
-              <>
-                <div className="research-steps-head">Next steps</div>
-                <ul className="research-steps">
-                  {research.next_steps.map((s, i) => (
-                    <li key={i}>{s}</li>
-                  ))}
-                </ul>
-                {mode === "active" && (
-                  <button className="link" onClick={addResearchSteps} disabled={pending}>
-                    + Add steps to checklist
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-        )}
       </div>
 
       {assignable && members.length > 0 && (
@@ -434,11 +332,6 @@ export default function TaskCard({
               {mode === "active" && !isFyi && (
                 <button onClick={breakdown} disabled={pending || breaking}>
                   {breaking ? "Thinking…" : "✨ Break it down"}
-                </button>
-              )}
-              {mode === "active" && !isFyi && (
-                <button onClick={runResearch} disabled={pending || researching}>
-                  {researching ? "Researching…" : "🔎 Research"}
                 </button>
               )}
               {mode === "active" && inHousehold && (
