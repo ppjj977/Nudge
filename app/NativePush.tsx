@@ -45,7 +45,17 @@ export default function NativePush() {
         Push.addListener("pushNotificationActionPerformed", (data) => {
           const url = (data as { notification?: { data?: { url?: string } } })
             ?.notification?.data?.url;
-          if (url) window.location.href = url;
+          if (!url) return;
+          // Keep navigation inside the WebView's own origin. An absolute URL to a
+          // different host (e.g. the raw Render URL) is treated as an external
+          // link and opened in the system browser instead of the app, so we
+          // strip it down to a same-origin path.
+          try {
+            const u = new URL(url, window.location.origin);
+            window.location.href = u.pathname + u.search + u.hash || "/";
+          } catch {
+            window.location.href = "/";
+          }
         });
         await Push.register();
       } catch {
