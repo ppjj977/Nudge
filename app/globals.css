@@ -1049,6 +1049,36 @@ button.recording {
   color: var(--teal);
   font-weight: 600;
 }
+/* ---- places ---- */
+.place-loc-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 4px 0 12px;
+}
+.place-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.place-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+.place-item:first-child {
+  border-top: none;
+}
+.place-item b {
+  display: block;
+}
+.place-item .note {
+  font-size: 12px;
+}
 /* ---- calendar subscribe ---- */
 .cal-row {
   display: flex;

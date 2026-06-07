@@ -7,6 +7,7 @@ const NAV = [
   { href: "/", label: "Timeline" },
   { href: "/day", label: "Today (timeline)" },
   { href: "/calendar", label: "Calendar" },
+  { href: "/places", label: "Places" },
   { href: "/lists", label: "Lists" },
   { href: "/digest", label: "Digest" },
   { href: "/money", label: "Money" },

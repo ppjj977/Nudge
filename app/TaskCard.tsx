@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CATEGORIES } from "@/lib/categories";
 import type { Member } from "@/lib/households";
@@ -31,8 +31,9 @@ export interface TaskView {
   assignee_id: string | null;
   recurrence: { freq: string; interval: number } | null;
   estimate_minutes: number | null;
-  leave_minutes: number | null;
   research: string | null;
+  place_id: string | null;
+  geo_trigger: string | null;
 }
 
 interface ResearchOption {
@@ -293,6 +294,9 @@ export default function TaskCard({
             <span className="chip owner">shared</span>
           )}
           {assigneeName && <span className="chip assignee">for {assigneeName}</span>}
+          {task.place_id && task.geo_trigger && (
+            <span className="chip">📍 {task.geo_trigger === "leave" ? "on leaving" : "on arrival"}</span>
+          )}
           {lowConfidence && (
             <span className="chip low-conf">
               ~{Math.round(task.confidence * 100)}% sure
@@ -538,13 +542,28 @@ function EditForm({
   const [repeat, setRepeat] = useState(task.recurrence?.freq ?? "none");
   const [amount, setAmount] = useState(task.amount?.toString() ?? "");
   const [location, setLocation] = useState(task.location ?? "");
-  const [leaveMin, setLeaveMin] = useState(task.leave_minutes?.toString() ?? "");
   const [category, setCategory] = useState<string>(task.category);
   const [lifeArea, setLifeArea] = useState(task.life_area ?? "");
   const [items, setItems] = useState<ChecklistItem[]>(
     task.checklist ? task.checklist.map((c) => ({ ...c })) : [],
   );
+  const [placeId, setPlaceId] = useState(task.place_id ?? "");
+  const [geoTrigger, setGeoTrigger] = useState(task.geo_trigger ?? "arrive");
+  const [places, setPlaces] = useState<{ id: string; name: string }[]>([]);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    fetch("/api/places")
+      .then((r) => (r.ok ? r.json() : { places: [] }))
+      .then((d) => {
+        if (live) setPlaces(Array.isArray(d.places) ? d.places : []);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
 
   // Keep the task's current area selectable even if it's no longer in the list.
   const areaOptions =
@@ -566,10 +585,9 @@ function EditForm({
       detail: detail.trim() || null,
       location: location.trim() || null,
       life_area: lifeArea || null,
+      place_id: placeId || null,
+      geo_trigger: placeId && geoTrigger ? geoTrigger : null,
     };
-    // Leave-by lead time only applies to a timed task with a place.
-    const lm = leaveMin.trim() === "" ? null : Math.max(0, Math.round(Number(leaveMin)));
-    patch.leave_minutes = location.trim() && time && lm && lm > 0 ? lm : null;
     const cleanedItems = items
       .map((it) => ({ text: it.text.trim(), done: it.done }))
       .filter((it) => it.text.length > 0);
@@ -678,24 +696,40 @@ function EditForm({
           </label>
         )}
         {(category === "attend" || category === "book") && (
-          <div className="field-row">
-            <label className="field">
-              <span>Location</span>
-              <input value={location} onChange={(e) => setLocation(e.target.value)} />
-            </label>
-            <label className="field">
-              <span>Leave-by (mins before)</span>
-              <input
-                type="number"
-                min="0"
-                step="5"
-                placeholder="e.g. 20"
-                value={leaveMin}
-                onChange={(e) => setLeaveMin(e.target.value)}
-                disabled={!time || !location.trim()}
-              />
-            </label>
-          </div>
+          <label className="field">
+            <span>Location</span>
+            <input value={location} onChange={(e) => setLocation(e.target.value)} />
+          </label>
+        )}
+        <div className="field-row">
+          <label className="field">
+            <span>Alert me at a place</span>
+            <select value={placeId} onChange={(e) => setPlaceId(e.target.value)}>
+              <option value="">— no place alert —</option>
+              {places.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>When I…</span>
+            <select
+              value={geoTrigger}
+              onChange={(e) => setGeoTrigger(e.target.value)}
+              disabled={!placeId}
+            >
+              <option value="arrive">arrive</option>
+              <option value="leave">leave</option>
+            </select>
+          </label>
+        </div>
+        {places.length === 0 && (
+          <p className="note">
+            <a href="/places">Set up your places</a> (home, school, work) to get a nudge
+            when you arrive or leave.
+          </p>
         )}
         <label className="field">
           <span>Life area</span>

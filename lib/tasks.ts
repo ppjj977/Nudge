@@ -36,12 +36,10 @@ export interface Task {
   assignee_id: string | null;
   recurrence: Recurrence | null;
   estimate_minutes: number | null;
-  leave_minutes: number | null;
-  geo_lat: number | null;
-  geo_lng: number | null;
-  remind_on_arrival: number;
   research: string | null;
   research_at: string | null;
+  place_id: string | null;
+  geo_trigger: string | null;
   created_at: string;
   updated_at: string;
   completed_at: string | null;
@@ -142,12 +140,10 @@ export async function insertTasksFromExtraction(
       assignee_id: null,
       recurrence: null,
       estimate_minutes: null,
-      leave_minutes: null,
-      geo_lat: null,
-      geo_lng: null,
-      remind_on_arrival: 0,
       research: null,
       research_at: null,
+      place_id: null,
+      geo_trigger: null,
       created_at: now,
       updated_at: now,
       completed_at: null,
@@ -166,8 +162,6 @@ const REMINDER_RELEVANT = new Set([
   "due_at",
   "due_type",
   "category",
-  "leave_minutes",
-  "location",
 ]);
 
 export type TimelineBucket = "today" | "week" | "later" | "unscheduled";
@@ -306,12 +300,10 @@ export async function createManualTask(
     assignee_id: null,
     recurrence,
     estimate_minutes: null,
-    leave_minutes: null,
-    geo_lat: null,
-    geo_lng: null,
-    remind_on_arrival: 0,
     research: null,
     research_at: null,
+    place_id: null,
+    geo_trigger: null,
     created_at: now,
     updated_at: now,
     completed_at: null,
@@ -390,10 +382,8 @@ const EDITABLE_FIELDS = new Set([
   "assignee_id",
   "recurrence",
   "estimate_minutes",
-  "leave_minutes",
-  "geo_lat",
-  "geo_lng",
-  "remind_on_arrival",
+  "place_id",
+  "geo_trigger",
 ]);
 
 /**

@@ -134,15 +134,24 @@ CREATE TABLE IF NOT EXISTS tasks (
   assignee_id    TEXT REFERENCES users(id),      -- shared task assigned to a member
   recurrence     TEXT,                            -- json: {freq, interval} for repeating tasks
   estimate_minutes INTEGER,                        -- AI/user estimate of effort (ADHD time-blindness)
-  leave_minutes  INTEGER,                          -- "leave-by": nudge this many minutes before due_at
-  geo_lat        REAL,                             -- geofence scaffold (arrival reminders; native, later)
-  geo_lng        REAL,
-  remind_on_arrival INTEGER NOT NULL DEFAULT 0,    -- 1 = fire when the user reaches the place (not yet enabled)
   research       TEXT,                             -- json: AI research brief (Pro feature)
   research_at    TEXT,                             -- when the research was last run
+  place_id       TEXT,                             -- geofence: linked place (see places table)
+  geo_trigger    TEXT,                             -- 'arrive' | 'leave' — when to alert at that place
   created_at     TEXT NOT NULL,
   updated_at     TEXT NOT NULL,
   completed_at   TEXT
+);
+
+-- Named circular geofences (home/school/work/…) for location-based alerts.
+CREATE TABLE IF NOT EXISTS places (
+  id         TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id),
+  name       TEXT NOT NULL,
+  lat        REAL NOT NULL,
+  lng        REAL NOT NULL,
+  radius     INTEGER NOT NULL DEFAULT 150,   -- metres
+  created_at TEXT NOT NULL
 );
 
 -- Generated from a task plus its category offset rules (SPEC §8, phase 2).
@@ -223,3 +232,4 @@ CREATE INDEX IF NOT EXISTS idx_lists_household        ON lists(household_id);
 CREATE INDEX IF NOT EXISTS idx_list_items_list        ON list_items(list_id);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_promo_redemption  ON promo_redemptions(code, user_id);
 CREATE INDEX IF NOT EXISTS idx_interest_created        ON interest_signups(created_at);
+CREATE INDEX IF NOT EXISTS idx_places_user             ON places(user_id);

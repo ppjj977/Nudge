@@ -1,47 +1,46 @@
-# Location reminders
+# Location alerts (geofencing)
 
-Two layers, shipped in stages.
+Get nudged when you **arrive at** or **leave** a saved place — e.g. *"leaving
+home → did you grab the parcel to return?"*
 
-## 1. Leave-by reminders (live now, web-only) ✅
+## What's built (web — live + testable)
 
-For a task that has **a time + a place**, you can set a **"Leave-by (mins
-before)"** value in the task editor. Nudge then schedules an extra reminder that
-many minutes before the due time — *"🚗 Time to leave — &lt;task&gt;"* with the
-location — on top of the normal reminders.
+- **Places** — named circular geofences (Home/School/Work…). Manage at `/places`:
+  name + "use my current location" + radius (80–2000 m). Table: `places`.
+- **Linking** — in the task editor, **"Alert me at a place"** + **"When I arrive /
+  leave"** sets `tasks.place_id` + `tasks.geo_trigger`. A 📍 chip shows on the card.
+- **`GET /api/geofences`** — returns the user's active rules (task ↔ place ↔
+  trigger) for the device to register. `lib/geofences.ts`.
 
-- Stored in `tasks.leave_minutes`.
-- Scheduled in `generateRemindersForTask` (a reminder row with `kind = 'leave'`).
-- Formatted in `lib/dispatch.ts` (`leaveEmail` + the leave-by push payload).
-- No background location, no new permission, no Play disclosure — works on web
-  + the existing app.
+This all works now. The only missing piece is the **native part that actually
+fires the alert in the background**, below.
 
-## 2. True geofencing — "remind me when I arrive" (scaffold only)
+## What's left: native background geofencing (needs a device build)
 
-The **data + API are ready**, but the native background-location piece is
-deliberately **not** enabled (it triggers a Google Play *prominent disclosure*
-and a stricter data-safety review, which would attach to your current Play
-submission).
+True "fire when I cross the boundary while the app is closed" requires native
+background location. It **can't be built/tested in the web env** — it needs a
+signed APK + on-device testing + a Play disclosure.
 
-Already in place:
-- Columns `tasks.geo_lat`, `tasks.geo_lng`, `tasks.remind_on_arrival`.
-- `GET /api/geofences` → the user's active arrival-reminder geofences
-  (`lib/geofences.ts`). Returns `[]` until coordinates are set.
+### Steps to enable
 
-### To enable it later (small, well-defined steps)
+1. **Add the plugin** to the install step in `.github/workflows/android.yml`:
+   `npm i @capgo/background-geolocation` (supports native geofences + posting
+   transitions while the WebView is suspended).
+2. **Permissions** — a patch script (mirror `native/patch-gradle.js`) that adds to
+   the generated `AndroidManifest.xml`:
+   `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION`, `ACCESS_BACKGROUND_LOCATION`,
+   `POST_NOTIFICATIONS`.
+3. **Register on launch** — a client module (like `NativePush`) that, on a native
+   platform: requests location permission, `GET /api/geofences`, and registers a
+   geofence per rule; on the matching enter/exit transition, posts a local
+   notification with the task title (e.g. *"Leaving Home — did you grab: return
+   the parcel?"*). Re-sync on app resume and after task/place edits.
+4. **Google Play** — complete the **background-location prominent disclosure** +
+   data-safety form. ⚠️ Do this **after** your first app approval — adding
+   background location to the pending submission can slow/complicate review.
 
-1. **Geocoding** — turn the task's `location` text into `geo_lat/geo_lng`
-   (Google Geocoding or OpenStreetMap Nominatim). Store on the task; expose a
-   "remind me when I arrive" toggle in the editor that sets `remind_on_arrival`.
-2. **Native plugin** — add `@capgo/background-geolocation` to the install step in
-   `.github/workflows/android.yml`, and a patch script that adds
-   `ACCESS_FINE_LOCATION`, `ACCESS_BACKGROUND_LOCATION` and `POST_NOTIFICATIONS`
-   to the generated `AndroidManifest.xml` (mirror `native/patch-gradle.js`).
-3. **Register on launch** — a small client module (like `NativePush`) calls
-   `GET /api/geofences` and registers a circular geofence per item; the plugin
-   posts a local notification on entry even while the WebView is suspended.
-4. **Play Console** — complete the background-location *prominent disclosure* and
-   data-safety form before submitting. Do this **after** the app is approved, to
-   avoid complicating the first review.
-
-Nothing in the leave-by path depends on this, so it can be turned on whenever
-you're ready without reworking anything.
+### Notes
+- Android caps geofences at 100/device — fine here.
+- Battery: geofences are OS-managed and cheap; avoid continuous tracking.
+- The web foundation doesn't depend on any of this, so it can be switched on
+  whenever you're ready without rework.
