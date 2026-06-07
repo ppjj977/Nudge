@@ -1622,11 +1622,30 @@ button.recording {
 .tut-dot.on {
   background: var(--teal);
 }
-.tut-capture {
+.tut-example {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  text-align: left;
   margin-bottom: 14px;
+  padding: 14px 16px;
+  background: var(--mint);
+  border: 1px solid var(--teal);
+  border-radius: 12px;
+}
+.tut-example-q {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--teal-hover);
+}
+.tut-example-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.tut-edit-fields {
+  margin-top: 10px;
 }
 .tut-capture input,
 .tut-edit-input {

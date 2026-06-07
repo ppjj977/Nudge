@@ -9,6 +9,29 @@ import { useEffect, useState } from "react";
  */
 const EXAMPLE = "Dentist Tuesday at 3pm";
 
+/** The next Tuesday as yyyy-mm-dd, so the sample feels real. */
+function nextTuesday(): string {
+  const d = new Date();
+  const add = (2 - d.getDay() + 7) % 7 || 7; // 2 = Tuesday
+  d.setDate(d.getDate() + add);
+  return d.toISOString().slice(0, 10);
+}
+
+/** A friendly "Tue 3:00 pm"-style label from a date + time. */
+function whenLabel(date: string, time: string): string {
+  try {
+    const d = new Date(`${date}T${time || "00:00"}`);
+    if (Number.isNaN(d.getTime())) return "Tue 3pm";
+    const day = d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+    const t = time
+      ? d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
+      : "";
+    return t ? `${day}, ${t}` : day;
+  } catch {
+    return "Tue 3pm";
+  }
+}
+
 const COPY: Record<number, { title: string; body: string }> = {
   1: {
     title: "Your first reminder ✨",
@@ -31,9 +54,10 @@ const COPY: Record<number, { title: string; body: string }> = {
 export default function Tutorial() {
   const [active, setActive] = useState(false);
   const [step, setStep] = useState(0); // 0 capture · 1 created · 2 edit · 3 snooze · 4 done · 5 finish
-  const [text, setText] = useState("");
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState("Dentist");
+  const [date, setDate] = useState(nextTuesday());
+  const [time, setTime] = useState("15:00");
   const [snoozed, setSnoozed] = useState(false);
   const [completed, setCompleted] = useState(false);
 
@@ -67,30 +91,17 @@ export default function Tutorial() {
           ))}
         </div>
 
-        {/* Step 0 — capture */}
+        {/* Step 0 — capture (one tap on the example) */}
         {step === 0 && (
           <>
             <h2>Welcome to Nudge 👋</h2>
             <p>
-              Nudge turns a quick note into a reminder. Let&apos;s try it — tap the
-              example below, then Capture.
+              Nudge turns a quick note into a reminder. Give it a go — tap the example
+              to capture it.
             </p>
-            <div className="tut-capture">
-              <input
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Type a task…"
-              />
-              <button type="button" className="example-chip" onClick={() => setText(EXAMPLE)}>
-                {EXAMPLE}
-              </button>
-            </div>
-            <button
-              className="primary tut-next"
-              disabled={!text.trim()}
-              onClick={() => setStep(1)}
-            >
-              Capture →
+            <button type="button" className="tut-example pulse" onClick={() => setStep(1)}>
+              <span className="tut-example-q">Capture this 👇</span>
+              <span className="tut-example-text">📝 “{EXAMPLE}”</span>
             </button>
           </>
         )}
@@ -105,22 +116,47 @@ export default function Tutorial() {
               <div className="body">
                 <div>
                   <span className="task-emoji" aria-hidden="true">📅</span>
-                  {editing ? (
-                    <input
-                      className="tut-edit-input"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      autoFocus
-                    />
-                  ) : (
-                    <span className="title">{title}</span>
-                  )}
+                  <span className="title">{title}</span>
                 </div>
                 <div className="chips">
                   <span className="chip cat">attend</span>
-                  <span className="chip">Tue 3pm</span>
+                  <span className="chip">{whenLabel(date, time)}</span>
                 </div>
                 {snoozed && <div className="meta">💤 Snoozed till tomorrow</div>}
+
+                {editing && (
+                  <div className="tut-edit-fields">
+                    <label className="field">
+                      <span>Name</span>
+                      <input
+                        className="tut-edit-input"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        autoFocus
+                      />
+                    </label>
+                    <div className="field-row">
+                      <label className="field">
+                        <span>Date</span>
+                        <input
+                          type="date"
+                          className="tut-edit-input"
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                        />
+                      </label>
+                      <label className="field">
+                        <span>Time</span>
+                        <input
+                          type="time"
+                          className="tut-edit-input"
+                          value={time}
+                          onChange={(e) => setTime(e.target.value)}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="actions">
