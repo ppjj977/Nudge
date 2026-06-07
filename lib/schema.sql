@@ -143,20 +143,6 @@ CREATE TABLE IF NOT EXISTS tasks (
   completed_at   TEXT
 );
 
--- Conditional "watch → notify" reminders: poll a URL and fire when a
--- natural-language condition becomes true (price drop, back in stock, …).
-CREATE TABLE IF NOT EXISTS watches (
-  id           TEXT PRIMARY KEY,
-  user_id      TEXT NOT NULL REFERENCES users(id),
-  url          TEXT NOT NULL,
-  condition    TEXT NOT NULL,            -- natural language, e.g. "price below £80"
-  label        TEXT,                      -- short title shown in the UI
-  status       TEXT NOT NULL DEFAULT 'active', -- active | met | paused
-  last_checked TEXT,
-  last_note    TEXT,                      -- the model's last reasoning / observed value
-  created_at   TEXT NOT NULL
-);
-
 -- Generated from a task plus its category offset rules (SPEC §8, phase 2).
 CREATE TABLE IF NOT EXISTS reminders (
   id        TEXT PRIMARY KEY,
@@ -235,5 +221,3 @@ CREATE INDEX IF NOT EXISTS idx_lists_household        ON lists(household_id);
 CREATE INDEX IF NOT EXISTS idx_list_items_list        ON list_items(list_id);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_promo_redemption  ON promo_redemptions(code, user_id);
 CREATE INDEX IF NOT EXISTS idx_interest_created        ON interest_signups(created_at);
-CREATE INDEX IF NOT EXISTS idx_watches_user            ON watches(user_id);
-CREATE INDEX IF NOT EXISTS idx_watches_status          ON watches(status);
