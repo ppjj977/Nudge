@@ -31,6 +31,7 @@ export interface TaskView {
   assignee_id: string | null;
   recurrence: { freq: string; interval: number } | null;
   estimate_minutes: number | null;
+  leave_minutes: number | null;
 }
 
 const CATEGORY_ICON: Record<string, string> = {
@@ -430,6 +431,7 @@ function EditForm({
   const [repeat, setRepeat] = useState(task.recurrence?.freq ?? "none");
   const [amount, setAmount] = useState(task.amount?.toString() ?? "");
   const [location, setLocation] = useState(task.location ?? "");
+  const [leaveMin, setLeaveMin] = useState(task.leave_minutes?.toString() ?? "");
   const [category, setCategory] = useState<string>(task.category);
   const [lifeArea, setLifeArea] = useState(task.life_area ?? "");
   const [items, setItems] = useState<ChecklistItem[]>(
@@ -458,6 +460,9 @@ function EditForm({
       location: location.trim() || null,
       life_area: lifeArea || null,
     };
+    // Leave-by lead time only applies to a timed task with a place.
+    const lm = leaveMin.trim() === "" ? null : Math.max(0, Math.round(Number(leaveMin)));
+    patch.leave_minutes = location.trim() && time && lm && lm > 0 ? lm : null;
     const cleanedItems = items
       .map((it) => ({ text: it.text.trim(), done: it.done }))
       .filter((it) => it.text.length > 0);
@@ -566,10 +571,24 @@ function EditForm({
           </label>
         )}
         {(category === "attend" || category === "book") && (
-          <label className="field">
-            <span>Location</span>
-            <input value={location} onChange={(e) => setLocation(e.target.value)} />
-          </label>
+          <div className="field-row">
+            <label className="field">
+              <span>Location</span>
+              <input value={location} onChange={(e) => setLocation(e.target.value)} />
+            </label>
+            <label className="field">
+              <span>Leave-by (mins before)</span>
+              <input
+                type="number"
+                min="0"
+                step="5"
+                placeholder="e.g. 20"
+                value={leaveMin}
+                onChange={(e) => setLeaveMin(e.target.value)}
+                disabled={!time || !location.trim()}
+              />
+            </label>
+          </div>
         )}
         <label className="field">
           <span>Life area</span>
