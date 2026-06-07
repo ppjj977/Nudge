@@ -29,13 +29,6 @@ function dataUrlToFile(dataUrl: string, name: string): File {
   return new File([arr], name, { type: mime });
 }
 
-/** One-tap examples for first-timers — they fill the box so the "aha" is one tap away. */
-const EXAMPLES = [
-  "Dentist Tuesday at 3pm",
-  "Pay £42 water bill by Friday",
-  "Mum's birthday on 20 June",
-];
-
 /**
  * The capture-first entry point (SPEC §1, §6). Paste text or drop an image;
  * both run the same extraction pipeline. Manual entry is deliberately not the
@@ -86,7 +79,6 @@ export default function CaptureBox({
   }
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [recording, setRecording] = useState(false);
@@ -247,30 +239,11 @@ export default function CaptureBox({
         dates, amounts &amp; to-dos and reminds you.
       </p>
       <textarea
-        ref={textareaRef}
         placeholder="e.g. Dentist Tuesday 3pm · Pay £42 water bill Friday · Mum's birthday 20 June"
         value={text}
         onChange={(e) => setText(e.target.value)}
         disabled={busy}
       />
-      {text.trim().length === 0 && !busy && created.length === 0 && (
-        <div className="capture-examples">
-          <span className="capture-examples-label">New here? Tap one to try:</span>
-          {EXAMPLES.map((ex) => (
-            <button
-              key={ex}
-              type="button"
-              className="example-chip"
-              onClick={() => {
-                setText(ex);
-                textareaRef.current?.focus();
-              }}
-            >
-              {ex}
-            </button>
-          ))}
-        </div>
-      )}
       <div className="capture-row">
         <button
           className="primary"
