@@ -36,8 +36,6 @@ export interface Task {
   assignee_id: string | null;
   recurrence: Recurrence | null;
   estimate_minutes: number | null;
-  research: string | null;
-  research_at: string | null;
   place_id: string | null;
   geo_trigger: string | null;
   created_at: string;
@@ -140,8 +138,6 @@ export async function insertTasksFromExtraction(
       assignee_id: null,
       recurrence: null,
       estimate_minutes: null,
-      research: null,
-      research_at: null,
       place_id: null,
       geo_trigger: null,
       created_at: now,
@@ -300,8 +296,6 @@ export async function createManualTask(
     assignee_id: null,
     recurrence,
     estimate_minutes: null,
-    research: null,
-    research_at: null,
     place_id: null,
     geo_trigger: null,
     created_at: now,
@@ -405,21 +399,6 @@ export async function getAccessibleTask(
     if (m.rows.length) return task;
   }
   return null;
-}
-
-/** Store a research brief (JSON) on a task the user can access. */
-export async function setTaskResearch(
-  userId: string,
-  id: string,
-  json: string,
-): Promise<boolean> {
-  const task = await getAccessibleTask(userId, id);
-  if (!task) return false;
-  await db.execute({
-    sql: "UPDATE tasks SET research = ?, research_at = ? WHERE id = ?",
-    args: [json, new Date().toISOString(), id],
-  });
-  return true;
 }
 
 /**
