@@ -5,7 +5,7 @@ import TaskCard, { type TaskView } from "./TaskCard";
 import type { FamilyTask } from "@/lib/tasks";
 import type { Member } from "@/lib/households";
 
-type Tab = "today" | "week" | "later" | "unscheduled" | "family" | "money" | "review";
+type Tab = "today" | "week" | "later" | "unscheduled" | "family" | "review";
 
 const EMPTY: Record<Tab, string> = {
   today: "Nothing for today. Breathe.",
@@ -13,7 +13,6 @@ const EMPTY: Record<Tab, string> = {
   later: "Nothing parked for later.",
   unscheduled: "No loose to-dos — everything has a home.",
   family: "Nothing shared with the family yet.",
-  money: "No payments to track right now.",
   review: "Nothing to review — you’re all caught up.",
 };
 
@@ -40,18 +39,14 @@ export default function Timeline({
   inHousehold: boolean;
   meId: string;
 }) {
-  const money = [...today, ...week, ...later, ...unscheduled].filter(
-    (t) => t.category === "pay",
-  );
-
   const tabs: { key: Tab; label: string }[] = [
     { key: "today", label: "Today" },
     { key: "week", label: "This week" },
     { key: "later", label: "Later" },
     { key: "unscheduled", label: "To-dos" },
     ...(inHousehold ? [{ key: "family" as Tab, label: "Family" }] : []),
-    { key: "money", label: "Money" },
-    { key: "review", label: "Needs review" },
+    // The review tab only appears when something actually needs a look.
+    ...(review.length > 0 ? [{ key: "review" as Tab, label: "Needs review" }] : []),
   ];
   const counts: Record<Tab, number> = {
     today: today.length,
@@ -59,19 +54,17 @@ export default function Timeline({
     later: later.length,
     unscheduled: unscheduled.length,
     family: family.length,
-    money: money.length,
     review: review.length,
   };
 
   const [tab, setTab] = useState<Tab>(review.length > 0 ? "review" : "today");
 
-  type OwnedTab = "today" | "week" | "later" | "unscheduled" | "money";
+  type OwnedTab = "today" | "week" | "later" | "unscheduled";
   const owned: Record<OwnedTab, TaskView[]> = {
     today,
     week,
     later,
     unscheduled,
-    money,
   };
 
   return (
@@ -104,9 +97,6 @@ export default function Timeline({
         <p className="review-hero">
           Nudge wasn’t sure about these. Approve, edit, or dismiss.
         </p>
-      )}
-      {tab === "money" && money.length > 0 && (
-        <p className="money-total">{moneyTotal(money)}</p>
       )}
       {tab === "family" && (
         <p className="note family-note">
@@ -160,18 +150,4 @@ export default function Timeline({
         ))}
     </div>
   );
-}
-
-function moneyTotal(tasks: TaskView[]): string {
-  const sum = tasks.reduce((acc, t) => acc + (t.amount ?? 0), 0);
-  const currency = tasks.find((t) => t.currency)?.currency || "GBP";
-  let label: string;
-  try {
-    label = new Intl.NumberFormat(undefined, { style: "currency", currency }).format(
-      sum,
-    );
-  } catch {
-    label = `${currency} ${sum.toFixed(2)}`;
-  }
-  return `${label} across ${tasks.length} ${tasks.length === 1 ? "payment" : "payments"}`;
 }
