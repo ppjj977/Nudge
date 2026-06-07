@@ -30,6 +30,7 @@ export interface TaskView {
   household_id: string | null;
   assignee_id: string | null;
   recurrence: { freq: string; interval: number } | null;
+  estimate_minutes: number | null;
 }
 
 const CATEGORY_ICON: Record<string, string> = {
@@ -176,9 +177,10 @@ export default function TaskCard({
     );
   }
 
-  const meta = [dueLabel(task), amountLabel(task), task.location]
-    .filter(Boolean)
-    .join(" · ");
+  const meta = [dueLabel(task), amountLabel(task)].filter(Boolean).join(" · ");
+  const mapsUrl = task.location
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.location)}`
+    : null;
 
   const repeatLabel = task.recurrence
     ? task.recurrence.interval > 1
@@ -230,6 +232,17 @@ export default function TaskCard({
         </div>
         {task.detail && <div className="meta">{task.detail}</div>}
         {meta && <div className="meta">{meta}</div>}
+        {task.location && (
+          <div className="meta">
+            📍{" "}
+            <a className="map-link" href={mapsUrl!} target="_blank" rel="noreferrer">
+              {task.location}
+            </a>
+          </div>
+        )}
+        {task.estimate_minutes ? (
+          <div className="meta">⏱️ ~{task.estimate_minutes} min</div>
+        ) : null}
         {task.checklist && task.checklist.length > 0 && (
           <ul className="checklist">
             {task.checklist.map((item, i) => (
