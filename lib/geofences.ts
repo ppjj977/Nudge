@@ -1,40 +1,52 @@
 import { db, ensureSchema } from "./db";
 
 /**
- * Geofence scaffold (arrival reminders). The data + this endpoint are ready so
- * that turning on true "remind me when I arrive" later is a small step: ship a
- * background-geolocation plugin in the native build, have the app pull this list
- * on launch and register a geofence per item, and post the reminder on entry.
- *
- * NOT yet wired to any native permission — see LOCATION.md for the enable path.
+ * The active geofence rules for a user: each is an active task linked to a place
+ * with an arrive/leave trigger. The native app pulls these on launch, registers
+ * a geofence per place, and fires the task's alert on the matching transition.
  */
-export const DEFAULT_GEOFENCE_RADIUS_M = 150;
-
-export interface Geofence {
-  id: string;
+export interface GeofenceRule {
+  taskId: string;
+  taskTitle: string;
+  placeId: string;
+  placeName: string;
   lat: number;
   lng: number;
   radius: number;
-  label: string;
+  trigger: "arrive" | "leave";
 }
 
-/** A user's active arrival-reminder tasks that have coordinates set. */
-export async function listGeofencesForUser(userId: string): Promise<Geofence[]> {
+export async function listGeofencesForUser(userId: string): Promise<GeofenceRule[]> {
   await ensureSchema();
   const res = await db.execute({
-    sql: `SELECT id, title, geo_lat, geo_lng FROM tasks
-          WHERE user_id = ? AND status = 'active'
-            AND remind_on_arrival = 1 AND geo_lat IS NOT NULL AND geo_lng IS NOT NULL`,
+    sql: `SELECT t.id AS taskId, t.title AS taskTitle, t.geo_trigger AS trigger,
+                 p.id AS placeId, p.name AS placeName, p.lat AS lat, p.lng AS lng, p.radius AS radius
+          FROM tasks t
+          JOIN places p ON p.id = t.place_id
+          WHERE t.user_id = ? AND t.status = 'active'
+            AND t.place_id IS NOT NULL AND t.geo_trigger IS NOT NULL`,
     args: [userId],
   });
   return res.rows.map((r) => {
-    const row = r as unknown as { id: string; title: string; geo_lat: number; geo_lng: number };
+    const row = r as unknown as {
+      taskId: string;
+      taskTitle: string;
+      trigger: string;
+      placeId: string;
+      placeName: string;
+      lat: number;
+      lng: number;
+      radius: number;
+    };
     return {
-      id: row.id,
-      lat: Number(row.geo_lat),
-      lng: Number(row.geo_lng),
-      radius: DEFAULT_GEOFENCE_RADIUS_M,
-      label: row.title,
+      taskId: row.taskId,
+      taskTitle: row.taskTitle,
+      placeId: row.placeId,
+      placeName: row.placeName,
+      lat: Number(row.lat),
+      lng: Number(row.lng),
+      radius: Number(row.radius),
+      trigger: row.trigger === "leave" ? "leave" : "arrive",
     };
   });
 }
