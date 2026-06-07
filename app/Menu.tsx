@@ -5,6 +5,7 @@ import Link from "next/link";
 
 const NAV = [
   { href: "/", label: "Timeline" },
+  { href: "/day", label: "Today (timeline)" },
   { href: "/calendar", label: "Calendar" },
   { href: "/lists", label: "Lists" },
   { href: "/digest", label: "Digest" },

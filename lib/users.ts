@@ -37,6 +37,7 @@ export interface User {
   plan_source: string | null;
   whatsapp_number: string | null;
   whatsapp_link_code: string | null;
+  calendar_token: string | null;
   created_at: string;
 }
 
@@ -149,6 +150,7 @@ export async function getOrCreateDefaultUser(): Promise<User> {
     plan_source: null,
     whatsapp_number: null,
     whatsapp_link_code: null,
+    calendar_token: null,
     created_at: now,
   };
 }

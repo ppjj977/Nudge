@@ -7,8 +7,10 @@ import { pushEnabled } from "@/lib/push";
 import { isPro } from "@/lib/plan";
 import { config } from "@/lib/config";
 import { getOrCreateLinkCode, linkDeepLink } from "@/lib/whatsapp";
+import { ensureCalendarToken, calendarFeedUrl } from "@/lib/calendar-feed";
 import SettingsForm from "../SettingsForm";
 import WhatsAppConnect from "../WhatsAppConnect";
+import CalendarSubscribe from "../CalendarSubscribe";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,8 @@ export default async function SettingsPage() {
   const waEnabled = Boolean(config.whatsapp.displayNumber);
   const waCode = waEnabled ? await getOrCreateLinkCode(user) : "";
   const waMasked = user.whatsapp_number ? `••• ${user.whatsapp_number.slice(-4)}` : null;
+
+  const calToken = await ensureCalendarToken(user);
 
   return (
     <>
@@ -49,6 +53,10 @@ export default async function SettingsPage() {
           displayNumber={config.whatsapp.displayNumber ?? null}
         />
       )}
+      <CalendarSubscribe
+        webcalUrl={calendarFeedUrl(calToken, "webcal")}
+        httpsUrl={calendarFeedUrl(calToken, "https")}
+      />
     </>
   );
 }

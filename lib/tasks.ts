@@ -35,6 +35,7 @@ export interface Task {
   household_id: string | null;
   assignee_id: string | null;
   recurrence: Recurrence | null;
+  estimate_minutes: number | null;
   created_at: string;
   updated_at: string;
   completed_at: string | null;
@@ -134,6 +135,7 @@ export async function insertTasksFromExtraction(
       household_id: null,
       assignee_id: null,
       recurrence: null,
+      estimate_minutes: null,
       created_at: now,
       updated_at: now,
       completed_at: null,
@@ -286,6 +288,7 @@ export async function createManualTask(
     household_id: null,
     assignee_id: null,
     recurrence,
+    estimate_minutes: null,
     created_at: now,
     updated_at: now,
     completed_at: null,
@@ -363,6 +366,7 @@ const EDITABLE_FIELDS = new Set([
   "status",
   "assignee_id",
   "recurrence",
+  "estimate_minutes",
 ]);
 
 /**
