@@ -1004,6 +1004,51 @@ button.recording {
   font-weight: 600;
   text-decoration: none;
 }
+/* ---- research brief on a task ---- */
+.research-panel {
+  margin-top: 10px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.research-summary {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--text);
+}
+.research-options {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  font-size: 14px;
+}
+.research-options li {
+  margin-bottom: 4px;
+}
+.research-options a {
+  color: var(--teal);
+  font-weight: 600;
+}
+.research-steps-head {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.research-steps {
+  margin: 4px 0 4px;
+  padding-left: 18px;
+  font-size: 14px;
+}
+.research-msg {
+  color: var(--muted);
+}
+.research-msg a {
+  color: var(--teal);
+  font-weight: 600;
+}
 /* ---- calendar subscribe ---- */
 .cal-row {
   display: flex;

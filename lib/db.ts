@@ -82,6 +82,8 @@ async function applyAdditiveMigrations(): Promise<void> {
     "ALTER TABLE tasks ADD COLUMN geo_lat REAL",
     "ALTER TABLE tasks ADD COLUMN geo_lng REAL",
     "ALTER TABLE tasks ADD COLUMN remind_on_arrival INTEGER NOT NULL DEFAULT 0",
+    "ALTER TABLE tasks ADD COLUMN research TEXT",
+    "ALTER TABLE tasks ADD COLUMN research_at TEXT",
     "ALTER TABLE reminders ADD COLUMN kind TEXT NOT NULL DEFAULT 'rule'",
   ];
   for (const stmt of additions) {
