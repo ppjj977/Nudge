@@ -37,6 +37,12 @@ export const config = {
   retention: {
     rawRetentionDays: num("RAW_RETENTION_DAYS", 30),
   },
+  /** Research (Pro): optional web-search grounding. With a Tavily key, the
+   *  research brief cites real results; without it, the model gives a
+   *  structured brief + suggested searches. */
+  research: {
+    tavilyKey: env("TAVILY_API_KEY"),
+  },
   email: {
     resendApiKey: env("RESEND_API_KEY"),
     from: env("MAIL_FROM") ?? "nudge@example.com",

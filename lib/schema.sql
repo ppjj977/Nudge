@@ -138,6 +138,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   geo_lat        REAL,                             -- geofence scaffold (arrival reminders; native, later)
   geo_lng        REAL,
   remind_on_arrival INTEGER NOT NULL DEFAULT 0,    -- 1 = fire when the user reaches the place (not yet enabled)
+  research       TEXT,                             -- json: AI research brief (Pro feature)
+  research_at    TEXT,                             -- when the research was last run
   created_at     TEXT NOT NULL,
   updated_at     TEXT NOT NULL,
   completed_at   TEXT

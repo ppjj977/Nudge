@@ -40,6 +40,8 @@ export interface Task {
   geo_lat: number | null;
   geo_lng: number | null;
   remind_on_arrival: number;
+  research: string | null;
+  research_at: string | null;
   created_at: string;
   updated_at: string;
   completed_at: string | null;
@@ -144,6 +146,8 @@ export async function insertTasksFromExtraction(
       geo_lat: null,
       geo_lng: null,
       remind_on_arrival: 0,
+      research: null,
+      research_at: null,
       created_at: now,
       updated_at: now,
       completed_at: null,
@@ -306,6 +310,8 @@ export async function createManualTask(
     geo_lat: null,
     geo_lng: null,
     remind_on_arrival: 0,
+    research: null,
+    research_at: null,
     created_at: now,
     updated_at: now,
     completed_at: null,
@@ -409,6 +415,21 @@ export async function getAccessibleTask(
     if (m.rows.length) return task;
   }
   return null;
+}
+
+/** Store a research brief (JSON) on a task the user can access. */
+export async function setTaskResearch(
+  userId: string,
+  id: string,
+  json: string,
+): Promise<boolean> {
+  const task = await getAccessibleTask(userId, id);
+  if (!task) return false;
+  await db.execute({
+    sql: "UPDATE tasks SET research = ?, research_at = ? WHERE id = ?",
+    args: [json, new Date().toISOString(), id],
+  });
+  return true;
 }
 
 /**
