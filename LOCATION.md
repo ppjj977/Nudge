@@ -9,38 +9,38 @@ home → did you grab the parcel to return?"*
   name + "use my current location" + radius (80–2000 m). Table: `places`.
 - **Linking** — in the task editor, **"Alert me at a place"** + **"When I arrive /
   leave"** sets `tasks.place_id` + `tasks.geo_trigger`. A 📍 chip shows on the card.
-- **`GET /api/geofences`** — returns the user's active rules (task ↔ place ↔
-  trigger) for the device to register. `lib/geofences.ts`.
+- **`GET /api/geofences`** — the user's active rules (task ↔ place ↔ trigger) +
+  the transition URL, for the native app to register. `lib/geofences.ts`.
 
-This all works now. The only missing piece is the **native part that actually
-fires the alert in the background**, below.
+## Native background geofencing — WIRED (needs a device build to verify)
 
-## What's left: native background geofencing (needs a device build)
+The native firing is wired up via `@capgo/background-geolocation`. It can't be
+compiled/tested in the web env, so treat the first Android build as a shakedown —
+but everything is in place:
 
-True "fire when I cross the boundary while the app is closed" requires native
-background location. It **can't be built/tested in the web env** — it needs a
-signed APK + on-device testing + a Play disclosure.
+- **Plugin** installed in `.github/workflows/android.yml`.
+- **Permissions** added to the manifest by `native/patch-geofence.js`
+  (`ACCESS_FINE/COARSE_LOCATION`, `ACCESS_BACKGROUND_LOCATION`, `POST_NOTIFICATIONS`).
+- **Registration** on launch: `app/NativeGeofence.tsx` calls `setupGeofencing` +
+  `addGeofence` per rule from `GET /api/geofences`.
+- **Background firing**: the plugin POSTs transitions (even while suspended) to
+  `POST /api/geofences/transition?t=<token>`, which maps the task and sends the
+  push ("📍 Leaving Home — return the parcel"). Token-authed (no session in bg).
 
-### Steps to enable
-
-1. **Add the plugin** to the install step in `.github/workflows/android.yml`:
-   `npm i @capgo/background-geolocation` (supports native geofences + posting
-   transitions while the WebView is suspended).
-2. **Permissions** — a patch script (mirror `native/patch-gradle.js`) that adds to
-   the generated `AndroidManifest.xml`:
-   `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION`, `ACCESS_BACKGROUND_LOCATION`,
-   `POST_NOTIFICATIONS`.
-3. **Register on launch** — a client module (like `NativePush`) that, on a native
-   platform: requests location permission, `GET /api/geofences`, and registers a
-   geofence per rule; on the matching enter/exit transition, posts a local
-   notification with the task title (e.g. *"Leaving Home — did you grab: return
-   the parcel?"*). Re-sync on app resume and after task/place edits.
-4. **Google Play** — complete the **background-location prominent disclosure** +
+### To ship it
+1. Run the **Build Android** GitHub Action → install the new APK (uninstall the
+   old one first — signing mismatch).
+2. On device: open Nudge → allow location **"Always"** + notifications, add a
+   Place, link a task with arrive/leave, then cross the boundary.
+3. **Google Play**: complete the **background-location prominent disclosure** +
    data-safety form. ⚠️ Do this **after** your first app approval — adding
    background location to the pending submission can slow/complicate review.
 
-### Notes
-- Android caps geofences at 100/device — fine here.
-- Battery: geofences are OS-managed and cheap; avoid continuous tracking.
-- The web foundation doesn't depend on any of this, so it can be switched on
-  whenever you're ready without rework.
+### Verify / likely to tweak on first build
+- **Transition POST body shape** — `app/api/geofences/transition` reads
+  `{ identifier, transition|enter, payload }`. If the plugin posts a different
+  shape, adjust the parser (check Render logs for the incoming body).
+- Android caps geofences at 100/device (fine here); geofences are OS-managed and
+  battery-cheap.
+- If background updates stall, the plugin docs mention `android.useLegacyBridge` —
+  only add it if needed (it changes the WebView bridge).

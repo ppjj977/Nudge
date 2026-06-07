@@ -5,6 +5,7 @@ import LogoMark from "./LogoMark";
 import SWRegister from "./SWRegister";
 import NativePush from "./NativePush";
 import NativeExtras from "./NativeExtras";
+import NativeGeofence from "./NativeGeofence";
 import PullToRefresh from "./PullToRefresh";
 import Menu from "./Menu";
 import { getCurrentUser } from "@/lib/auth";
@@ -46,6 +47,7 @@ export default async function RootLayout({
         <SWRegister />
         {user && <NativePush />}
         {user && <NativeExtras />}
+        {user && <NativeGeofence />}
         {user && <PullToRefresh />}
         <header className="topbar">
           <Link href="/" className="brand">
