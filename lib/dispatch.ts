@@ -153,7 +153,9 @@ export async function runDispatch(
         const payload = {
           title: `⏰ ${task.title}`,
           body: task.detail ?? "Tap to open nudge",
-          url: config.appBaseUrl,
+          // Relative path: the tap stays inside the app/PWA origin. An absolute
+          // URL (esp. the raw Render host) would open the system browser instead.
+          url: "/",
           taskId: task.id,
           doneStatus: task.category === "pay" ? "paid" : "done",
         };
