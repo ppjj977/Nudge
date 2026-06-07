@@ -146,6 +146,44 @@ a {
 .menu-item.signout:hover {
   background: rgba(229, 72, 77, 0.08);
 }
+.menu-section {
+  border-top: 1px solid var(--border);
+}
+.menu-section:first-of-type {
+  border-top: none;
+}
+.menu-group-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 9px;
+}
+.menu-group-head:hover {
+  background: var(--bg);
+}
+.menu-chev {
+  color: var(--muted);
+  font-size: 12px;
+  transition: transform 0.15s;
+}
+.menu-chev.open {
+  transform: rotate(180deg);
+}
+.menu-item.sub {
+  padding-left: 24px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.menu-item.sub:hover {
+  color: var(--navy);
+}
 
 .guide-item {
   display: flex;
@@ -1540,6 +1578,31 @@ button.recording {
    UI refresh: inbox-detox surfaces (capture / tabs / review)
    ============================================================ */
 
+.coachmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: var(--mint);
+  border: 1px solid var(--teal);
+  border-radius: 12px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--navy);
+}
+.coachmark-got {
+  flex-shrink: 0;
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+  font-size: 13px;
+  padding: 6px 12px;
+}
+.coachmark-got:hover {
+  background: var(--teal-hover);
+  border-color: var(--teal-hover);
+}
 .capture-lead {
   margin: 0 0 2px;
   font-size: 17px;
