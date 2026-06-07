@@ -78,6 +78,11 @@ async function applyAdditiveMigrations(): Promise<void> {
     "ALTER TABLE users ADD COLUMN whatsapp_link_code TEXT",
     "ALTER TABLE users ADD COLUMN calendar_token TEXT",
     "ALTER TABLE tasks ADD COLUMN estimate_minutes INTEGER",
+    "ALTER TABLE tasks ADD COLUMN leave_minutes INTEGER",
+    "ALTER TABLE tasks ADD COLUMN geo_lat REAL",
+    "ALTER TABLE tasks ADD COLUMN geo_lng REAL",
+    "ALTER TABLE tasks ADD COLUMN remind_on_arrival INTEGER NOT NULL DEFAULT 0",
+    "ALTER TABLE reminders ADD COLUMN kind TEXT NOT NULL DEFAULT 'rule'",
   ];
   for (const stmt of additions) {
     try {

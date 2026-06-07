@@ -22,6 +22,32 @@ interface ReminderRow {
   user_id: string;
   fire_at: string;
   status: string;
+  kind?: string;
+}
+
+/** Email for a "leave-by" nudge (time-to-set-off for a task with a place). */
+function leaveEmail(task: Task, tz: string) {
+  const due =
+    task.due_at && task.due_type === "datetime"
+      ? DateTime.fromISO(task.due_at, { zone: tz }).toFormat("HH:mm")
+      : null;
+  const link = config.appBaseUrl;
+  const lines = [
+    `Time to set off for: ${task.title}`,
+    task.location ? `Where: ${task.location}` : "",
+    due ? `Arrive by: ${due}` : "",
+  ].filter(Boolean);
+  const bodyHtml = `
+    ${task.location ? `<div style="color:${emailBrand.muted};font-size:14px">Where: ${esc(task.location)}</div>` : ""}
+    ${due ? `<div style="color:${emailBrand.muted};font-size:14px;margin-top:2px">Arrive by: ${esc(due)}</div>` : ""}
+    <p style="color:${emailBrand.text};margin:12px 0 0">Set off now to arrive on time.</p>`;
+  const html = emailShell({
+    heading: `🚗 Time to leave — ${esc(task.title)}`,
+    bodyHtml,
+    ctaText: link ? "Open nudge" : undefined,
+    ctaUrl: link,
+  });
+  return { subject: `🚗 Time to leave — ${task.title}`, text: lines.join("\n"), html };
 }
 
 function reminderEmail(task: Task, tz: string) {
@@ -113,7 +139,7 @@ export async function runDispatch(
     .toUTC()
     .toISO();
   const res = await db.execute({
-    sql: `SELECT id, task_id, user_id, fire_at, status FROM reminders
+    sql: `SELECT id, task_id, user_id, fire_at, status, kind FROM reminders
           WHERE status = 'pending' AND fire_at <= ?
           ORDER BY fire_at ASC LIMIT 500`,
     args: [windowEnd],
@@ -143,22 +169,31 @@ export async function runDispatch(
     if (!(await claimReminder(r.id, now))) continue;
 
     try {
+      const isLeave = r.kind === "leave";
       const { channels } = parseUserSettings(user);
       // Email reminders are a Pro feature; free users get push only.
       if (channels.email && user.email && isPro(user)) {
-        const msg = reminderEmail(task, user.timezone);
+        const msg = isLeave ? leaveEmail(task, user.timezone) : reminderEmail(task, user.timezone);
         await sendEmail({ to: user.email, ...msg });
       }
       if (channels.push) {
-        const payload = {
-          title: `⏰ ${task.title}`,
-          body: task.detail ?? "Tap to open nudge",
-          // Relative path: the tap stays inside the app/PWA origin. An absolute
-          // URL (esp. the raw Render host) would open the system browser instead.
-          url: "/",
-          taskId: task.id,
-          doneStatus: task.category === "pay" ? "paid" : "done",
-        };
+        const payload = isLeave
+          ? {
+              title: `🚗 Time to leave — ${task.title}`,
+              body: task.location ? `Head to ${task.location}` : "Set off now to be on time",
+              url: "/",
+              taskId: task.id,
+              doneStatus: task.category === "pay" ? "paid" : "done",
+            }
+          : {
+              title: `⏰ ${task.title}`,
+              body: task.detail ?? "Tap to open nudge",
+              // Relative path: the tap stays inside the app/PWA origin. An absolute
+              // URL (esp. the raw Render host) would open the system browser instead.
+              url: "/",
+              taskId: task.id,
+              doneStatus: task.category === "pay" ? "paid" : "done",
+            };
         await sendPushToUser(user.id, payload); // web push (PWA / desktop)
         await sendFcmToUser(user.id, payload); // native push (Android app)
       }

@@ -134,6 +134,10 @@ CREATE TABLE IF NOT EXISTS tasks (
   assignee_id    TEXT REFERENCES users(id),      -- shared task assigned to a member
   recurrence     TEXT,                            -- json: {freq, interval} for repeating tasks
   estimate_minutes INTEGER,                        -- AI/user estimate of effort (ADHD time-blindness)
+  leave_minutes  INTEGER,                          -- "leave-by": nudge this many minutes before due_at
+  geo_lat        REAL,                             -- geofence scaffold (arrival reminders; native, later)
+  geo_lng        REAL,
+  remind_on_arrival INTEGER NOT NULL DEFAULT 0,    -- 1 = fire when the user reaches the place (not yet enabled)
   created_at     TEXT NOT NULL,
   updated_at     TEXT NOT NULL,
   completed_at   TEXT
@@ -161,6 +165,7 @@ CREATE TABLE IF NOT EXISTS reminders (
   fire_at   TEXT NOT NULL,                       -- ISO 8601 UTC
   channel   TEXT NOT NULL DEFAULT 'email',
   status    TEXT NOT NULL DEFAULT 'pending',     -- pending | sent | cancelled
+  kind      TEXT NOT NULL DEFAULT 'rule',         -- 'rule' | 'leave' (time-to-leave nudge)
   sent_at   TEXT
 );
 

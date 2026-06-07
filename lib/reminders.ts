@@ -254,6 +254,31 @@ export async function generateRemindersForTask(task: Task): Promise<void> {
       });
     }
   }
+
+  // "Leave-by" nudge: a timed task with a place + lead time gets an extra
+  // reminder early enough to set off (e.g. "leave now for the 3pm pickup").
+  if (
+    task.due_type === "datetime" &&
+    task.location &&
+    task.leave_minutes &&
+    task.leave_minutes > 0 &&
+    task.due_at
+  ) {
+    const due = DateTime.fromISO(task.due_at, { zone: user.timezone });
+    if (due.isValid) {
+      const leaveAt = due.minus({ minutes: task.leave_minutes }).toUTC();
+      const iso = leaveAt.toISO();
+      if (iso && leaveAt > DateTime.now().toUTC()) {
+        for (const uid of targets) {
+          await db.execute({
+            sql: `INSERT INTO reminders (id, task_id, user_id, fire_at, channel, status, kind, sent_at)
+                  VALUES (?,?,?,?,?,?,?,?)`,
+            args: [newId("rem"), task.id, uid, iso, "all", "pending", "leave", null],
+          });
+        }
+      }
+    }
+  }
 }
 
 /** Regenerate reminders for all of a user's active tasks (after a rules edit). */
