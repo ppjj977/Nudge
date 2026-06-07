@@ -56,25 +56,6 @@ export default function CaptureBox({
   const [created, setCreated] = useState<TaskView[]>([]);
   const [createdVia, setCreatedVia] = useState("");
   const [showCreated, setShowCreated] = useState(false);
-  const [showCoach, setShowCoach] = useState(false);
-
-  // First-run hint, shown once (then remembered).
-  useEffect(() => {
-    try {
-      if (!localStorage.getItem("nudge_coach_seen")) setShowCoach(true);
-    } catch {
-      /* storage blocked — just skip the hint */
-    }
-  }, []);
-
-  function dismissCoach() {
-    setShowCoach(false);
-    try {
-      localStorage.setItem("nudge_coach_seen", "1");
-    } catch {
-      /* ignore */
-    }
-  }
 
   // Tasks created from a native "Share to nudge" land here (stashed by
   // NativeExtras before it navigated back), so they get the same verify cards.
@@ -260,17 +241,6 @@ export default function CaptureBox({
 
   return (
     <div className="capture">
-      {showCoach && (
-        <div className="coachmark">
-          <span>
-            👋 <b>Start here.</b> Type below — or tap an example — and Nudge turns it
-            into a reminder.
-          </span>
-          <button className="coachmark-got" onClick={dismissCoach}>
-            Got it
-          </button>
-        </div>
-      )}
       <p className="capture-lead">What do you need to remember?</p>
       <p className="capture-sub">
         Type it, paste a message, snap a photo or record a note — Nudge finds the
@@ -294,7 +264,6 @@ export default function CaptureBox({
               onClick={() => {
                 setText(ex);
                 textareaRef.current?.focus();
-                dismissCoach();
               }}
             >
               {ex}

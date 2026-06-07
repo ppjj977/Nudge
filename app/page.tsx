@@ -9,6 +9,7 @@ import Timeline from "./Timeline";
 import { type TaskView } from "./TaskCard";
 import Landing from "./Landing";
 import Onboarding from "./Onboarding";
+import Tutorial from "./Tutorial";
 import PushPrompt from "./PushPrompt";
 import { pushEnabled } from "@/lib/push";
 
@@ -62,6 +63,7 @@ export default async function Dashboard({
 
   return (
     <>
+      <Tutorial />
       <div className="greeting">
         <h1>
           {greeting(now.hour)}
