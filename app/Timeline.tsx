@@ -5,12 +5,13 @@ import TaskCard, { type TaskView } from "./TaskCard";
 import type { FamilyTask } from "@/lib/tasks";
 import type { Member } from "@/lib/households";
 
-type Tab = "today" | "week" | "later" | "family" | "money" | "review";
+type Tab = "today" | "week" | "later" | "unscheduled" | "family" | "money" | "review";
 
 const EMPTY: Record<Tab, string> = {
   today: "Nothing for today. Breathe.",
   week: "Nothing booked this week.",
   later: "Nothing parked for later.",
+  unscheduled: "No loose to-dos — everything has a home.",
   family: "Nothing shared with the family yet.",
   money: "No payments to track right now.",
   review: "Nothing to review — you’re all caught up.",
@@ -20,6 +21,7 @@ export default function Timeline({
   today,
   week,
   later,
+  unscheduled,
   review,
   family,
   members,
@@ -30,6 +32,7 @@ export default function Timeline({
   today: TaskView[];
   week: TaskView[];
   later: TaskView[];
+  unscheduled: TaskView[];
   review: TaskView[];
   family: FamilyTask[];
   members: Member[];
@@ -37,12 +40,15 @@ export default function Timeline({
   inHousehold: boolean;
   meId: string;
 }) {
-  const money = [...today, ...week, ...later].filter((t) => t.category === "pay");
+  const money = [...today, ...week, ...later, ...unscheduled].filter(
+    (t) => t.category === "pay",
+  );
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "today", label: "Today" },
     { key: "week", label: "This week" },
     { key: "later", label: "Later" },
+    { key: "unscheduled", label: "To-dos" },
     ...(inHousehold ? [{ key: "family" as Tab, label: "Family" }] : []),
     { key: "money", label: "Money" },
     { key: "review", label: "Needs review" },
@@ -51,6 +57,7 @@ export default function Timeline({
     today: today.length,
     week: week.length,
     later: later.length,
+    unscheduled: unscheduled.length,
     family: family.length,
     money: money.length,
     review: review.length,
@@ -58,10 +65,12 @@ export default function Timeline({
 
   const [tab, setTab] = useState<Tab>(review.length > 0 ? "review" : "today");
 
-  const owned: Record<"today" | "week" | "later" | "money", TaskView[]> = {
+  type OwnedTab = "today" | "week" | "later" | "unscheduled" | "money";
+  const owned: Record<OwnedTab, TaskView[]> = {
     today,
     week,
     later,
+    unscheduled,
     money,
   };
 
@@ -131,12 +140,16 @@ export default function Timeline({
           ))
         ))}
 
+      {tab === "unscheduled" && unscheduled.length > 0 && (
+        <p className="note">To-dos with no date attached — do them whenever.</p>
+      )}
+
       {tab !== "family" &&
         tab !== "review" &&
-        (owned[tab as "today" | "week" | "later" | "money"].length === 0 ? (
+        (owned[tab as OwnedTab].length === 0 ? (
           <div className="empty">{EMPTY[tab]}</div>
         ) : (
-          owned[tab as "today" | "week" | "later" | "money"].map((t) => (
+          owned[tab as OwnedTab].map((t) => (
             <TaskCard
               key={t.id}
               task={t}

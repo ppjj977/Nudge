@@ -55,6 +55,7 @@ export default async function Dashboard({
     timeline.today.length +
       timeline.week.length +
       timeline.later.length +
+      timeline.unscheduled.length +
       timeline.review.length +
       family.length ===
     0;
@@ -81,6 +82,7 @@ export default async function Dashboard({
           today={timeline.today.map(toView)}
           week={timeline.week.map(toView)}
           later={timeline.later.map(toView)}
+          unscheduled={timeline.unscheduled.map(toView)}
           review={timeline.review.map(toView)}
           family={family}
           members={members}
