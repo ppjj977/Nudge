@@ -113,6 +113,13 @@ server-side later — `PurchasePro` shows a graceful fallback until configured. 
 upload → create Play products → configure RevenueCat (+ webhook auth) → set the Render
 env var + redeploy → test as license tester → promote to production.
 
+## Advertising ID declaration
+**No** — nudge uses no ads, ad-attribution, or analytics SDK. (FCM push alone doesn't
+add `AD_ID`; RevenueCat doesn't by default.) If Play ever blocks a release saying the
+`com.google.android.gms.permission.AD_ID` permission is in the merged manifest, add a
+manifest rule to strip it (`<uses-permission android:name="com.google.android.gms.permission.AD_ID"
+tools:node="remove"/>` via a `native/patch-*.js`) and rebuild — keeps the "No" airtight.
+
 ## Upload notes
 - First AAB: version code 1 (1.0), ~8 MB, minSdk API 24 (Android 7+).
 - The 2 upload **warnings** (no deobfuscation file; no native debug symbols) are
