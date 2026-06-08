@@ -56,10 +56,28 @@ function rich(s: string): string {
 }
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
+/** The new sun mark (green disc + white n + amber rays) centred at (cx,cy). */
+function sunMark(cx: number, cy: number, r: number): string {
+  const inner = r + r * 0.36;
+  const outer = r + r * 0.92;
+  const w = Math.max(2, r * 0.2);
+  const fs = r * 1.5;
+  const base = cy + fs * 0.35;
+  let rays = "";
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * 2 * Math.PI;
+    rays += `<line x1="${(cx + inner * Math.cos(a)).toFixed(1)}" y1="${(cy + inner * Math.sin(a)).toFixed(1)}" x2="${(cx + outer * Math.cos(a)).toFixed(1)}" y2="${(cy + outer * Math.sin(a)).toFixed(1)}"/>`;
+  }
+  return (
+    `<g stroke="${C.amber}" stroke-width="${w}" stroke-linecap="round">${rays}</g>` +
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${C.green}"/>` +
+    `<text x="${cx}" y="${base.toFixed(1)}" font-size="${fs.toFixed(0)}" font-weight="800" fill="${C.white}" text-anchor="middle">n</text>`
+  );
+}
+
 const WORDMARK = `
-  <rect x="430" y="70" width="64" height="64" rx="18" fill="${C.green}"/>
-  <text x="462" y="116" font-size="40" font-weight="800" fill="${C.white}" text-anchor="middle">n</text>
-  <text x="512" y="116" font-size="38" font-weight="800" fill="${C.text}">nudge</text>`;
+  ${sunMark(452, 100, 24)}
+  <text x="512" y="115" font-size="38" font-weight="800" fill="${C.text}">nudge</text>`;
 
 /* Shared promo scene (animated) + strip (cover). */
 const PROMO_SCENE = `

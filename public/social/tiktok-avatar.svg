@@ -1,17 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" width="720" height="720">
-  <!-- Nudge — circle-safe profile avatar (TikTok/IG). Mark centred so it never
-       clips when cropped to a circle. -->
-  <rect width="720" height="720" fill="#7BAA94"/>
-  <g transform="translate(3.5,81) scale(6.2)">
-    <!-- arc / cradle -->
-    <path d="M32.4 75.8 A29 29 0 1 1 65.6 75.8" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none"/>
-    <!-- nudge dot -->
-    <circle cx="49" cy="56" r="8" fill="#F5B52E"/>
-    <!-- nudge lines -->
-    <g stroke="#F5B52E" stroke-width="4.2" stroke-linecap="round">
-      <path d="M70 30 L75 18"/>
-      <path d="M78 27 L84 14"/>
-      <path d="M85 32 L95 25"/>
-    </g>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" width="720" height="720"><rect width="720" height="720" fill="#3C5A4C"/><g stroke="#F5B52E" stroke-width="24" stroke-linecap="round"><line x1="523.2" y1="360.0" x2="590.4" y2="360.0"/><line x1="510.8" y1="422.5" x2="572.9" y2="448.2"/><line x1="475.4" y1="475.4" x2="522.9" y2="522.9"/><line x1="422.5" y1="510.8" x2="448.2" y2="572.9"/><line x1="360.0" y1="523.2" x2="360.0" y2="590.4"/><line x1="297.5" y1="510.8" x2="271.8" y2="572.9"/><line x1="244.6" y1="475.4" x2="197.1" y2="522.9"/><line x1="209.2" y1="422.5" x2="147.1" y2="448.2"/><line x1="196.8" y1="360.0" x2="129.6" y2="360.0"/><line x1="209.2" y1="297.5" x2="147.1" y2="271.8"/><line x1="244.6" y1="244.6" x2="197.1" y2="197.1"/><line x1="297.5" y1="209.2" x2="271.8" y2="147.1"/><line x1="360.0" y1="196.8" x2="360.0" y2="129.6"/><line x1="422.5" y1="209.2" x2="448.2" y2="147.1"/><line x1="475.4" y1="244.6" x2="522.9" y2="197.1"/><line x1="510.8" y1="297.5" x2="572.9" y2="271.8"/></g><circle cx="360" cy="360" r="120" fill="#7BAA94"/><text x="360" y="423.0" font-family="Manrope, Arial, sans-serif" font-size="180" font-weight="800" fill="#FFFFFF" text-anchor="middle">n</text></svg>
