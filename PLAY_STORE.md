@@ -66,6 +66,13 @@ demo video). Deferred.
     live** (not collected before billing ships; a "£15" in a task is user content)
   - Leave empty: Health/fitness, Calendar (no device-calendar read), Contacts (invites
     typed manually), Web browsing, App info & performance (no analytics/crash SDK).
+- Data usage & handling (Step 4) — same for every type: **Collected** (never Shared —
+  Groq/Resend/FCM/Turso/Render are service providers, exempt from "shared"); **not**
+  processed ephemerally (stored); purpose **App functionality** (+ **Account management**
+  for Name & Email). Required vs optional: **Email = required**; everything else =
+  **optional** (user chooses to add a photo/voice/email-in/task or enable notifications).
+  App activity should be **only "Other user-generated content"** (no analytics → no App
+  interactions/Other actions).
 - Processors (disclosed in `/privacy`, `/data-safety`): Groq, Resend, FCM/Google,
   Render, Turso, Google Sign-in, and — when live — RevenueCat + Google Play Billing.
   Meta/WhatsApp only if the forwarding feature stays on.
