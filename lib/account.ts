@@ -58,8 +58,20 @@ export async function deleteUserAccount(userId: string): Promise<void> {
     args: [userId],
   });
 
+  // Lists they created (and the items in them); detach items they added to
+  // other people's lists so the foreign key doesn't block the delete.
+  await db.execute({ sql: "UPDATE list_items SET added_by = NULL WHERE added_by = ?", args: [userId] });
+  await db.execute({
+    sql: "DELETE FROM list_items WHERE list_id IN (SELECT id FROM lists WHERE user_id = ?)",
+    args: [userId],
+  });
+  await db.execute({ sql: "DELETE FROM lists WHERE user_id = ?", args: [userId] });
+
   // The user's own rows.
   await db.execute({ sql: "DELETE FROM push_subscriptions WHERE user_id = ?", args: [userId] });
+  await db.execute({ sql: "DELETE FROM fcm_tokens WHERE user_id = ?", args: [userId] });
+  await db.execute({ sql: "DELETE FROM places WHERE user_id = ?", args: [userId] }); // geofence lat/lng
+  await db.execute({ sql: "DELETE FROM promo_redemptions WHERE user_id = ?", args: [userId] });
   await db.execute({ sql: "DELETE FROM tasks WHERE user_id = ?", args: [userId] });
   await db.execute({ sql: "DELETE FROM captures WHERE user_id = ?", args: [userId] });
   await db.execute({ sql: "DELETE FROM digest_log WHERE user_id = ?", args: [userId] });

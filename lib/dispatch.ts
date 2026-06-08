@@ -10,6 +10,7 @@ import { sendEmail, esc, emailShell, emailBrand } from "./email";
 import { sendPushToUser } from "./push";
 import { sendFcmToUser } from "./fcm";
 import { composeDigest } from "./digest";
+import { purgeExpiredRawCaptures } from "./captures";
 import { config } from "./config";
 
 /* -------------------------------------------------------------------------- */
@@ -93,6 +94,7 @@ export interface DispatchResult {
   due: number;
   sent: number;
   cancelled: number;
+  purged?: number;
 }
 
 /**
@@ -171,7 +173,9 @@ export async function runDispatch(
       throw err;
     }
   }
-  return { due: rows.length, sent, cancelled };
+  // Drop raw capture payloads past the retention window (Data Safety promise).
+  const purged = await purgeExpiredRawCaptures(now.toJSDate());
+  return { due: rows.length, sent, cancelled, purged };
 }
 
 /**
