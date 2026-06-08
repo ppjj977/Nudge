@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { isPro, FREE_MONTHLY_CAPTURES } from "@/lib/plan";
 import RedeemForm from "../RedeemForm";
+import PurchasePro from "../PurchasePro";
 
 export const dynamic = "force-dynamic";
 
@@ -40,10 +41,7 @@ export default async function UpgradePage() {
             <li>Nudge Family — shared tasks &amp; lists for the household</li>
             <li>Recurring tasks, birthdays &amp; trips</li>
           </ul>
-          <p className="note">
-            Paid subscriptions are coming shortly. In the meantime, if you have a
-            code, redeem it below.
-          </p>
+          <PurchasePro userId={user.id} />
         </section>
       )}
 
