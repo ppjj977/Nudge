@@ -10,13 +10,7 @@
   <!-- logo tile -->
   <g transform="translate(80 130)">
     <rect width="240" height="240" rx="52" fill="#FFFFFF"/>
-    <g transform="translate(20 20) scale(2.0)">
-      <path d="M32.4 75.8 A29 29 0 1 1 65.6 75.8" stroke="#7BAA94" stroke-width="12" stroke-linecap="round" fill="none"/>
-      <circle cx="49" cy="56" r="8" fill="#F5B52E"/>
-      <g stroke="#F5B52E" stroke-width="4.2" stroke-linecap="round">
-        <path d="M70 30 L75 18"/><path d="M78 27 L84 14"/><path d="M85 32 L95 25"/>
-      </g>
-    </g>
+    <g stroke="#F5B52E" stroke-width="10.4" stroke-linecap="round"><line x1="190.7" y1="120.0" x2="219.8" y2="120.0"/><line x1="185.3" y1="147.1" x2="212.2" y2="158.2"/><line x1="170.0" y1="170.0" x2="190.6" y2="190.6"/><line x1="147.1" y1="185.3" x2="158.2" y2="212.2"/><line x1="120.0" y1="190.7" x2="120.0" y2="219.8"/><line x1="92.9" y1="185.3" x2="81.8" y2="212.2"/><line x1="70.0" y1="170.0" x2="49.4" y2="190.6"/><line x1="54.7" y1="147.1" x2="27.8" y2="158.2"/><line x1="49.3" y1="120.0" x2="20.2" y2="120.0"/><line x1="54.7" y1="92.9" x2="27.8" y2="81.8"/><line x1="70.0" y1="70.0" x2="49.4" y2="49.4"/><line x1="92.9" y1="54.7" x2="81.8" y2="27.8"/><line x1="120.0" y1="49.3" x2="120.0" y2="20.2"/><line x1="147.1" y1="54.7" x2="158.2" y2="27.8"/><line x1="170.0" y1="70.0" x2="190.6" y2="49.4"/><line x1="185.3" y1="92.9" x2="212.2" y2="81.8"/></g><circle cx="120" cy="120" r="52" fill="#7BAA94"/><text x="120" y="147.3" font-family="Manrope, Arial, sans-serif" font-size="78" font-weight="800" fill="#FFFFFF" text-anchor="middle">n</text>
   </g>
 
   <!-- wordmark + tagline -->
