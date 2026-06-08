@@ -1582,6 +1582,41 @@ button.recording {
 .recent-item {
   margin-bottom: 14px;
 }
+.empty-captures {
+  margin-bottom: 16px;
+  border-left: 3px solid var(--amber);
+}
+.ec-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+.ec-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+.ec-item:first-child {
+  border-top: none;
+}
+.ec-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ec-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.ec-text {
+  font-size: 14px;
+  color: var(--text);
+}
 .recent-meta {
   display: flex;
   gap: 6px;
