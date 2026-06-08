@@ -2,9 +2,8 @@
   <!-- Nudge — Day 5 (promo): animated 9:16, loops 14s. Screen-record full-screen on a phone. -->
   <rect width="1080" height="1920" fill="#F8F7F4"/>
   
-  <rect x="430" y="70" width="64" height="64" rx="18" fill="#7BAA94"/>
-  <text x="462" y="116" font-size="40" font-weight="800" fill="#FFFFFF" text-anchor="middle">n</text>
-  <text x="512" y="116" font-size="38" font-weight="800" fill="#232A32">nudge</text>
+  <g stroke="#E8A24A" stroke-width="4.800000000000001" stroke-linecap="round"><line x1="484.6" y1="100.0" x2="498.1" y2="100.0"/><line x1="482.2" y1="112.5" x2="494.6" y2="117.6"/><line x1="475.1" y1="123.1" x2="484.6" y2="132.6"/><line x1="464.5" y1="130.2" x2="469.6" y2="142.6"/><line x1="452.0" y1="132.6" x2="452.0" y2="146.1"/><line x1="439.5" y1="130.2" x2="434.4" y2="142.6"/><line x1="428.9" y1="123.1" x2="419.4" y2="132.6"/><line x1="421.8" y1="112.5" x2="409.4" y2="117.6"/><line x1="419.4" y1="100.0" x2="405.9" y2="100.0"/><line x1="421.8" y1="87.5" x2="409.4" y2="82.4"/><line x1="428.9" y1="76.9" x2="419.4" y2="67.4"/><line x1="439.5" y1="69.8" x2="434.4" y2="57.4"/><line x1="452.0" y1="67.4" x2="452.0" y2="53.9"/><line x1="464.5" y1="69.8" x2="469.6" y2="57.4"/><line x1="475.1" y1="76.9" x2="484.6" y2="67.4"/><line x1="482.2" y1="87.5" x2="494.6" y2="82.4"/></g><circle cx="452" cy="100" r="24" fill="#7BAA94"/><text x="452" y="112.6" font-size="36" font-weight="800" fill="#FFFFFF" text-anchor="middle">n</text>
+  <text x="512" y="115" font-size="38" font-weight="800" fill="#232A32">nudge</text>
 
   <!-- SCENE 1: hook + the messy input -->
   <g opacity="0">

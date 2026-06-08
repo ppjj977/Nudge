@@ -85,7 +85,14 @@ export function emailShell(opts: {
       : "";
   return `<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:${BRAND.bg};padding:24px 16px">
     <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid ${BRAND.border};border-radius:16px;padding:24px">
-      <div style="font-weight:800;font-size:20px;letter-spacing:-0.3px;color:${BRAND.green}">nudge</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        ${
+          config.appBaseUrl
+            ? `<img src="${config.appBaseUrl.replace(/\/$/, "")}/icon-192.png" width="28" height="28" alt="" style="display:inline-block;vertical-align:middle"/>`
+            : ""
+        }
+        <span style="font-weight:800;font-size:20px;letter-spacing:-0.3px;color:${BRAND.green};vertical-align:middle">nudge</span>
+      </div>
       <h1 style="font-size:19px;line-height:1.3;color:${BRAND.text};margin:14px 0 6px">${heading}</h1>
       ${intro ? `<p style="color:${BRAND.muted};margin:0 0 10px;font-size:15px">${intro}</p>` : ""}
       ${bodyHtml}
