@@ -113,6 +113,15 @@ server-side later — `PurchasePro` shows a graceful fallback until configured. 
 upload → create Play products → configure RevenueCat (+ webhook auth) → set the Render
 env var + redeploy → test as license tester → promote to production.
 
+## Upload notes
+- First AAB: version code 1 (1.0), ~8 MB, minSdk API 24 (Android 7+).
+- The 2 upload **warnings** (no deobfuscation file; no native debug symbols) are
+  optional crash-debugging niceties — **safe to ignore**, non-blocking.
+- ⚠️ **New personal dev account gate:** must run a **closed test with ≥12 testers
+  opted in for 14 continuous days** before applying for production. Line up ~12 Gmail
+  testers early — this 14-day clock is the main launch blocker. Add them on the Closed
+  testing → Testers tab (email list or Google Group).
+
 ## Build & roll out
 1. `git tag v1.0.0 && git push --tags` → `android-release.yml` builds signed `nudge.aab`.
 2. Upload to **Internal testing** first (instant), confirm install + login.
