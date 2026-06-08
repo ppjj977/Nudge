@@ -8,8 +8,43 @@ import { createManualTask } from "@/lib/tasks";
 import { sendPushToUser } from "@/lib/push";
 import { sendFcmToUser } from "@/lib/fcm";
 import { parseFirstEvent, extractVCalendar } from "@/lib/ical";
+import { sendEmail, esc } from "@/lib/email";
 
 export const runtime = "nodejs";
+
+/** Local-parts treated as support mailboxes and forwarded, not parsed. */
+const SUPPORT_LOCALPARTS = new Set(["hello", "nudge", "support", "feedback"]);
+
+/**
+ * Forward a support email (hello@/nudge@) to the real inbox in config. Sends
+ * from the verified domain with Reply-To set to the original sender, so a reply
+ * goes straight back to whoever wrote in.
+ */
+async function forwardSupportEmail(toAddr: string, data: InboundEmail): Promise<void> {
+  const dest = config.supportForwardTo;
+  if (!dest) return;
+  const from = extractEmail(data.from);
+  const subject = (data.subject ?? "").trim() || "(no subject)";
+  let text = (data.text ?? "").trim();
+  let html = data.html ?? "";
+  if (!text && !html && data.email_id) {
+    const got = await fetchInboundBody(data.email_id);
+    if (got) {
+      text = (got.text ?? "").trim();
+      html = got.html ?? "";
+    }
+  }
+  const bodyText = text || htmlToText(html) || "(no body)";
+  await sendEmail({
+    to: dest,
+    replyTo: from || undefined,
+    subject: `[${toAddr}] ${subject}`,
+    text: `Forwarded from ${from || "unknown"} → ${toAddr}\n\n${bodyText}`,
+    html:
+      `<p style="color:#667085;font-size:13px">Forwarded from <b>${esc(from || "unknown")}</b> → ${esc(toAddr)}</p>` +
+      (html || `<p style="white-space:pre-wrap;color:#232A32">${esc(bodyText)}</p>`),
+  }).catch((e) => console.error("[inbound] support forward failed", e));
+}
 
 async function push(userId: string, title: string, body: string, url = "/recent") {
   const payload = { title, body, url };
@@ -94,6 +129,19 @@ export async function POST(req: Request) {
   const dataKeys = Object.keys(data);
   const recipients = toList(data.to);
   const domain = config.inbound.domain?.toLowerCase();
+
+  // Support mailboxes (hello@/nudge@) land here too because the domain's MX
+  // points at Resend inbound. Forward those to a real inbox instead of trying
+  // to extract a task. Runs before per-user matching.
+  if (config.supportForwardTo) {
+    const hit = recipients.find((r) =>
+      SUPPORT_LOCALPARTS.has(extractEmail(r).toLowerCase().split("@")[0]),
+    );
+    if (hit) {
+      await forwardSupportEmail(extractEmail(hit).toLowerCase(), data);
+      return NextResponse.json({ ok: true, forwarded: extractEmail(hit).toLowerCase() });
+    }
+  }
 
   // Find the recipient that belongs to us and map it to a user.
   let localPart: string | null = null;

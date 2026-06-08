@@ -50,9 +50,13 @@ Android (remote WebView, `server.url = https://nudgelive.co.uk`), hosted on Rend
 - **Email-in (inbound capture):** Resend inbound on the **`in.` subdomain**
   (`INBOUND_DOMAIN`, e.g. `in.nudgelive.co.uk`) — so the **root `nudgelive.co.uk` MX is
   free** for normal mailboxes without breaking email-in or Resend sending (SPF/DKIM are TXT).
-- **Free inbox for `nudge@`/`hello@`:** forward the root domain to a Gmail via a free
-  forwarder (ImprovMX / Cloudflare Email Routing / registrar forwarding) — DNS is at
-  names.co.uk. Add root MX for the forwarder; leave the `in.` subdomain MX (Resend) alone.
+- **Root MX points at Resend inbound** (blank-host MX → `inbound-smtp.eu-west-1.amazonaws.com`),
+  so ALL `@nudgelive.co.uk` mail hits `/api/inbound`. No separate mailbox provider needed.
+- **`hello@`/`nudge@`/`support@`/`feedback@` are forwarded in code** by `/api/inbound`
+  (`SUPPORT_LOCALPARTS`) to `SUPPORT_FORWARD_TO` (defaults to `ADMIN_EMAIL`) — a real
+  Gmail — with Reply-To = original sender. Set `SUPPORT_FORWARD_TO` in Render. No DNS
+  changes, no Zoho/ImprovMX. (A real login-able mailbox would need moving email-in to a
+  subdomain first — avoided.)
 - **Feedback:** `/feedback` (menu → Account) → `/api/feedback` → emails `SUPPORT_EMAIL`
   (Reply-To = the user). **Waitlist alert:** `/api/interest` emails `ADMIN_EMAIL`/support
   on each genuinely new sign-up.
