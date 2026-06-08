@@ -18,9 +18,13 @@ demo video). Deferred.
   sign-in is also available.
 - **Ads:** No (no ad SDKs).
 - **Content rating (IARC):** category Utility/Productivity; No to violence, sexuality,
-  profanity, controlled substances, gambling; users share content only within a
-  private family group (no public/social, no stranger contact); no user location
-  shared. → PEGI 3 / Everyone.
+  profanity, controlled substances, gambling; no user location shared. → PEGI 3 / Everyone.
+  - *User-content-sharing branch (Nudge Family):* "Does the app allow users to
+    interact/exchange content?" **Yes** (family task/list sharing — text only, no
+    voice, no free-form messaging). Then: is shared UGC the primary content? **No** ·
+    public nudity? **No** · public graphic violence? **No** · block users? **No** ·
+    report users? **No** · chat moderation? **No** (no chat) · **interactions limited
+    to invited friends only? Yes** (this is the safety control that keeps it Everyone).
 - **Target audience:** 18+ (or 13+); do NOT include under-13. Appeals to children: No.
 - **News / COVID / Government / Financial features / Health:** No to all (bills are
   reminders only — no banking/payments/health functions).
