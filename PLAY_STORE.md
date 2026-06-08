@@ -25,6 +25,13 @@ demo video). Deferred.
     public nudity? **No** · public graphic violence? **No** · block users? **No** ·
     report users? **No** · chat moderation? **No** (no chat) · **interactions limited
     to invited friends only? Yes** (this is the safety control that keeps it Everyone).
+  - *Online content:* "features/promotes content not in the download?" **Yes** —
+    connected app (synced data) + generative AI (task extraction & step-breakdowns).
+    Content surfaced is the user's own private input + AI summaries of it only (no
+    public catalog/feed). Doesn't raise the rating.
+- **Generative AI** (App content section, separate from the rating): declare **Yes**.
+  AI only transforms the user's own captures into their own tasks — no image gen, no
+  open-ended chatbot, no public output.
 - **Target audience:** 18+ (or 13+); do NOT include under-13. Appeals to children: No.
 - **News / COVID / Government / Financial features / Health:** No to all (bills are
   reminders only — no banking/payments/health functions).
