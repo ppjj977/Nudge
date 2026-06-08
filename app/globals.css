@@ -1083,6 +1083,20 @@ button.recording {
 .cal-cta {
   display: inline-block;
 }
+.invite-link {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.invite-link-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 6px 0;
+}
+.invite-link-row .cal-url {
+  flex: 1;
+}
 .cal-url {
   width: 100%;
   background: var(--bg);

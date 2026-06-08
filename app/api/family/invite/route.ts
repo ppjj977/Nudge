@@ -78,5 +78,7 @@ export async function POST(req: Request) {
     }),
   });
 
-  return NextResponse.json({ ok: true, sent });
+  // Return the link too, so the inviter can copy/share it directly — email can
+  // land in junk, and a link sent over WhatsApp/text always gets through.
+  return NextResponse.json({ ok: true, sent, link });
 }
