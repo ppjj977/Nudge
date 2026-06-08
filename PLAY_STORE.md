@@ -29,6 +29,10 @@ demo video). Deferred.
     connected app (synced data) + generative AI (task extraction & step-breakdowns).
     Content surfaced is the user's own private input + AI summaries of it only (no
     public catalog/feed). Doesn't raise the rating.
+  - *Miscellaneous:* shares precise location with other users? **No** · purchase
+    digital goods? **Yes** (Pro subscription) · cash/gift-cards/play-to-earn/crypto/
+    NFTs? **No** · web browser or search engine? **No** · primarily news/educational?
+    **No**.
 - **Generative AI** (App content section, separate from the rating): declare **Yes**.
   AI only transforms the user's own captures into their own tasks — no image gen, no
   open-ended chatbot, no public output.
