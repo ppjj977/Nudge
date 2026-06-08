@@ -1578,6 +1578,18 @@ button.recording {
    UI refresh: inbox-detox surfaces (capture / tabs / review)
    ============================================================ */
 
+/* ---- recently added ---- */
+.recent-item {
+  margin-bottom: 14px;
+}
+.recent-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 0 2px 4px;
+}
 /* ---- first-run tutorial ---- */
 .tut-overlay {
   position: fixed;

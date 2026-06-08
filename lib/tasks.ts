@@ -332,6 +332,34 @@ export async function getActiveTasks(userId: string): Promise<Task[]> {
   return res.rows.map((r) => mapTaskRow(r as Record<string, unknown>));
 }
 
+export type RecentTask = Task & { capture_source: string | null };
+
+/**
+ * Recently created tasks (any status except dismissed), newest first — powers
+ * the "Recently added" view that confirms email/share/voice captures landed.
+ * Joins the capture so we can show how each one arrived.
+ */
+export async function getRecentlyCreated(
+  userId: string,
+  limit = 30,
+): Promise<RecentTask[]> {
+  const res = await db.execute({
+    sql: `SELECT t.*, c.source AS capture_source
+          FROM tasks t LEFT JOIN captures c ON c.id = t.capture_id
+          WHERE t.user_id = ? AND t.status IN ('active','review','done','paid')
+          ORDER BY t.created_at DESC
+          LIMIT ?`,
+    args: [userId, limit],
+  });
+  return res.rows.map((r) => {
+    const row = r as Record<string, unknown>;
+    return {
+      ...mapTaskRow(row),
+      capture_source: (row.capture_source as string | null) ?? null,
+    };
+  });
+}
+
 /** Completed tasks (done/paid), most recently finished first — for the Done view. */
 export async function getCompletedTasks(
   userId: string,
