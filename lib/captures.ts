@@ -1,4 +1,25 @@
 import { db, ensureSchema } from "./db";
+import { config } from "./config";
+
+/**
+ * Null out raw capture payloads (and the normalised text) once they're older
+ * than the retention window. The extracted tasks remain; only the original
+ * email/photo/voice text is dropped. This is what makes the Privacy Policy /
+ * Data Safety promise ("raw captures are purged after a short retention
+ * period") actually true. Driven from the dispatch cron.
+ */
+export async function purgeExpiredRawCaptures(now: Date = new Date()): Promise<number> {
+  await ensureSchema();
+  const days = config.retention.rawRetentionDays;
+  if (!days || days <= 0) return 0;
+  const cutoff = new Date(now.getTime() - days * 86_400_000).toISOString();
+  const res = await db.execute({
+    sql: `UPDATE captures SET raw_content = NULL, normalized_text = NULL
+          WHERE received_at < ? AND (raw_content IS NOT NULL OR normalized_text IS NOT NULL)`,
+    args: [cutoff],
+  });
+  return res.rowsAffected ?? 0;
+}
 
 /**
  * Captures that produced no task ("nothing actionable" or a failed read). These
