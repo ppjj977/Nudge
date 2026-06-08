@@ -104,6 +104,15 @@ Icon `public/icon-512.png` · Feature graphic `public/marketing/feature-graphic.
 · Screenshots `public/screenshots/*.png` (leaf-branded mockups) · all regenerable
 (`scripts/gen-*.ts`).
 
+## Subscriptions can be enabled AFTER upload (no AAB rebuild)
+The release AAB only needs the RevenueCat **native plugin** compiled in (it is, via the
+workflow). Products/prices/entitlement/offering live in Play + RevenueCat dashboards;
+the app reads `NEXT_PUBLIC_REVENUECAT_ANDROID_KEY` from the **Render** web build (the
+WebView loads the site, not the bundle). So upload the app first, then set up billing
+server-side later — `PurchasePro` shows a graceful fallback until configured. Order:
+upload → create Play products → configure RevenueCat (+ webhook auth) → set the Render
+env var + redeploy → test as license tester → promote to production.
+
 ## Build & roll out
 1. `git tag v1.0.0 && git push --tags` → `android-release.yml` builds signed `nudge.aab`.
 2. Upload to **Internal testing** first (instant), confirm install + login.
