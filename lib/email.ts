@@ -10,6 +10,8 @@ export interface EmailMessage {
   subject: string;
   html: string;
   text: string;
+  /** Optional Reply-To (e.g. route feedback replies back to the user). */
+  replyTo?: string;
 }
 
 export async function sendEmail(msg: EmailMessage): Promise<boolean> {
@@ -33,6 +35,7 @@ export async function sendEmail(msg: EmailMessage): Promise<boolean> {
       subject: msg.subject,
       html: msg.html,
       text: msg.text,
+      ...(msg.replyTo ? { reply_to: msg.replyTo } : {}),
     }),
   });
   if (!res.ok) {

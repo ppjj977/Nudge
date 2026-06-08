@@ -38,6 +38,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
       { href: "/profile", label: "Profile" },
       { href: "/settings", label: "Settings" },
       { href: "/help", label: "Categories & help" },
+      { href: "/feedback", label: "Send feedback" },
     ],
   },
 ];
