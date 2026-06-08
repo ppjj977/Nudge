@@ -54,7 +54,12 @@ export default function RecentCaptures({ items }: { items: Item[] }) {
               </span>
             </div>
             {made.has(it.id) ? (
-              <span className="note">✓ Added</span>
+              <button
+                className="link ec-view"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
+                ✓ Added — view ↑
+              </button>
             ) : (
               <button onClick={() => makeTask(it)} disabled={busy === it.id}>
                 {busy === it.id ? "…" : "Make a task"}
