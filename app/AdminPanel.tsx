@@ -20,6 +20,28 @@ export default function AdminPanel({ codes }: { codes: Code[] }) {
   const [grantDays, setGrantDays] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // demo / Play-review account
+  const [demoEmail, setDemoEmail] = useState("");
+  const [demoPass, setDemoPass] = useState("");
+  const [demoResult, setDemoResult] = useState<{ email: string; password: string } | null>(null);
+
+  async function makeDemo() {
+    setBusy(true);
+    setDemoResult(null);
+    setMsg(null);
+    const r = await fetch("/api/admin/demo", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: demoEmail || undefined, password: demoPass || undefined }),
+    });
+    setBusy(false);
+    const d = await r.json().catch(() => ({}));
+    if (r.ok) {
+      setDemoResult({ email: d.email, password: d.password });
+    } else {
+      setMsg(d.error || "Couldn’t create the demo account.");
+    }
+  }
 
   async function createCode() {
     if (!code.trim()) return;
@@ -80,6 +102,37 @@ export default function AdminPanel({ codes }: { codes: Code[] }) {
         <button className="primary" disabled={busy} onClick={grant}>
           Grant Pro
         </button>
+      </section>
+
+      <section className="panel">
+        <h2 className="section">Play-review demo account</h2>
+        <p className="note">
+          Creates (or refreshes) a login for Google Play reviewers — comped to Pro
+          with sample tasks. Leave blank for the defaults. Paste the result into
+          Play Console → App access.
+        </p>
+        <div className="field-row">
+          <label className="field">
+            <span>Email (blank = reviewer@nudgelive.co.uk)</span>
+            <input type="email" value={demoEmail} onChange={(e) => setDemoEmail(e.target.value)} />
+          </label>
+          <label className="field">
+            <span>Password (blank = a default)</span>
+            <input value={demoPass} onChange={(e) => setDemoPass(e.target.value)} />
+          </label>
+        </div>
+        <button className="primary" disabled={busy} onClick={makeDemo}>
+          Create / refresh demo account
+        </button>
+        {demoResult && (
+          <div className="note" style={{ marginTop: 10 }}>
+            ✓ Ready. Give Play these credentials:
+            <br />
+            <b>Email:</b> {demoResult.email}
+            <br />
+            <b>Password:</b> {demoResult.password}
+          </div>
+        )}
       </section>
 
       <section className="panel">

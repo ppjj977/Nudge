@@ -58,9 +58,13 @@ Add yourself as a **license tester** to buy without being charged and verify the
 purchase → webhook → `plan=pro` loop.
 
 ## Demo / review account
-`npx tsx scripts/seed-demo.ts` (override `DEMO_EMAIL`/`DEMO_PASSWORD`). Default:
-`reviewer@nudgelive.co.uk` / `NudgeDemo2026!`, comped to Pro, 5 sample tasks seeded.
-Give these to Play under App access.
+**No terminal needed:** log in as the admin (`ADMIN_EMAIL`) → **/admin → "Play-review
+demo account" → Create / refresh demo account**. It prints the email + password to
+paste into Play Console → App access. Defaults `reviewer@nudgelive.co.uk` /
+`NudgeDemo2026!`; both overridable in the form. Comped to Pro, 5 sample tasks seeded,
+idempotent. (CLI equivalent: `npx tsx scripts/seed-demo.ts` with optional
+`DEMO_EMAIL`/`DEMO_PASSWORD` — but DB scripts can't run from the Claude container.)
+Logic shared in `lib/demo.ts` (`seedDemoAccount`).
 
 ## Assets
 Icon `public/icon-512.png` · Feature graphic `public/marketing/feature-graphic.png`
