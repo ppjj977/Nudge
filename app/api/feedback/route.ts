@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   const fromUser = user?.email ?? "anonymous";
 
   const ok = await sendEmail({
-    to: config.supportEmail,
+    to: config.supportForwardTo ?? config.supportEmail,
     replyTo: user?.email,
     subject: `nudge feedback from ${fromUser}`,
     text: `From: ${fromUser}\n\n${trimmed}`,

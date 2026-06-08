@@ -14,7 +14,7 @@ async function alertNewSignup(input: {
   position: number;
   freeForLife: boolean;
 }): Promise<void> {
-  const to = config.adminEmail ?? config.supportEmail;
+  const to = config.supportForwardTo ?? config.adminEmail ?? config.supportEmail;
   if (!to) return;
   const bits = [
     `<b>${esc(input.email)}</b>`,
