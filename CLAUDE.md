@@ -44,6 +44,19 @@ Android (remote WebView, `server.url = https://nudgelive.co.uk`), hosted on Rend
   location = hard Play review).
 - Public pages: `/privacy`, `/terms`, `/data-safety` (the Data Safety answer key).
 
+## Email
+- **Sending:** Resend (`lib/email.ts` `sendEmail`, supports `replyTo`). `MAIL_FROM`,
+  `SUPPORT_EMAIL` (default `hello@nudgelive.co.uk`), `ADMIN_EMAIL`.
+- **Email-in (inbound capture):** Resend inbound on the **`in.` subdomain**
+  (`INBOUND_DOMAIN`, e.g. `in.nudgelive.co.uk`) — so the **root `nudgelive.co.uk` MX is
+  free** for normal mailboxes without breaking email-in or Resend sending (SPF/DKIM are TXT).
+- **Free inbox for `nudge@`/`hello@`:** forward the root domain to a Gmail via a free
+  forwarder (ImprovMX / Cloudflare Email Routing / registrar forwarding) — DNS is at
+  names.co.uk. Add root MX for the forwarder; leave the `in.` subdomain MX (Resend) alone.
+- **Feedback:** `/feedback` (menu → Account) → `/api/feedback` → emails `SUPPORT_EMAIL`
+  (Reply-To = the user). **Waitlist alert:** `/api/interest` emails `ADMIN_EMAIL`/support
+  on each genuinely new sign-up.
+
 ## Conventions
 - **Keep these docs current — every turn.** After each exchange that establishes a
   decision, changes a fact, or ships code, update the relevant doc (`CLAUDE.md` and/or

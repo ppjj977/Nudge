@@ -817,7 +817,8 @@ button.recording {
   color: var(--muted);
   margin-bottom: 4px;
 }
-.auth input {
+.auth input,
+.auth textarea {
   width: 100%;
   background: var(--bg);
   color: var(--text);
@@ -825,6 +826,10 @@ button.recording {
   border-radius: 8px;
   padding: 9px 11px;
   font: inherit;
+}
+.auth textarea {
+  resize: vertical;
+  min-height: 120px;
 }
 .auth-actions {
   display: flex;
