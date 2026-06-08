@@ -59,3 +59,15 @@ export async function getRecentEmptyCaptures(
     };
   });
 }
+
+/**
+ * Dismiss an empty capture — the user confirming "no task needed". Flags it so
+ * it drops out of getRecentEmptyCaptures (which only looks at processed/failed).
+ */
+export async function dismissCapture(userId: string, id: string): Promise<void> {
+  await ensureSchema();
+  await db.execute({
+    sql: "UPDATE captures SET status = 'dismissed' WHERE id = ? AND user_id = ?",
+    args: [id, userId],
+  });
+}

@@ -12,11 +12,12 @@ interface Item {
   label: string; // "📨 from email · 2h ago"
 }
 
-/** "Came in, no task" captures — with a one-tap rescue that makes a task. */
+/** "Came in, no task" captures — rescue into a task, or dismiss as "no action needed". */
 export default function RecentCaptures({ items }: { items: Item[] }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [made, setMade] = useState<Set<string>>(new Set());
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 
   async function makeTask(it: Item) {
     const title = (it.subject || it.snippet || "Follow up").slice(0, 120);
@@ -33,16 +34,25 @@ export default function RecentCaptures({ items }: { items: Item[] }) {
     }
   }
 
-  if (items.length === 0) return null;
+  function dismiss(it: Item) {
+    setDismissed((prev) => new Set(prev).add(it.id));
+    fetch(`/api/captures?id=${encodeURIComponent(it.id)}`, { method: "DELETE" }).catch(
+      () => {},
+    );
+  }
+
+  const visible = items.filter((it) => !dismissed.has(it.id));
+  if (visible.length === 0) return null;
 
   return (
     <section className="panel empty-captures">
       <h2 className="section">Came in — but no reminder made</h2>
       <p className="note">
-        Nudge couldn’t spot a task in these. Tap “Make a task” to add one yourself.
+        Nudge couldn’t spot a task in these. Make a task yourself, or dismiss if
+        nothing was needed.
       </p>
       <ul className="ec-list">
-        {items.map((it) => (
+        {visible.map((it) => (
           <li key={it.id} className="ec-item">
             <div className="ec-main">
               <span className="ec-label">{it.label}</span>
@@ -53,18 +63,25 @@ export default function RecentCaptures({ items }: { items: Item[] }) {
                 {it.status === "failed" ? " (couldn’t read it)" : ""}
               </span>
             </div>
-            {made.has(it.id) ? (
-              <button
-                className="link ec-view"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              >
-                ✓ Added — view ↑
-              </button>
-            ) : (
-              <button onClick={() => makeTask(it)} disabled={busy === it.id}>
-                {busy === it.id ? "…" : "Make a task"}
-              </button>
-            )}
+            <div className="ec-actions">
+              {made.has(it.id) ? (
+                <button
+                  className="link ec-view"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                >
+                  ✓ Added — view ↑
+                </button>
+              ) : (
+                <>
+                  <button onClick={() => makeTask(it)} disabled={busy === it.id}>
+                    {busy === it.id ? "…" : "Make a task"}
+                  </button>
+                  <button className="link ec-dismiss" onClick={() => dismiss(it)}>
+                    Dismiss
+                  </button>
+                </>
+              )}
+            </div>
           </li>
         ))}
       </ul>
