@@ -43,6 +43,9 @@ export const config = {
   },
   /** Public contact address shown in the privacy policy / terms. */
   supportEmail: env("SUPPORT_EMAIL") ?? "hello@nudgelive.co.uk",
+  /** Real inbox to forward support mail (hello@/nudge@) to, since the domain's
+   *  MX points at Resend inbound. Defaults to ADMIN_EMAIL. */
+  supportForwardTo: env("SUPPORT_FORWARD_TO") ?? env("ADMIN_EMAIL") ?? null,
   /** Email of the account allowed into /admin (subscriber stats, promo codes). */
   adminEmail: env("ADMIN_EMAIL")?.toLowerCase() ?? null,
   /** When false (default), public sign-up is closed — show register-interest. */
