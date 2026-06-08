@@ -56,28 +56,34 @@ function rich(s: string): string {
 }
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
-/** The new sun mark (green disc + white n + amber rays) centred at (cx,cy). */
-function sunMark(cx: number, cy: number, r: number): string {
-  const inner = r + r * 0.36;
-  const outer = r + r * 0.92;
-  const w = Math.max(2, r * 0.2);
-  const fs = r * 1.5;
-  const base = cy + fs * 0.35;
-  let rays = "";
-  for (let i = 0; i < 16; i++) {
-    const a = (i / 16) * 2 * Math.PI;
-    rays += `<line x1="${(cx + inner * Math.cos(a)).toFixed(1)}" y1="${(cy + inner * Math.sin(a)).toFixed(1)}" x2="${(cx + outer * Math.cos(a)).toFixed(1)}" y2="${(cy + outer * Math.sin(a)).toFixed(1)}"/>`;
-  }
+const AMBER = "#F5B52E";
+/** Leaf/speech-bubble: square with two opposite corners pointed, two rounded. */
+function leafPath(x: number, y: number, s: number): string {
+  const r = s / 2;
   return (
-    `<g stroke="${C.amber}" stroke-width="${w}" stroke-linecap="round">${rays}</g>` +
-    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${C.green}"/>` +
-    `<text x="${cx}" y="${base.toFixed(1)}" font-size="${fs.toFixed(0)}" font-weight="800" fill="${C.white}" text-anchor="middle">n</text>`
+    `M ${x} ${y} L ${x + r} ${y} A ${r} ${r} 0 0 1 ${x + s} ${y + r} ` +
+    `L ${x + s} ${y + s} L ${x + r} ${y + s} A ${r} ${r} 0 0 1 ${x} ${y + r} Z`
   );
 }
 
+/**
+ * The leaf mark (green outline + "n" + amber dot) centred at (cx,cy). `r` keeps
+ * the old sun-mark call sites' footprint; nColor is navy on light, cream on dark.
+ */
+function leafMark(cx: number, cy: number, r: number, nColor = C.text): string {
+  const k = r * 0.0384; // 100-box → old sun footprint
+  const tx = cx - 50 * k;
+  const ty = cy - 50 * k;
+  const inner =
+    `<path d="${leafPath(16, 16, 68)}" fill="none" stroke="${C.green}" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>` +
+    `<text x="45" y="64" font-size="44" font-weight="700" fill="${nColor}" text-anchor="middle">n</text>` +
+    `<circle cx="64" cy="59" r="5.5" fill="${AMBER}"/>`;
+  return `<g transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${k.toFixed(3)})">${inner}</g>`;
+}
+
 const WORDMARK = `
-  ${sunMark(452, 100, 24)}
-  <text x="512" y="115" font-size="38" font-weight="800" fill="${C.text}">nudge</text>`;
+  ${leafMark(452, 100, 24)}
+  <text x="520" y="118" font-size="38" font-weight="800" fill="${C.text}">nudge</text>`;
 
 /* Shared promo scene (animated) + strip (cover). */
 const PROMO_SCENE = `
@@ -154,7 +160,7 @@ function buildAnimated(d: Day): string {
   const footY = Y0 + d.tasks.length * PITCH + 60;
   const footA = (0.4 + d.tasks.length * 0.1 + 0.04).toFixed(2);
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Manrope, Arial, sans-serif">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Inter, Arial, sans-serif">
   <!-- Nudge — Day ${d.n} (${d.slug}): animated 9:16, loops 14s. Screen-record full-screen on a phone. -->
   <rect width="1080" height="1920" fill="${C.bg}"/>
   ${WORDMARK}
@@ -229,7 +235,7 @@ function buildCover(d: Day): string {
     .join("");
   const stripY = Math.max(1470, startY + n * pitch + 60);
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Manrope, Arial, sans-serif">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Inter, Arial, sans-serif">
   <!-- Nudge — Day ${d.n} (${d.slug}) static cover. Facebook image / TikTok thumbnail. -->
   <rect width="1080" height="1920" fill="${C.bg}"/>
   <rect x="378" y="70" width="60" height="60" rx="17" fill="${C.green}"/>

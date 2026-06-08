@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope } from "next/font/google";
+import { Inter } from "next/font/google";
 import Link from "next/link";
 import LogoMark from "./LogoMark";
 import SWRegister from "./SWRegister";
@@ -11,7 +11,7 @@ import Menu from "./Menu";
 import { getCurrentUser } from "@/lib/auth";
 import "./globals.css";
 
-const manrope = Manrope({ subsets: ["latin"], display: "swap" });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 // Brand name. Overridable via APP_NAME; defaults to the product name "nudge".
 const APP_NAME = process.env.APP_NAME ?? "nudge";
@@ -42,7 +42,7 @@ export default async function RootLayout({
 }) {
   const user = await getCurrentUser();
   return (
-    <html lang="en" className={manrope.className}>
+    <html lang="en" className={inter.className}>
       <body>
         <SWRegister />
         {user && <NativePush />}

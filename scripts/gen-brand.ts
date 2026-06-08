@@ -3,81 +3,74 @@ import { join } from "node:path";
 import { Resvg } from "@resvg/resvg-js";
 
 /**
- * Generate the brand assets from one source-of-truth mark: a green circle with
- * a white "n", inside an amber sun-burst of rays. Writes the icon SVGs (used by
- * @capacitor/assets for Android) + their PNG siblings, then the public/ web
- * icons. Run after a logo change: `npx tsx scripts/gen-brand.ts`.
+ * Brand assets from the official mark (Brand Guidelines v1.0): a green leaf /
+ * speech-bubble outline holding a cream "n" with an amber "nudge" dot, on navy.
+ * Run after a logo change: `npx tsx scripts/gen-brand.ts` then gen-icons.ts.
  */
 const root = process.cwd();
 const GREEN = "#7BAA94";
 const AMBER = "#F5B52E";
-const DARK = "#3C5A4C";
-const WHITE = "#FFFFFF";
+const NAVY = "#232A32";
+const NAVY_TILE = "#161B21";
+const CREAM = "#ECE6D6";
 const BG = "#F8F7F4";
 
-/** Amber sun rays around (cx,cy). */
-function rays(cx: number, cy: number, inner: number, outer: number, w: number, n = 16): string {
-  let s = "";
-  for (let i = 0; i < n; i++) {
-    const a = (i / n) * 2 * Math.PI;
-    const x1 = (cx + inner * Math.cos(a)).toFixed(2);
-    const y1 = (cy + inner * Math.sin(a)).toFixed(2);
-    const x2 = (cx + outer * Math.cos(a)).toFixed(2);
-    const y2 = (cy + outer * Math.sin(a)).toFixed(2);
-    s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
-  }
-  return `<g stroke="${AMBER}" stroke-width="${w}" stroke-linecap="round">${s}</g>`;
-}
-
-/** The full mark (rays + green disc + white n) centred at (cx,cy), disc radius r. */
-function mark(cx: number, cy: number, r: number): string {
-  const inner = r + r * 0.36;
-  const outer = r + r * 0.92;
-  const w = Math.max(2, r * 0.2);
-  const fs = r * 1.5;
-  const baseline = cy + fs * 0.35;
+/** Leaf/speech-bubble: square with two opposite corners pointed, two rounded. */
+function leafPath(x: number, y: number, s: number): string {
+  const r = s / 2;
   return (
-    rays(cx, cy, inner, outer, w) +
-    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${GREEN}"/>` +
-    `<text x="${cx}" y="${baseline.toFixed(2)}" font-family="Manrope, Arial, sans-serif" ` +
-    `font-size="${fs.toFixed(1)}" font-weight="800" fill="${WHITE}" text-anchor="middle">n</text>`
+    `M ${x} ${y} L ${x + r} ${y} A ${r} ${r} 0 0 1 ${x + s} ${y + r} ` +
+    `L ${x + s} ${y + s} L ${x + r} ${y + s} A ${r} ${r} 0 0 1 ${x} ${y + r} Z`
   );
 }
 
-const wrap = (inner: string, vb = 100) =>
+/**
+ * The mark in a 100×100 box. `nColor` is the letter colour (navy on light,
+ * cream on dark). Stroke width + glyph scale tuned to the official artwork.
+ */
+function mark(nColor: string, inset = 16, stroke = 8): string {
+  const s = 100 - inset * 2;
+  const leaf = `<path d="${leafPath(inset, inset, s)}" fill="none" stroke="${GREEN}" stroke-width="${stroke}" stroke-linejoin="round" stroke-linecap="round"/>`;
+  const n = `<text x="45" y="64" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="700" fill="${nColor}" text-anchor="middle">n</text>`;
+  const dot = `<circle cx="64" cy="59" r="5.5" fill="${AMBER}"/>`;
+  return leaf + n + dot;
+}
+
+const svg = (inner: string, vb = 100) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${vb} ${vb}" width="${vb}" height="${vb}">${inner}</svg>`;
 
-// Source SVGs --------------------------------------------------------------
-const iconSvg = wrap(mark(50, 50, 20)); // transparent, mark fills frame
-const foregroundSvg = wrap(mark(50, 50, 16)); // adaptive safe zone (padded)
-const backgroundSvg = wrap(`<rect width="100" height="100" fill="${DARK}"/>`);
-const maskableSvg = wrap(`<rect width="100" height="100" fill="${DARK}"/>` + mark(50, 50, 18));
+// Tile (rounded navy square) + the mark, for icons.
+const tile = (bg: string, m: string) =>
+  svg(`<rect width="100" height="100" rx="22" fill="${bg}"/>${m}`);
+
+const iconSvg = tile(NAVY_TILE, mark(CREAM)); // favicon / PWA / app icon
+const maskableSvg = svg(`<rect width="100" height="100" fill="${NAVY_TILE}"/>` + mark(CREAM, 22, 7));
+const foregroundSvg = svg(mark(CREAM, 24, 7)); // adaptive fg (transparent)
+const backgroundSvg = svg(`<rect width="100" height="100" fill="${NAVY_TILE}"/>`);
 
 writeFileSync(join(root, "assets/icon.svg"), iconSvg);
+writeFileSync(join(root, "assets/icon-maskable.svg"), maskableSvg);
 writeFileSync(join(root, "assets/icon-foreground.svg"), foregroundSvg);
 writeFileSync(join(root, "assets/icon-background.svg"), backgroundSvg);
-writeFileSync(join(root, "assets/icon-maskable.svg"), maskableSvg);
 
-// Splash screens -----------------------------------------------------------
-function splash(bg: string, markFill: "light" | "dark"): string {
-  const m = markFill === "light" ? mark(512, 470, 90) : mark(512, 470, 90);
-  const word = markFill === "light" ? GREEN : "#FFFFFF";
+// Splash: navy bg, centred mark + cream wordmark (1024²).
+function splashSvg(): string {
+  const m = `<g transform="translate(312,200) scale(4)">${mark(CREAM)}</g>`; // 100→400px, centred-ish
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">` +
-    `<rect width="1024" height="1024" fill="${bg}"/>${m}` +
-    `<text x="512" y="660" font-family="Manrope, Arial, sans-serif" font-size="120" font-weight="800" fill="${word}" text-anchor="middle">nudge</text></svg>`;
+    `<rect width="1024" height="1024" fill="${NAVY}"/>${m}` +
+    `<text x="512" y="720" font-family="Inter, Arial, sans-serif" font-size="120" font-weight="700" fill="${CREAM}" text-anchor="middle">nudge</text></svg>`;
 }
-writeFileSync(join(root, "assets/splash.svg"), splash(BG, "light"));
-writeFileSync(join(root, "assets/splash-dark.svg"), splash(DARK, "dark"));
+writeFileSync(join(root, "assets/splash.svg"), splashSvg());
+writeFileSync(join(root, "assets/splash-dark.svg"), splashSvg());
 
-// PNG siblings (@capacitor/assets + committed copies) ----------------------
-function png(svg: string, size: number, out: string) {
-  const buf = new Resvg(svg, { fitTo: { mode: "width", value: size } }).render().asPng();
-  writeFileSync(join(root, out), buf);
+// PNG siblings for @capacitor/assets + committed copies.
+function png(s: string, size: number, out: string) {
+  writeFileSync(join(root, out), new Resvg(s, { fitTo: { mode: "width", value: size } }).render().asPng());
 }
 png(iconSvg, 1024, "assets/icon-only.png");
 png(foregroundSvg, 1024, "assets/icon-foreground.png");
 png(backgroundSvg, 1024, "assets/icon-background.png");
-png(splash(BG, "light"), 2048, "assets/splash.png");
-png(splash(DARK, "dark"), 2048, "assets/splash-dark.png");
+png(splashSvg(), 2048, "assets/splash.png");
+png(splashSvg(), 2048, "assets/splash-dark.png");
 
-console.log("brand assets written → assets/. Now run: npx tsx scripts/gen-icons.ts");
+console.log("brand assets written. Now: npx tsx scripts/gen-icons.ts");
