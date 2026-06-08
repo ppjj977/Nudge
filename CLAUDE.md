@@ -57,6 +57,10 @@ Android (remote WebView, `server.url = https://nudgelive.co.uk`), hosted on Rend
   Gmail — with Reply-To = original sender. Set `SUPPORT_FORWARD_TO` in Render. No DNS
   changes, no Zoho/ImprovMX. (A real login-able mailbox would need moving email-in to a
   subdomain first — avoided.)
+- **Reply AS `nudge@`/`hello@` from Gmail:** Gmail → Send mail as → add the address via
+  **Resend SMTP** (`smtp.resend.com:465`, user `resend`, pass = Resend API key) so
+  SPF/DKIM align; the verification email arrives via the forward above. Don't use Gmail
+  SMTP (would fail SPF/DKIM).
 - **Feedback:** `/feedback` (menu → Account) → `/api/feedback` → emails `SUPPORT_EMAIL`
   (Reply-To = the user). **Waitlist alert:** `/api/interest` emails `ADMIN_EMAIL`/support
   on each genuinely new sign-up.
