@@ -8,18 +8,23 @@
   <text x="540" y="214" font-size="54" font-weight="800" fill="#232A32" text-anchor="middle">A school email with</text>
   <text x="540" y="278" font-size="54" font-weight="800" fill="#232A32" text-anchor="middle">5 things buried in it.</text>
 
-  <!-- mock email -->
-  <g transform="rotate(-3 540 470)">
-    <rect x="300" y="330" width="480" height="300" rx="14" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
-    <rect x="300" y="330" width="480" height="70" rx="14" fill="#EDF2EF"/>
-    <text x="330" y="376" font-size="24" font-weight="800" fill="#3C5A4C">OAKWOOD ACADEMY</text>
-    <text x="330" y="452" font-size="25" fill="#232A32">Transition Days <tspan font-weight="800">23–24 Jun</tspan>, 8:40am</text>
-    <text x="330" y="498" font-size="25" fill="#232A32">PE kit + packed lunch each day</text>
-    <text x="330" y="544" font-size="25" fill="#232A32">Yr 7 Evening <tspan font-weight="800">9 Jul, 6pm</tspan>…</text>
-    <text x="330" y="600" font-size="22" fill="#9AA4AE" font-style="italic">forward it to Nudge →</text>
-  </g>
+  <!-- mock Gmail email -->
+  <rect x="150" y="318" width="780" height="356" rx="16" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
+  <text x="186" y="372" font-size="30" fill="#5F6368">←</text>
+  <text x="894" y="372" font-size="30" fill="#5F6368" text-anchor="middle">Forward</text>
+  <text x="186" y="424" font-size="27" font-weight="800" fill="#202124">Year 7 Transition Days &amp; Evening</text>
+  <rect x="186" y="442" width="96" height="34" rx="17" fill="#E8EAED"/>
+  <text x="234" y="466" font-size="18" font-weight="700" fill="#5F6368" text-anchor="middle">Inbox</text>
+  <circle cx="210" cy="530" r="28" fill="#9B2D45"/>
+  <text x="210" y="540" font-size="26" font-weight="800" fill="#FFFFFF" text-anchor="middle">O</text>
+  <text x="256" y="522" font-size="24" font-weight="800" fill="#202124">Oakwood Academy</text>
+  <text x="256" y="552" font-size="20" fill="#5F6368">to me</text>
+  <text x="894" y="522" font-size="20" fill="#5F6368" text-anchor="end">10:29</text>
+  <line x1="186" y1="584" x2="894" y2="584" stroke="#E9E9E3" stroke-width="2"/>
+  <text x="186" y="624" font-size="24" fill="#202124">Transition Days <tspan font-weight="800">23–24 Jun</tspan>, arrive 8:40am.</text>
+  <text x="186" y="660" font-size="24" fill="#202124">PE kit + lunch. Yr 7 Evening <tspan font-weight="800">9 Jul, 6pm</tspan>…</text>
 
-  <text x="540" y="712" font-size="40" font-weight="800" fill="#7BAA94" text-anchor="middle">Nudge sorts it ↓</text>
+  <text x="540" y="726" font-size="40" font-weight="800" fill="#7BAA94" text-anchor="middle">Nudge sorts it ↓</text>
 
   <!-- task 1 -->
   <rect x="100" y="748" width="880" height="288" rx="20" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>

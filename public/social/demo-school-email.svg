@@ -1,41 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Manrope, Arial, sans-serif">
-  <!-- Nudge demo: forward a school email → tasks + checklist. Mock data only.
+  <!-- Nudge demo: a (mock) Gmail school email → tasks + checklist. Mock data only.
        Vertical 9:16, loops every 15s. Screen-record full-screen on a phone. -->
   <rect width="1080" height="1920" fill="#F8F7F4"/>
 
   <!-- wordmark -->
-  <rect x="430" y="70" width="64" height="64" rx="18" fill="#7BAA94"/>
-  <text x="462" y="116" font-size="40" font-weight="800" fill="#FFFFFF" text-anchor="middle">n</text>
-  <text x="512" y="116" font-size="38" font-weight="800" fill="#232A32">nudge</text>
+  <rect x="430" y="64" width="60" height="60" rx="17" fill="#7BAA94"/>
+  <text x="460" y="108" font-size="38" font-weight="800" fill="#FFFFFF" text-anchor="middle">n</text>
+  <text x="508" y="108" font-size="36" font-weight="800" fill="#232A32">nudge</text>
 
-  <!-- ===== SCENE A — the email ===== -->
+  <!-- ===== SCENE A — the Gmail email ===== -->
   <g opacity="0">
     <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.03;0.31;0.345;1" dur="15s" repeatCount="indefinite"/>
-    <text x="540" y="300" font-size="56" font-weight="800" fill="#232A32" text-anchor="middle">A school email with</text>
-    <text x="540" y="370" font-size="56" font-weight="800" fill="#232A32" text-anchor="middle">5 things buried in it 🫠</text>
+    <text x="540" y="178" font-size="46" font-weight="800" fill="#232A32" text-anchor="middle">POV: another school email 😵‍💫</text>
 
-    <g transform="rotate(-3 540 1010)">
-      <rect x="160" y="520" width="760" height="940" rx="16" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
-      <rect x="160" y="520" width="760" height="118" rx="16" fill="#EDF2EF"/>
-      <text x="210" y="592" font-size="32" font-weight="800" fill="#3C5A4C">OAKWOOD ACADEMY</text>
-      <text x="210" y="704" font-size="30" fill="#667085">Year 7 Transition — parent letter</text>
-      <line x1="210" y1="734" x2="870" y2="734" stroke="#E9E9E3" stroke-width="2"/>
-      <text x="210" y="800" font-size="30" fill="#232A32">Transition Days: <tspan font-weight="800">23–24 June</tspan>, arrive</text>
-      <text x="210" y="846" font-size="30" fill="#232A32">main entrance by <tspan font-weight="800">8:40am</tspan>.</text>
-      <text x="210" y="916" font-size="30" fill="#232A32">Wear primary PE kit; pack a lunch</text>
-      <text x="210" y="962" font-size="30" fill="#232A32">&amp; water bottle each day.</text>
-      <text x="210" y="1032" font-size="30" fill="#232A32">Written permission needed if your</text>
-      <text x="210" y="1078" font-size="30" fill="#232A32">child may walk home alone.</text>
-      <text x="210" y="1148" font-size="30" fill="#232A32">Rising to Year 7 Evening:</text>
-      <text x="210" y="1194" font-size="30" fill="#232A32"><tspan font-weight="800">Thu 9 July, 6:00pm</tspan>, Main Reception…</text>
-      <text x="210" y="1300" font-size="27" fill="#9AA4AE" font-style="italic">…and three more paragraphs.</text>
-    </g>
-
-    <g>
-      <rect x="300" y="1540" width="480" height="80" rx="40" fill="#232A32"/>
-      <text x="540" y="1591" font-size="30" font-weight="700" fill="#FFFFFF" text-anchor="middle">✉️ Forward it to Nudge</text>
-      <animate attributeName="opacity" values="0.45;1;0.45" dur="1.6s" repeatCount="indefinite"/>
-    </g>
+    <!-- gmail screen -->
+    <rect x="48" y="210" width="984" height="1560" rx="22" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
+    <!-- toolbar -->
+    <text x="86" y="292" font-size="40" fill="#5F6368">←</text>
+    <text x="930" y="292" font-size="40" fill="#5F6368" text-anchor="middle">⋮</text>
+    <text x="848" y="292" font-size="34" fill="#5F6368" text-anchor="middle">↩</text>
+    <!-- subject -->
+    <text x="86" y="392" font-size="40" font-weight="800" fill="#202124">Year 7 Transition Days &amp;</text>
+    <text x="86" y="444" font-size="40" font-weight="800" fill="#202124">Rising Year 7 Evening</text>
+    <rect x="86" y="470" width="116" height="42" rx="21" fill="#E8EAED"/>
+    <text x="144" y="499" font-size="22" font-weight="700" fill="#5F6368" text-anchor="middle">Inbox</text>
+    <!-- sender row -->
+    <circle cx="120" cy="588" r="36" fill="#9B2D45"/>
+    <text x="120" y="601" font-size="34" font-weight="800" fill="#FFFFFF" text-anchor="middle">O</text>
+    <text x="178" y="576" font-size="30" font-weight="800" fill="#202124">Oakwood Academy</text>
+    <text x="178" y="614" font-size="24" fill="#5F6368">to me</text>
+    <text x="994" y="576" font-size="24" fill="#5F6368" text-anchor="end">10:29</text>
+    <line x1="86" y1="664" x2="994" y2="664" stroke="#E9E9E3" stroke-width="2"/>
+    <!-- school banner -->
+    <rect x="86" y="690" width="908" height="150" rx="12" fill="#9B2D45"/>
+    <circle cx="170" cy="765" r="44" fill="#FFFFFF"/>
+    <text x="170" y="778" font-size="34" font-weight="800" fill="#9B2D45" text-anchor="middle">O</text>
+    <text x="246" y="752" font-size="32" font-weight="800" fill="#FFFFFF">OAKWOOD ACADEMY</text>
+    <text x="246" y="790" font-size="20" fill="#F2D6DD" letter-spacing="2">INSPIRING POTENTIAL</text>
+    <!-- body -->
+    <text x="86" y="908" font-size="29" fill="#202124">Dear Parents and Carers,</text>
+    <text x="86" y="966" font-size="29" fill="#202124">Year 6 Transition Days: <tspan font-weight="800">23–24 June</tspan>.</text>
+    <text x="86" y="1010" font-size="29" fill="#202124">Arrive at the main entrance by <tspan font-weight="800">8:40am</tspan>.</text>
+    <text x="86" y="1072" font-size="29" fill="#202124">What to wear: primary school PE kit.</text>
+    <text x="86" y="1116" font-size="29" fill="#202124">What to bring: a packed lunch + water.</text>
+    <text x="86" y="1178" font-size="29" fill="#202124">Rising to Year 7 Evening: <tspan font-weight="800">Thu 9 July</tspan>,</text>
+    <text x="86" y="1222" font-size="29" fill="#202124">6:00pm, Main Reception.</text>
+    <text x="86" y="1284" font-size="29" fill="#202124">Written permission required if your child</text>
+    <text x="86" y="1328" font-size="29" fill="#202124">may walk home alone…</text>
+    <text x="86" y="1392" font-size="26" fill="#9AA4AE" font-style="italic">…and three more paragraphs.</text>
+    <!-- reply / forward bar -->
+    <rect x="86" y="1452" width="250" height="84" rx="42" fill="#FFFFFF" stroke="#DADCE0" stroke-width="2"/>
+    <text x="211" y="1503" font-size="28" font-weight="700" fill="#5F6368" text-anchor="middle">↩ Reply</text>
+    <rect x="356" y="1452" width="380" height="84" rx="42" fill="#7BAA94">
+      <animate attributeName="opacity" values="0.55;1;0.55" dur="1.5s" repeatCount="indefinite"/>
+    </rect>
+    <text x="546" y="1503" font-size="28" font-weight="800" fill="#FFFFFF" text-anchor="middle">↪ Forward → Nudge</text>
+    <text x="86" y="1620" font-size="25" fill="#9AA4AE">Forward it to your personal Nudge address ✉️</text>
   </g>
 
   <!-- ===== SCENE B — sorted tasks ===== -->
@@ -45,7 +65,6 @@
     <rect x="170" y="280" width="740" height="84" rx="42" fill="#EDF2EF"/>
     <text x="540" y="334" font-size="33" font-weight="800" fill="#3C5A4C" text-anchor="middle">✨ Nudge pulled out 2 tasks</text>
 
-    <!-- card 1: prepare + checklist -->
     <g opacity="0">
       <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.40;0.45;1" dur="15s" repeatCount="indefinite"/>
       <animateTransform attributeName="transform" type="translate" values="0 26;0 26;0 0;0 0" keyTimes="0;0.40;0.46;1" dur="15s" repeatCount="indefinite"/>
@@ -60,7 +79,6 @@
       <text x="150" y="736" font-size="28" fill="#232A32">☐ Written permission to walk home</text>
     </g>
 
-    <!-- card 2: attend evening -->
     <g opacity="0">
       <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.50;0.55;1" dur="15s" repeatCount="indefinite"/>
       <animateTransform attributeName="transform" type="translate" values="0 26;0 26;0 0;0 0" keyTimes="0;0.50;0.56;1" dur="15s" repeatCount="indefinite"/>
