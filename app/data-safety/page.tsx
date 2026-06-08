@@ -102,9 +102,10 @@ export default function DataSafetyPage() {
         <li>Can users request data deletion? <strong>Yes (in-app + by email).</strong></li>
         <li>
           Data types collected: <strong>Personal info</strong> (name, email
-          address); <strong>Photos</strong> and <strong>Audio</strong> (only the
-          ones you capture); <strong>Files &amp; docs / other user content</strong>{" "}
-          (captured text and forwarded emails, tasks and lists);{" "}
+          address); <strong>Photos</strong> and <strong>Voice recordings</strong>{" "}
+          (only the ones you capture); <strong>Files &amp; docs</strong> and{" "}
+          <strong>other user-generated content</strong> (forwarded emails, captured
+          text, tasks and lists); <strong>Messages</strong> (forwarded email content);{" "}
           <strong>Device or other IDs</strong> (push token).
         </li>
         <li>

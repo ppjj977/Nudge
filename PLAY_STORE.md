@@ -50,18 +50,22 @@ demo video). Deferred.
 - Account creation methods (select all): **Username and password** (email+password),
   **Username and other authentication** (passwordless magic-link), **OAuth** (Google).
 - Additional badges: none (no independent security review; not an India/UPI app).
-- Data types — all *collected*, server-processed, **not shared** for third-party use,
-  linked to user, **not** used for tracking/ads, purpose = App functionality / Account:
-  - Personal info → **Name**, **Email address**
-  - **Photos and videos** (photo captures)
-  - Audio → **Voice or sound recordings** (voice notes)
-  - **Files & docs / other user content** (captured text, forwarded emails, tasks, lists)
-  - Messages → **Other in-app messages** — *only if the WhatsApp/email-in inbound
-    feature stays enabled*
-  - Device or other IDs → **Push token (FCM)**
+- Data types (Step 3 checkboxes) — all *collected*, server-processed, **not shared**
+  for third-party use, linked to user, **not** used for tracking/ads, purpose = App
+  functionality / Account management:
+  - Personal info → **Name**, **Email address** (not User IDs — internal id is generated)
+  - Photos and videos → **Photos** (photo captures)
+  - Audio files → **Voice or sound recordings** (voice notes)
+  - Files and docs → **Files and docs** (forwarded-email content + attachments)
+  - App activity → **Other user-generated content** (tasks, notes, lists)
+  - Messages → **Emails** (email-in forwarded content); **+ Other in-app messages
+    ONLY if WhatsApp capture is live in prod**
+  - Device or other IDs → **Device or other IDs** (FCM/push token)
   - **Location: NOT collected** (see decision above)
-  - Financial info → **Purchase history: set to Yes once the RevenueCat purchase flow
-    is live** (not collected before billing ships)
+  - Financial info → **Purchase history: tick once the RevenueCat purchase flow is
+    live** (not collected before billing ships; a "£15" in a task is user content)
+  - Leave empty: Health/fitness, Calendar (no device-calendar read), Contacts (invites
+    typed manually), Web browsing, App info & performance (no analytics/crash SDK).
 - Processors (disclosed in `/privacy`, `/data-safety`): Groq, Resend, FCM/Google,
   Render, Turso, Google Sign-in, and — when live — RevenueCat + Google Play Billing.
   Meta/WhatsApp only if the forwarding feature stays on.
