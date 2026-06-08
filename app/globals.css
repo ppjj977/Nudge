@@ -1617,6 +1617,17 @@ button.recording {
   font-size: 14px;
   color: var(--text);
 }
+.ec-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.ec-dismiss {
+  color: var(--muted);
+  font-size: 12px;
+}
 .recent-meta {
   display: flex;
   gap: 6px;
