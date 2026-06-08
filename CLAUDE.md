@@ -55,6 +55,10 @@ Android (remote WebView, `server.url = https://nudgelive.co.uk`), hosted on Rend
   container/proxy has served stale snapshots before — always reset from origin/main).
   Identity: `Claude <noreply@anthropic.com>`. Don't include the model id in commits.
 - **Schema:** self-healing — `lib/schema.sql` + additive ALTERs in `lib/db.ts`.
+- **Prod DB scripts can't run from the Claude Code remote container** — its network
+  policy blocks `turso.io` (`403 Host not in allowlist`). Run DB scripts (e.g.
+  `scripts/seed-demo.ts`) from **Render Shell** (creds already set) or a local machine
+  with `TURSO_*` in `.env.local`. Don't ask the user to paste the auth token here.
 - **Android builds:** GitHub Actions. `android.yml` = debug APK (incl. geofencing);
   `android-release.yml` = signed AAB+APK on a `v*` tag (Play build, no geofencing).
   `npx cap add android` regenerates native; native code injected via `native/patch-*.js`.
