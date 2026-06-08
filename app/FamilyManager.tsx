@@ -21,6 +21,8 @@ export default function FamilyManager({
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   async function create() {
     setBusy(true);
@@ -47,13 +49,25 @@ export default function FamilyManager({
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ email }),
     });
-    const d = (await r.json().catch(() => ({}))) as { error?: string };
+    const d = (await r.json().catch(() => ({}))) as { error?: string; link?: string };
     setBusy(false);
     if (r.ok) {
-      setMsg(`Invite sent to ${email}.`);
+      setMsg(`Invite emailed to ${email}.`);
+      if (d.link) setInviteLink(d.link);
       setEmail("");
     } else {
       setMsg(d.error || "Couldn't send the invite.");
+    }
+  }
+
+  async function copyLink() {
+    if (!inviteLink) return;
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard blocked — the field is selectable as a fallback */
     }
   }
 
@@ -172,6 +186,25 @@ export default function FamilyManager({
           Send invite
         </button>
         {msg && <p className="note">{msg}</p>}
+
+        {inviteLink && (
+          <div className="invite-link">
+            <p className="note">
+              📨 Emails sometimes land in junk — to be sure they get it, send this
+              link directly (WhatsApp, text, anywhere):
+            </p>
+            <div className="invite-link-row">
+              <input
+                className="cal-url"
+                readOnly
+                value={inviteLink}
+                onFocus={(e) => e.currentTarget.select()}
+              />
+              <button onClick={copyLink}>{copied ? "Copied ✓" : "Copy link"}</button>
+            </div>
+            <p className="note">They open it once signed in to Nudge. Expires in 7 days.</p>
+          </div>
+        )}
       </section>
 
       <section className="profile-card">
