@@ -43,6 +43,10 @@ demo video). Deferred.
 ## Data safety (full)
 - Collects user data: **Yes**. Encrypted in transit: **Yes** (HTTPS/TLS). Deletion:
   **Yes** — in-app (Profile → Delete account) + email `hello@nudgelive.co.uk`.
+- **Delete account URL** (public, required by the form): `https://nudgelive.co.uk/delete-account`
+  (page = `app/delete-account/page.tsx`). Optional "delete some data without deleting
+  account": answer **No** (do NOT pick "auto-deleted within 90 days" — only raw
+  captures auto-purge at 30 days; tasks persist until completed/deleted).
 - Account creation methods (select all): **Username and password** (email+password),
   **Username and other authentication** (passwordless magic-link), **OAuth** (Google).
 - Additional badges: none (no independent security review; not an India/UPI app).
