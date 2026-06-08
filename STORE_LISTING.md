@@ -126,6 +126,15 @@ Storyboard frames (if making stills): 1) messy newsletter 2) capture screen
   family, family-tab) — usable directly as Play screenshots.
 - App icon source: `assets/icon.svg` → `public/icon-512.png`
 
-Still needed before submission (not generated here): a hosted **privacy policy**
-URL and the Play **Data safety** answers (nudge stores account email + the
-content you capture; used to provide the service; not sold). I can draft both.
+## Pricing
+Free (10 AI captures/mo + in-app reminders) · **Pro £3.49/mo or £29.99/yr, 7-day
+free trial** (unlimited captures, email reminders + digest, family, recurring).
+See `PLAY_STORE.md` for the subscription product setup.
+
+## Submission answers
+Privacy policy (`/privacy`), Terms (`/terms`) and the **Data safety** answer key
+(`/data-safety`) are all live. The full Play Console answer set — App content,
+Data safety, subscription products, demo account, roll-out — is in **`PLAY_STORE.md`**.
+
+> Note: leave-by/location reminders are NOT in the Play release build — don't add
+> them to this copy until shipped natively (see `PLAY_STORE.md`).
