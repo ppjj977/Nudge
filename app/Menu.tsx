@@ -9,6 +9,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
     label: "Plan",
     items: [
       { href: "/", label: "Timeline" },
+      { href: "/recent", label: "Recently added" },
       { href: "/day", label: "Today (hour-by-hour)" },
       { href: "/calendar", label: "Calendar" },
     ],

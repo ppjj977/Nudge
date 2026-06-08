@@ -5,9 +5,24 @@ import { findUserByInboundLocalPart } from "@/lib/users";
 import { cleanForwardedEmail } from "@/lib/normalize";
 import { ingestAndExtract } from "@/lib/pipeline";
 import { createManualTask } from "@/lib/tasks";
+import { sendPushToUser } from "@/lib/push";
+import { sendFcmToUser } from "@/lib/fcm";
 import { parseFirstEvent, extractVCalendar } from "@/lib/ical";
 
 export const runtime = "nodejs";
+
+/** Confirm a forwarded email landed: push "N tasks added" → the Recent view. */
+async function notifyTasksAdded(userId: string, titles: string[]): Promise<void> {
+  if (titles.length === 0) return;
+  const n = titles.length;
+  const payload = {
+    title: `✅ ${n} ${n === 1 ? "task" : "tasks"} added from your email`,
+    body: titles.slice(0, 3).join(" · "),
+    url: "/recent",
+  };
+  await sendPushToUser(userId, payload).catch(() => 0);
+  await sendFcmToUser(userId, payload).catch(() => 0);
+}
 
 /**
  * Email-in (SPEC §3). Resend posts a signed webhook here when mail arrives at a
@@ -118,6 +133,7 @@ export async function POST(req: Request) {
         taskId: task.id,
         due_at: task.due_at,
       };
+      await notifyTasksAdded(user.id, [task.title]);
       console.log("[inbound] calendar event", diag);
       return NextResponse.json(diag);
     }
@@ -142,6 +158,7 @@ export async function POST(req: Request) {
     tasks: result.tasks.length,
     error: result.error,
   };
+  await notifyTasksAdded(user.id, result.tasks.map((t) => t.title));
   console.log("[inbound] processed", diag);
   return NextResponse.json(diag);
 }
