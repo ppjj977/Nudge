@@ -3,7 +3,9 @@ import { DateTime } from "luxon";
 import { requireUser } from "@/lib/auth";
 import { getUserLifeAreas } from "@/lib/users";
 import { getRecentlyCreated } from "@/lib/tasks";
+import { getRecentEmptyCaptures } from "@/lib/captures";
 import TaskCard, { type TaskView } from "../TaskCard";
+import RecentCaptures from "../RecentCaptures";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +33,7 @@ export default async function RecentPage() {
   const user = await requireUser();
   const lifeAreas = getUserLifeAreas(user);
   const recent = await getRecentlyCreated(user.id);
+  const empties = await getRecentEmptyCaptures(user.id);
 
   return (
     <div className="container">
@@ -43,7 +46,18 @@ export default async function RecentPage() {
         </p>
       </div>
 
-      {recent.length === 0 ? (
+      <RecentCaptures
+        items={empties.map((c) => ({
+          id: c.id,
+          source: c.source,
+          status: c.status,
+          subject: c.subject,
+          snippet: c.snippet,
+          label: `${SOURCE_LABEL[c.source] ?? "✍️ added"} · ${ago(c.received_at, user.timezone)}`,
+        }))}
+      />
+
+      {recent.length === 0 && empties.length === 0 ? (
         <div className="empty">Nothing captured yet.</div>
       ) : (
         recent.map((t) => (

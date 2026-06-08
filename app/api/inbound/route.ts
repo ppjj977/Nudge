@@ -11,17 +11,45 @@ import { parseFirstEvent, extractVCalendar } from "@/lib/ical";
 
 export const runtime = "nodejs";
 
+async function push(userId: string, title: string, body: string, url = "/recent") {
+  const payload = { title, body, url };
+  await sendPushToUser(userId, payload).catch(() => 0);
+  await sendFcmToUser(userId, payload).catch(() => 0);
+}
+
 /** Confirm a forwarded email landed: push "N tasks added" → the Recent view. */
 async function notifyTasksAdded(userId: string, titles: string[]): Promise<void> {
   if (titles.length === 0) return;
   const n = titles.length;
-  const payload = {
-    title: `✅ ${n} ${n === 1 ? "task" : "tasks"} added from your email`,
-    body: titles.slice(0, 3).join(" · "),
-    url: "/recent",
-  };
-  await sendPushToUser(userId, payload).catch(() => 0);
-  await sendFcmToUser(userId, payload).catch(() => 0);
+  await push(
+    userId,
+    `✅ ${n} ${n === 1 ? "task" : "tasks"} added from your email`,
+    titles.slice(0, 3).join(" · "),
+  );
+}
+
+/**
+ * Always confirm a forwarded email — including when nothing was extracted, so a
+ * "nothing actionable" result is never a silent failure. Points at /recent,
+ * where the email is listed with a one-tap "make a task".
+ */
+async function notifyInboundOutcome(
+  userId: string,
+  result: { status: string; tasks: { title: string }[] },
+  subject: string,
+): Promise<void> {
+  if (result.status === "processed" && result.tasks.length > 0) {
+    return notifyTasksAdded(userId, result.tasks.map((t) => t.title));
+  }
+  const subj = subject ? `“${subject}”` : "your email";
+  if (result.status === "limit") {
+    return push(userId, "📭 Email received — capture limit reached", "Go Pro for unlimited captures.", "/upgrade");
+  }
+  if (result.status === "failed") {
+    return push(userId, "⚠️ Couldn’t read your email", `${subj} — tap to add it by hand.`);
+  }
+  // processed, but nothing extracted
+  return push(userId, "📭 Email received — but no reminder made", `${subj} — tap to turn it into a task.`);
 }
 
 /**
@@ -158,7 +186,7 @@ export async function POST(req: Request) {
     tasks: result.tasks.length,
     error: result.error,
   };
-  await notifyTasksAdded(user.id, result.tasks.map((t) => t.title));
+  await notifyInboundOutcome(user.id, result, subject);
   console.log("[inbound] processed", diag);
   return NextResponse.json(diag);
 }
