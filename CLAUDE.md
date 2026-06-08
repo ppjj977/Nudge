@@ -45,6 +45,10 @@ Android (remote WebView, `server.url = https://nudgelive.co.uk`), hosted on Rend
 - Public pages: `/privacy`, `/terms`, `/data-safety` (the Data Safety answer key).
 
 ## Conventions
+- **Keep these docs current — every turn.** After each exchange that establishes a
+  decision, changes a fact, or ships code, update the relevant doc (`CLAUDE.md` and/or
+  `PLAY_STORE.md`/`STORE_LISTING.md`/`SPEC.md`) and commit it with the work. Standing
+  instruction from the user. Skip only when a message changes nothing durable.
 - **Git:** develop on `claude/new-session-d52qs`. Workflow: commit → `git push -u
   origin <branch>` → `git checkout main && git reset --hard origin/main && git merge
   --no-ff <branch> && git push origin main`. `origin/main` is the source of truth (the
