@@ -43,6 +43,9 @@ demo video). Deferred.
 ## Data safety (full)
 - Collects user data: **Yes**. Encrypted in transit: **Yes** (HTTPS/TLS). Deletion:
   **Yes** — in-app (Profile → Delete account) + email `hello@nudgelive.co.uk`.
+- Account creation methods (select all): **Username and password** (email+password),
+  **Username and other authentication** (passwordless magic-link), **OAuth** (Google).
+- Additional badges: none (no independent security review; not an India/UPI app).
 - Data types — all *collected*, server-processed, **not shared** for third-party use,
   linked to user, **not** used for tracking/ads, purpose = App functionality / Account:
   - Personal info → **Name**, **Email address**
