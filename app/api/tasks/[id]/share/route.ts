@@ -8,14 +8,15 @@ import { sendFcmToUser } from "@/lib/fcm";
 
 export const runtime = "nodejs";
 
-/** Tell the rest of the family (not the sharer) that a task was just shared. */
+/** Tell the rest of the family (not the sharer) that a task was just shared.
+ *  Returns how many members and devices were actually pinged (for the UI). */
 async function notifyFamilyOfShare(
   householdId: string,
   sharerId: string,
   sharerName: string | null,
   taskId: string,
   taskTitle: string,
-): Promise<void> {
+): Promise<{ members: number; devices: number }> {
   const who = sharerName?.split(" ")[0]?.trim() || "Someone";
   const payload = {
     title: `${who} shared a task with the family`,
@@ -23,10 +24,13 @@ async function notifyFamilyOfShare(
     url: `/?task=${taskId}`, // opens + focuses the task on tap
   };
   const others = (await memberIds(householdId)).filter((id) => id !== sharerId);
+  let devices = 0;
   for (const uid of others) {
-    await sendPushToUser(uid, payload).catch(() => 0);
-    await sendFcmToUser(uid, payload).catch(() => 0);
+    devices += await sendPushToUser(uid, payload).catch(() => 0);
+    devices += await sendFcmToUser(uid, payload).catch(() => 0);
   }
+  console.log("[share] notified family", { householdId, members: others.length, devices });
+  return { members: others.length, devices };
 }
 
 /**
@@ -62,8 +66,9 @@ export async function POST(
   const updated = await setTaskHousehold(user.id, id, householdId);
   if (updated) await generateRemindersForTask(updated);
   // Notify the family only when newly shared (not on re-share or un-share).
+  let notified: { members: number; devices: number } | undefined;
   if (householdId && !wasShared) {
-    await notifyFamilyOfShare(householdId, user.id, user.name, id, task.title);
+    notified = await notifyFamilyOfShare(householdId, user.id, user.name, id, task.title);
   }
-  return NextResponse.json({ ok: true, shared: Boolean(householdId) });
+  return NextResponse.json({ ok: true, shared: Boolean(householdId), notified });
 }

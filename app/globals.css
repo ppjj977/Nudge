@@ -2510,3 +2510,5 @@ button.link.danger { color: var(--danger); }
   text-decoration: none;
   vertical-align: middle;
 }
+
+.share-toast { margin-top: 8px; font-size: 13px; }
