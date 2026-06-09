@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { config } from "@/lib/config";
-import { planStats, listPromoCodes } from "@/lib/plan";
+import { planStats, listPromoCodes, listUsersForAdmin } from "@/lib/plan";
 import { listInterest, FREE_FOR_LIFE_COHORT } from "@/lib/interest";
 import AdminPanel from "../AdminPanel";
+import AdminUsers from "../AdminUsers";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +14,11 @@ export default async function AdminPage() {
   if (!config.adminEmail || user.email.toLowerCase() !== config.adminEmail) {
     notFound();
   }
-  const [stats, codes, interest] = await Promise.all([
+  const [stats, codes, interest, users] = await Promise.all([
     planStats(),
     listPromoCodes(),
     listInterest(),
+    listUsersForAdmin(),
   ]);
 
   return (
@@ -45,6 +47,17 @@ export default async function AdminPage() {
           codes you grant directly.
         </p>
       </section>
+
+      <AdminUsers
+        users={users.map((u) => ({
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          pro: u.pro,
+          plan_source: u.plan_source,
+          created_at: u.created_at,
+        }))}
+      />
 
       <section className="panel">
         <h2 className="section">Tester invite links</h2>
