@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TaskCard, { type TaskView } from "./TaskCard";
 import type { FamilyTask } from "@/lib/tasks";
 import type { Member } from "@/lib/households";
@@ -58,6 +58,39 @@ export default function Timeline({
   };
 
   const [tab, setTab] = useState<Tab>(review.length > 0 ? "review" : "today");
+  const [focusId, setFocusId] = useState<string | null>(null);
+
+  /** Which tab holds a given task id (shared tasks live in Family). */
+  function tabFor(id: string): Tab | null {
+    if (family.some((t) => t.id === id)) return "family";
+    if (today.some((t) => t.id === id)) return "today";
+    if (week.some((t) => t.id === id)) return "week";
+    if (later.some((t) => t.id === id)) return "later";
+    if (unscheduled.some((t) => t.id === id)) return "unscheduled";
+    if (review.some((t) => t.id === id)) return "review";
+    return null;
+  }
+
+  // Deep link from a notification: /?task=<id> → open its tab.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("task");
+    if (!id) return;
+    const tb = tabFor(id);
+    if (tb) setTab(tb);
+    setFocusId(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // …then scroll to it and flash it once the right tab is rendered.
+  useEffect(() => {
+    if (!focusId) return;
+    const el = document.getElementById(`t-${focusId}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("task-flash");
+    const t = setTimeout(() => el.classList.remove("task-flash"), 2200);
+    return () => clearTimeout(t);
+  }, [focusId, tab]);
 
   type OwnedTab = "today" | "week" | "later" | "unscheduled";
   const owned: Record<OwnedTab, TaskView[]> = {
@@ -110,14 +143,15 @@ export default function Timeline({
           <div className="empty">{EMPTY.family}</div>
         ) : (
           family.map((t) => (
-            <TaskCard
-              key={t.id}
-              task={t as unknown as TaskView}
-              ownerName={t.user_id === meId ? "you" : t.owner_name || t.owner_email}
-              members={members}
-              assignable
-              lifeAreas={lifeAreas}
-            />
+            <div id={`t-${t.id}`} key={t.id}>
+              <TaskCard
+                task={t as unknown as TaskView}
+                ownerName={t.user_id === meId ? "you" : t.owner_name || t.owner_email}
+                members={members}
+                assignable
+                lifeAreas={lifeAreas}
+              />
+            </div>
           ))
         ))}
 
@@ -126,7 +160,9 @@ export default function Timeline({
           <div className="empty">{EMPTY.review}</div>
         ) : (
           review.map((t) => (
-            <TaskCard key={t.id} task={t} review lifeAreas={lifeAreas} />
+            <div id={`t-${t.id}`} key={t.id}>
+              <TaskCard task={t} review lifeAreas={lifeAreas} />
+            </div>
           ))
         ))}
 
@@ -140,12 +176,9 @@ export default function Timeline({
           <div className="empty">{EMPTY[tab]}</div>
         ) : (
           owned[tab as OwnedTab].map((t) => (
-            <TaskCard
-              key={t.id}
-              task={t}
-              inHousehold={inHousehold}
-              lifeAreas={lifeAreas}
-            />
+            <div id={`t-${t.id}`} key={t.id}>
+              <TaskCard task={t} inHousehold={inHousehold} lifeAreas={lifeAreas} />
+            </div>
           ))
         ))}
     </div>

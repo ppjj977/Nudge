@@ -2444,6 +2444,11 @@ button.link.danger { color: var(--danger); }
   color: var(--navy);
 }
 .capture-limit a { color: var(--teal); font-weight: 700; }
+.task-flash { animation: task-flash 2.2s ease-out; border-radius: var(--radius); }
+@keyframes task-flash {
+  0%, 35% { box-shadow: 0 0 0 3px var(--amber), 0 0 0 8px rgba(245, 181, 46, 0.25); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 181, 46, 0); }
+}
 .user-search { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font: inherit; margin-bottom: 10px; }
 .user-list { display: flex; flex-direction: column; }
 .user-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
