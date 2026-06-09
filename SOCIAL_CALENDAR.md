@@ -184,10 +184,11 @@ Every day: **reshare the post + link sticker.** Then by weekday:
 > TikTok/Reel) and a static `dayNN-cover.png` (Facebook image / TikTok cover).
 > Regenerate or tweak copy via `npx tsx scripts/gen-social.ts`.
 
-**Day 2 — TikTok**
-- Hook: "Things my brain refuses to remember." Rapid list (bin day, dentist, birthday, bill) → tasks land in Nudge.
+**Day 2 — TikTok** *(tailored to the trending "find peace of mind" search — 288K, +69%; the exact phrase is on-screen in the hook for TikTok search)*
+- Hook (on-screen): "Want peace of mind? Empty your head." → 8 messy brain-dumps → 8 dated/recurring reminders, soonest-first.
+- Say the phrase out loud too ("this is how I found some peace of mind") — TikTok weights spoken + on-screen + caption keyword matches.
 - Assets: `day02-brain-forgets.svg` · `day02-cover.png`
-- Caption: *"My brain at 9pm: a junk drawer. Now I just dump it on Nudge and get a nudge before each one. 🎁 First 10 to register interest = Pro free for life → nudgelive.co.uk #adhdtok #lifeadmin #mentalload"*
+- Caption: *"Want peace of mind? It starts with getting it ALL out of your head. Brain-dump the chaos and Nudge turns each one into a reminder — even the recurring stuff 🔁 (bin day every Thursday, sorted). 🎁 First 10 to register interest = Pro free for life → nudgelive.co.uk #peaceofmind #findpeaceofmind #mentalload #adhdtok #lifeadmin"*
 
 **Day 3 — TikTok + 🅵**
 - Hook: "Your camera roll is a to-do list in disguise." Screenshots → Nudge reads them.

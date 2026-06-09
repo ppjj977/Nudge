@@ -387,7 +387,7 @@ const DAYS: Day[] = [
   {
     n: 2,
     slug: "brain-forgets",
-    hook: ["Things my brain", "refuses to remember:"],
+    hook: ["Want peace of mind?", "Empty your head."],
     input: {
       title: "MY HEAD, 9PM",
       lines: [
