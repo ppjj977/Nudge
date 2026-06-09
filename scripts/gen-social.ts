@@ -160,78 +160,41 @@ function hookLines(lines: string[], size: number, startY: number, fill = C.text)
 }
 
 /* ----------------------------- animated SVG ------------------------------- */
+/** A group that fades + rises into place at [in0..in1] of the 14s loop, holds. */
+function reveal(inner: string, in0: number, in1: number): string {
+  return (
+    `<g opacity="0">` +
+    `<animate attributeName="opacity" values="0;0;1;1" keyTimes="0;${in0};${in1};1" dur="14s" repeatCount="indefinite"/>` +
+    `<animateTransform attributeName="transform" type="translate" values="0 26;0 26;0 0;0 0" keyTimes="0;${in0};${in1};1" dur="14s" repeatCount="indefinite"/>` +
+    inner +
+    `</g>`
+  );
+}
+
+/**
+ * Animated 9:16 clip — the day's cover, brought to life: hook in, the "chaos"
+ * beat, then the "sorted" payoff beat, then the CTA. Distinct per day (matches
+ * the cover's bg + motif). Loops 14s; screen-record full-screen on a phone.
+ */
 function buildAnimated(d: Day): string {
-  const hookSize = d.hook.length >= 3 ? 54 : 58;
-  const hookY = d.hook.length >= 3 ? 300 : 320;
-
-  // input card
-  const inLines = d.input.lines
-    .map((l, i) => `<text x="240" y="${884 + i * 64}" font-size="32" fill="${C.text}">${rich(l)}</text>`)
-    .join("\n      ");
-  const hint = d.input.hint
-    ? `<text x="240" y="${884 + d.input.lines.length * 64 + 40}" font-size="28" fill="${C.faint}" font-style="italic">${esc(d.input.hint)}</text>`
-    : "";
-
-  // task cards (staggered pop)
-  const Y0 = 540,
-    PITCH = 240,
-    H = 200;
-  const tasks = d.tasks
-    .map((t, i) => {
-      const y = Y0 + i * PITCH;
-      const inA = 0.4 + i * 0.1;
-      const cw = Math.max(150, t.chip.length * 30 + 60);
-      const cx = 940 - cw;
-      return `
-    <g opacity="0">
-      <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;${inA.toFixed(2)};${(inA + 0.04).toFixed(2)};1" dur="14s" repeatCount="indefinite"/>
-      <animateTransform attributeName="transform" type="translate" values="0 28;0 28;0 0;0 0" keyTimes="0;${inA.toFixed(2)};${(inA + 0.05).toFixed(2)};1" dur="14s" repeatCount="indefinite"/>
-      <rect x="120" y="${y}" width="840" height="${H}" rx="22" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>
-      <text x="170" y="${y + 96}" font-size="44" font-weight="800" fill="${C.text}">${esc(t.emoji)} ${esc(t.title)}</text>
-      <text x="170" y="${y + 156}" font-size="30" fill="${C.muted}">${esc(t.sub)}</text>
-      <rect x="${cx}" y="${y + 46}" width="${cw}" height="78" rx="16" fill="${t.chipFill}"/>
-      <text x="${cx + cw / 2}" y="${y + 97}" font-size="32" font-weight="800" fill="${C.white}" text-anchor="middle">${esc(t.chip)}</text>
-    </g>`;
-    })
-    .join("");
-  const footY = Y0 + d.tasks.length * PITCH + 60;
-  const footA = (0.4 + d.tasks.length * 0.1 + 0.04).toFixed(2);
-
+  const st = coverStyle(d.slug);
+  const m = motif(d, st);
+  const big = d.hook.length >= 3;
+  const hookSize = big ? 58 : 66;
+  const hookY = big ? 240 : 280;
+  const lh = hookSize + 14;
+  const hook = d.hook
+    .map((l, i) => `<text x="540" y="${hookY + i * lh}" font-size="${hookSize}" font-weight="800" fill="${st.ink}" text-anchor="middle">${rich(l)}</text>`)
+    .join("\n  ");
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Inter, Arial, sans-serif">
   <!-- Nudge — Day ${d.n} (${d.slug}): animated 9:16, loops 14s. Screen-record full-screen on a phone. -->
-  <rect width="1080" height="1920" fill="${C.bg}"/>
-  ${WORDMARK}
-
-  <!-- SCENE 1: hook + the messy input -->
-  <g opacity="0">
-    <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.03;0.31;0.345;1" dur="14s" repeatCount="indefinite"/>
-    ${hookLines(d.hook, hookSize, hookY)}
-    <g transform="rotate(-3 540 1080)">
-      <rect x="190" y="600" width="700" height="900" rx="16" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>
-      <rect x="190" y="600" width="700" height="120" rx="16" fill="${C.greenTint}"/>
-      <text x="240" y="678" font-size="34" font-weight="800" fill="${C.greenDk}">${esc(d.input.title)}</text>
-      <line x1="240" y1="760" x2="840" y2="760" stroke="${C.border}" stroke-width="2"/>
-      ${inLines}
-      ${hint}
-    </g>
-  </g>
-
-  <!-- SCENE 2: Nudge sorts it -->
-  <g opacity="0">
-    <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.345;0.38;0.75;0.785;1" dur="14s" repeatCount="indefinite"/>
-    <rect x="180" y="300" width="720" height="84" rx="42" fill="${C.greenTint}"/>
-    <text x="540" y="354" font-size="34" font-weight="800" fill="${C.greenDk}" text-anchor="middle">${esc(d.header)}</text>
-    ${tasks}
-    <g opacity="0">
-      <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;${footA};${(Number(footA) + 0.04).toFixed(2)};1" dur="14s" repeatCount="indefinite"/>
-      <text x="540" y="${footY}" font-size="34" fill="${C.greenDk}" text-anchor="middle" font-weight="700">${esc(d.footnote[0])}</text>
-      <text x="540" y="${footY + 56}" font-size="32" fill="${C.muted}" text-anchor="middle">${esc(d.footnote[1])}</text>
-    </g>
-  </g>
-
-  ${PROMO_SCENE}
-
-  <rect x="0" y="1900" width="0" height="20" fill="${C.green}">
+  <rect width="1080" height="1920" fill="${st.bg}"/>
+  ${coverWordmark(st)}
+  ${reveal(hook, 0.03, 0.07)}
+  ${reveal(m.chaos, 0.1, 0.18)}
+  ${reveal(m.resolved, 0.42, 0.5)}
+  ${reveal(ctaBand(st), 0.78, 0.84)}
+  <rect x="0" y="1900" width="0" height="20" fill="${st.accent}">
     <animate attributeName="width" values="0;1080" dur="14s" repeatCount="indefinite"/>
   </rect>
 </svg>
@@ -259,25 +222,24 @@ function taskCard(x: number, y: number, w: number, title: string, chip: string, 
   );
 }
 
-function motif(d: Day, st: CStyle): string {
+/** Per-day concept illustration split into the "chaos" beat and the "sorted"
+ *  payoff beat — covers render both together; clips reveal them in sequence. */
+function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
   switch (d.slug) {
     case "brain-forgets": {
-      // Messy pile of sticky notes → one tidy nudge card.
       const fills = [C.mint, "#FBE7BD", CREAM, "#D9E7DF"];
-      const notes = d.input.lines
+      const chaos = d.input.lines
         .slice(0, 4)
         .map((l, i) =>
           note(250 + (i % 2) * 60, 470 + i * 120, i % 2 ? 5 : -6, 520, fills[i % fills.length], l, C.navy),
         )
         .join("");
-      return (
-        notes +
-        arrowDown(540, 1000, st.accent) +
-        taskCard(240, 1110, 600, "Dentist — Tue 9:30", "TUE", st)
-      );
+      return {
+        chaos,
+        resolved: arrowDown(540, 1000, st.accent) + taskCard(240, 1110, 600, "Dentist — Tue 9:30", "TUE", st),
+      };
     }
     case "screenshot-graveyard": {
-      // Phone full of unread screenshots + a big "237" badge.
       const cells = [];
       for (let i = 0; i < 9; i++) {
         const cx = 430 + (i % 3) * 80,
@@ -287,23 +249,22 @@ function motif(d: Day, st: CStyle): string {
             `<rect x="${cx + 8}" y="${cy + 10}" width="48" height="40" rx="6" fill="${i % 3 === 0 ? st.accent : "#46535F"}"/>`,
         );
       }
-      return (
-        `<rect x="390" y="490" width="300" height="640" rx="40" fill="#1C232B" stroke="#3A4650" stroke-width="4"/>` +
-        cells.join("") +
-        `<circle cx="720" cy="540" r="90" fill="${st.accent}"/>` +
-        `<text x="720" y="540" font-size="60" font-weight="800" fill="${C.navy}" text-anchor="middle">237</text>` +
-        `<text x="720" y="585" font-size="22" font-weight="700" fill="${C.navy}" text-anchor="middle">UNREAD</text>` +
-        arrowDown(540, 1190, st.accent) +
-        taskCard(240, 1290, 600, "Move car — 6pm", "6PM", st)
-      );
+      return {
+        chaos:
+          `<rect x="390" y="490" width="300" height="640" rx="40" fill="#1C232B" stroke="#3A4650" stroke-width="4"/>` +
+          cells.join("") +
+          `<circle cx="720" cy="540" r="90" fill="${st.accent}"/>` +
+          `<text x="720" y="540" font-size="60" font-weight="800" fill="${C.navy}" text-anchor="middle">237</text>` +
+          `<text x="720" y="585" font-size="22" font-weight="700" fill="${C.navy}" text-anchor="middle">UNREAD</text>`,
+        resolved: arrowDown(540, 1190, st.accent) + taskCard(240, 1290, 600, "Move car — 6pm", "6PM", st),
+      };
     }
     case "mental-load": {
-      // A head carrying a teetering tower of tasks → calm checklist.
       const tower = d.input.lines
         .slice(0, 4)
         .map((l, i) => {
           const w = 360 - i * 30,
-            x = 360 - (360 - i * 30 - 300) / 2 + i * 0,
+            x = 360 - (360 - i * 30 - 300) / 2,
             y = 760 - i * 70,
             rot = i % 2 ? 3 : -3;
           return (
@@ -316,57 +277,63 @@ function motif(d: Day, st: CStyle): string {
       const head =
         `<circle cx="540" cy="900" r="78" fill="none" stroke="${C.navy}" stroke-width="9"/>` +
         `<path d="M 470 1010 q 70 -70 140 0" fill="none" stroke="${C.navy}" stroke-width="9" stroke-linecap="round"/>`;
-      return tower + head + arrowDown(540, 1080, st.accent) +
-        `<text x="540" y="1200" font-size="34" font-weight="800" fill="${st.accent}" text-anchor="middle">…now it's all held for you</text>`;
+      return {
+        chaos: tower + head,
+        resolved:
+          arrowDown(540, 1080, st.accent) +
+          `<text x="540" y="1200" font-size="34" font-weight="800" fill="${st.accent}" text-anchor="middle">…now it's all held for you</text>`,
+      };
     }
     case "promo": {
-      // Big rosette badge: PRO FREE FOR LIFE.
       const ray = Array.from({ length: 24 }, (_, i) => {
         const a = (i / 24) * 2 * Math.PI;
         return `<line x1="${540 + 150 * Math.cos(a)}" y1="${760 + 150 * Math.sin(a)}" x2="${540 + 185 * Math.cos(a)}" y2="${760 + 185 * Math.sin(a)}"/>`;
       }).join("");
-      return (
-        `<path d="M 470 880 l -30 240 l 100 -60 z" fill="${C.green}"/>` +
-        `<path d="M 610 880 l 30 240 l -100 -60 z" fill="${C.green}"/>` +
-        `<g stroke="${st.accent}" stroke-width="10" stroke-linecap="round">${ray}</g>` +
-        `<circle cx="540" cy="760" r="150" fill="${st.accent}"/>` +
-        `<text x="540" y="730" font-size="40" font-weight="800" fill="${C.navy}" text-anchor="middle">PRO</text>` +
-        `<text x="540" y="780" font-size="34" font-weight="800" fill="${C.navy}" text-anchor="middle">FREE</text>` +
-        `<text x="540" y="822" font-size="30" font-weight="700" fill="${C.navy}" text-anchor="middle">for life</text>` +
-        `<text x="540" y="1230" font-size="40" font-weight="800" fill="${st.ink}" text-anchor="middle">First 10 to register interest</text>` +
-        `<text x="540" y="1290" font-size="32" font-weight="700" fill="${st.sub}" text-anchor="middle">everyone else → 3 months free</text>`
-      );
+      return {
+        chaos:
+          `<path d="M 470 880 l -30 240 l 100 -60 z" fill="${C.green}"/>` +
+          `<path d="M 610 880 l 30 240 l -100 -60 z" fill="${C.green}"/>` +
+          `<g stroke="${st.accent}" stroke-width="10" stroke-linecap="round">${ray}</g>` +
+          `<circle cx="540" cy="760" r="150" fill="${st.accent}"/>` +
+          `<text x="540" y="730" font-size="40" font-weight="800" fill="${C.navy}" text-anchor="middle">PRO</text>` +
+          `<text x="540" y="780" font-size="34" font-weight="800" fill="${C.navy}" text-anchor="middle">FREE</text>` +
+          `<text x="540" y="822" font-size="30" font-weight="700" fill="${C.navy}" text-anchor="middle">for life</text>`,
+        resolved:
+          `<text x="540" y="1230" font-size="40" font-weight="800" fill="${st.ink}" text-anchor="middle">First 10 to register interest</text>` +
+          `<text x="540" y="1290" font-size="32" font-weight="700" fill="${st.sub}" text-anchor="middle">everyone else → 3 months free</text>`,
+      };
     }
     case "forward-email": {
-      // Envelope → arrow → task card (horizontal flow).
-      const env =
-        `<rect x="150" y="700" width="300" height="200" rx="16" fill="${C.white}" stroke="${C.border}" stroke-width="3"/>` +
-        `<path d="M 150 716 L 300 820 L 450 716" fill="none" stroke="${C.green}" stroke-width="6"/>` +
-        `<text x="300" y="880" font-size="24" font-weight="700" fill="${C.muted}" text-anchor="middle">FWD: booking</text>`;
-      const card =
-        `<rect x="630" y="700" width="300" height="200" rx="16" fill="${C.white}" stroke="${C.border}" stroke-width="3"/>` +
-        `<circle cx="690" cy="770" r="22" fill="none" stroke="${C.green}" stroke-width="5"/>` +
-        check(690, 770, C.green) +
-        `<text x="724" y="782" font-size="28" font-weight="800" fill="${C.text}">Dinner</text>` +
-        `<text x="660" y="850" font-size="24" fill="${C.muted}">Fri · 7:30pm</text>`;
-      return env + arrowRight(478, 800, st.accent) + card +
-        `<text x="540" y="1120" font-size="34" font-weight="800" fill="${st.accent}" text-anchor="middle">the what, when &amp; where — pulled out</text>`;
+      return {
+        chaos:
+          `<rect x="150" y="700" width="300" height="200" rx="16" fill="${C.white}" stroke="${C.border}" stroke-width="3"/>` +
+          `<path d="M 150 716 L 300 820 L 450 716" fill="none" stroke="${C.green}" stroke-width="6"/>` +
+          `<text x="300" y="880" font-size="24" font-weight="700" fill="${C.muted}" text-anchor="middle">FWD: booking</text>`,
+        resolved:
+          arrowRight(478, 800, st.accent) +
+          `<rect x="630" y="700" width="300" height="200" rx="16" fill="${C.white}" stroke="${C.border}" stroke-width="3"/>` +
+          `<circle cx="690" cy="770" r="22" fill="none" stroke="${C.green}" stroke-width="5"/>` +
+          check(690, 770, C.green) +
+          `<text x="724" y="782" font-size="28" font-weight="800" fill="${C.text}">Dinner</text>` +
+          `<text x="660" y="850" font-size="24" fill="${C.muted}">Fri · 7:30pm</text>` +
+          `<text x="540" y="1120" font-size="34" font-weight="800" fill="${st.accent}" text-anchor="middle">the what, when &amp; where — pulled out</text>`,
+      };
     }
     case "one-thing": {
-      // Giant question mark + bubbles.
       const bubble = (x: number, y: number, w: number, t: string) =>
         `<rect x="${x}" y="${y}" width="${w}" height="80" rx="40" fill="${C.white}"/>` +
         `<text x="${x + w / 2}" y="${y + 52}" font-size="30" font-weight="700" fill="${C.navy}" text-anchor="middle">${esc(t)}</text>`;
-      return (
-        `<text x="540" y="930" font-size="420" font-weight="800" fill="${st.accent}" text-anchor="middle">?</text>` +
-        bubble(160, 540, 300, "bin day?") +
-        bubble(640, 640, 360, "that 'starred' email?") +
-        bubble(250, 1040, 340, "renew the car tax?") +
-        `<text x="540" y="1230" font-size="34" font-weight="800" fill="${st.ink}" text-anchor="middle">comment yours 👇</text>`.replace(" 👇", "")
-      );
+      return {
+        chaos:
+          `<text x="540" y="930" font-size="420" font-weight="800" fill="${st.accent}" text-anchor="middle">?</text>` +
+          bubble(160, 540, 300, "bin day?") +
+          bubble(640, 640, 360, "that 'starred' email?") +
+          bubble(250, 1040, 340, "renew the car tax?"),
+        resolved: `<text x="540" y="1230" font-size="34" font-weight="800" fill="${st.ink}" text-anchor="middle">comment yours</text>`,
+      };
     }
     default:
-      return "";
+      return { chaos: "", resolved: "" };
   }
 }
 
@@ -381,7 +348,7 @@ function buildCover(d: Day): string {
   <rect width="1080" height="1920" fill="${st.bg}"/>
   ${coverWordmark(st)}
   ${d.hook.map((l, i) => `<text x="540" y="${hookY + i * lh}" font-size="${hookSize}" font-weight="800" fill="${st.ink}" text-anchor="middle">${rich(l)}</text>`).join("\n  ")}
-  ${motif(d, st)}
+  ${(() => { const m = motif(d, st); return m.chaos + m.resolved; })()}
   ${ctaBand(st)}
 </svg>
 `;
