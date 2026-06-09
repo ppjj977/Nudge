@@ -42,6 +42,10 @@ Android (remote WebView, `server.url = https://nudgelive.co.uk`), hosted on Rend
   `…/api/invite?code=<code>` drops an invite cookie → `/signup` works for that browser
   (password / magic-link / Google) via `signupAllowed()` in `lib/auth.ts`. Public still
   sees register-interest. Then grant them Pro in `/admin`.
+- **Family share notification:** sharing a task (`/api/tasks/[id]/share`, newly
+  shared only) push+FCMs the other household members ("X shared a task with the
+  family"); the tap deep-links to `/?task=<id>`, which `Timeline.tsx` opens on the
+  right tab and scroll-flashes (`.task-flash`). Calendar/ICS already include shared tasks.
 
 ## Privacy / data (kept TRUE — Play Data Safety depends on it)
 - Raw captures purged after `RAW_RETENTION_DAYS` (30) — `purgeExpiredRawCaptures()`
