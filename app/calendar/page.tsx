@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getUserLifeAreas } from "@/lib/users";
 import { requireUser } from "@/lib/auth";
 import { getActiveTasks } from "@/lib/tasks";
+import { getMembershipForUser } from "@/lib/households";
 import { ACTION_CATEGORIES } from "@/lib/categories";
 import CalendarMonth, { type CalDay } from "../CalendarMonth";
 import type { TaskView } from "../TaskCard";
@@ -27,7 +28,9 @@ export default async function CalendarPage({
   const gridStart = monthStart.startOf("week"); // Monday
   const todayKey = now.toFormat("yyyy-LL-dd");
 
-  const tasks = await getActiveTasks(user.id);
+  // Include tasks shared with the user's family so they show on the calendar.
+  const membership = await getMembershipForUser(user.id);
+  const tasks = await getActiveTasks(user.id, { householdId: membership?.household.id });
   const byDay = new Map<string, TaskView[]>();
   const place = (key: string, t: TaskView) => {
     const arr = byDay.get(key) ?? [];

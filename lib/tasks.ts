@@ -322,13 +322,25 @@ export async function createManualTask(
 }
 
 /** All active tasks (for the Money, Calendar, and Filter views). */
-export async function getActiveTasks(userId: string): Promise<Task[]> {
-  const res = await db.execute({
-    sql: `SELECT * FROM tasks
-          WHERE user_id = ? AND status = 'active'
-          ORDER BY (due_at IS NULL), due_at ASC, created_at DESC`,
-    args: [userId],
-  });
+export async function getActiveTasks(
+  userId: string,
+  opts: { householdId?: string | null } = {},
+): Promise<Task[]> {
+  // When a household id is given, also include tasks shared with that family
+  // (owned by another member) so shared tasks appear on the calendar/feed.
+  const res = opts.householdId
+    ? await db.execute({
+        sql: `SELECT * FROM tasks
+              WHERE status = 'active' AND (user_id = ? OR household_id = ?)
+              ORDER BY (due_at IS NULL), due_at ASC, created_at DESC`,
+        args: [userId, opts.householdId],
+      })
+    : await db.execute({
+        sql: `SELECT * FROM tasks
+              WHERE user_id = ? AND status = 'active'
+              ORDER BY (due_at IS NULL), due_at ASC, created_at DESC`,
+        args: [userId],
+      });
   return res.rows.map((r) => mapTaskRow(r as Record<string, unknown>));
 }
 
