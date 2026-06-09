@@ -227,34 +227,43 @@ function taskCard(x: number, y: number, w: number, title: string, chip: string, 
 function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
   switch (d.slug) {
     case "brain-forgets": {
-      const fills = [C.mint, "#FBE7BD", CREAM, "#D9E7DF"];
+      // A genuinely chaotic pile: 8 notes, strong varied angles, overlapping,
+      // varied widths/fills/x — visual overwhelm.
+      const rots = [-10, 8, -6, 12, -9, 5, -13, 7];
+      const xs = [210, 300, 195, 320, 235, 285, 205, 330];
+      const ws = [520, 560, 500, 540, 560, 510, 540, 500];
+      const fills = [C.mint, "#FBE7BD", CREAM, "#D9E7DF", "#EFE3CC", "#CFE0D5", "#F6E8C8", "#DCEAE1"];
       const chaos = d.input.lines
-        .slice(0, 4)
-        .map((l, i) => note(250 + (i % 2) * 60, 430 + i * 104, i % 2 ? 5 : -6, 540, fills[i % fills.length], l, C.navy))
+        .slice(0, 8)
+        .map((l, i) => note(xs[i], 408 + i * 62, rots[i], ws[i], fills[i], l, C.navy))
         .join("");
-      // Each brain-dump → its own dated/recurring reminder (chip shows the
-      // horizon; "EVERY THU" highlights recurring, "12 JUL" a future birthday).
+      // Each brain-dump → its own reminder, ordered SOONEST first. Green chip =
+      // recurring/appointment (incl. "EVERY THU"), amber = money/deadline.
       const sorted: [string, string, boolean][] = [
+        ["Call the plumber", "TODAY", false],
         ["Put the bins out", "EVERY THU", true],
-        ["Mum's birthday", "12 JUL", false],
+        ["School trip £15", "FRI", false],
         ["Dentist check-up", "TUE 9:30", true],
+        ["Library books back", "18 JUN", true],
+        ["Cancel free trial", "20 JUN", false],
         ["Pay the water bill", "28 JUN", false],
+        ["Mum's birthday", "12 JUL", true],
       ];
-      const mini = (y: number, title: string, chip: string, recurring: boolean) => {
-        const cw = chip.length * 18 + 44;
-        const cx = 880 - cw;
-        const fill = recurring ? C.green : C.amber;
+      const mini = (y: number, title: string, chip: string, green: boolean) => {
+        const cw = chip.length * 15 + 36;
+        const cx = 886 - cw;
+        const fill = green ? C.green : C.amber;
         return (
-          `<rect x="200" y="${y}" width="680" height="100" rx="16" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>` +
-          `<circle cx="248" cy="${y + 50}" r="18" fill="none" stroke="${C.green}" stroke-width="4"/>` +
-          check(248, y + 50, C.green) +
-          `<text x="288" y="${y + 62}" font-size="32" font-weight="800" fill="${C.text}">${esc(title)}</text>` +
-          `<rect x="${cx}" y="${y + 26}" width="${cw}" height="48" rx="12" fill="${fill}"/>` +
-          `<text x="${cx + cw / 2}" y="${y + 59}" font-size="24" font-weight="800" fill="${recurring ? C.white : C.navy}" text-anchor="middle">${esc(chip)}</text>`
+          `<rect x="170" y="${y}" width="716" height="64" rx="14" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>` +
+          `<circle cx="212" cy="${y + 32}" r="15" fill="none" stroke="${C.green}" stroke-width="4"/>` +
+          check(212, y + 32, C.green) +
+          `<text x="250" y="${y + 42}" font-size="28" font-weight="800" fill="${C.text}">${esc(title)}</text>` +
+          `<rect x="${cx}" y="${y + 13}" width="${cw}" height="38" rx="10" fill="${fill}"/>` +
+          `<text x="${cx + cw / 2}" y="${y + 39}" font-size="21" font-weight="800" fill="${green ? C.white : C.navy}" text-anchor="middle">${esc(chip)}</text>`
         );
       };
-      const cards = sorted.map(([t, chip, rec], i) => mini(972 + i * 116, t, chip, rec)).join("");
-      return { chaos, resolved: arrowDown(540, 884, st.accent) + cards };
+      const cards = sorted.map(([t, chip, g], i) => mini(1010 + i * 76, t, chip, g)).join("");
+      return { chaos, resolved: arrowDown(540, 936, st.accent) + cards };
     }
     case "screenshot-graveyard": {
       const cells = [];
@@ -381,7 +390,16 @@ const DAYS: Day[] = [
     hook: ["Things my brain", "refuses to remember:"],
     input: {
       title: "MY HEAD, 9PM",
-      lines: ["Bin day — which bin??", "Mum's birthday… next month?", "Dentist — some Tuesday?", "That bill. Which bill?"],
+      lines: [
+        "bin day — which bin?!",
+        "mum's bday… next month?",
+        "cancel that free trial!!",
+        "dentist — some Tuesday?",
+        "PLUMBER still dripping",
+        "water bill?? which one",
+        "library books overdue?",
+        "school trip money??",
+      ],
       hint: "too much to hold.",
     },
     header: "✨ Now they live in Nudge",
