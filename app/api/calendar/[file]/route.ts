@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getActiveTasks } from "@/lib/tasks";
+import { getMembershipForUser } from "@/lib/households";
 import { buildIcsFeed, findUserByCalendarToken } from "@/lib/calendar-feed";
 
 export const runtime = "nodejs";
@@ -18,7 +19,8 @@ export async function GET(
   const user = await findUserByCalendarToken(token);
   if (!user) return new NextResponse("Not found", { status: 404 });
 
-  const tasks = await getActiveTasks(user.id);
+  const membership = await getMembershipForUser(user.id);
+  const tasks = await getActiveTasks(user.id, { householdId: membership?.household.id });
   const ics = buildIcsFeed(user, tasks);
 
   return new NextResponse(ics, {
