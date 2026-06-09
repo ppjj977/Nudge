@@ -230,14 +230,31 @@ function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
       const fills = [C.mint, "#FBE7BD", CREAM, "#D9E7DF"];
       const chaos = d.input.lines
         .slice(0, 4)
-        .map((l, i) =>
-          note(250 + (i % 2) * 60, 470 + i * 120, i % 2 ? 5 : -6, 520, fills[i % fills.length], l, C.navy),
-        )
+        .map((l, i) => note(250 + (i % 2) * 60, 430 + i * 104, i % 2 ? 5 : -6, 540, fills[i % fills.length], l, C.navy))
         .join("");
-      return {
-        chaos,
-        resolved: arrowDown(540, 1000, st.accent) + taskCard(240, 1110, 600, "Dentist — Tue 9:30", "TUE", st),
+      // Each brain-dump → its own dated/recurring reminder (chip shows the
+      // horizon; "EVERY THU" highlights recurring, "12 JUL" a future birthday).
+      const sorted: [string, string, boolean][] = [
+        ["Put the bins out", "EVERY THU", true],
+        ["Mum's birthday", "12 JUL", false],
+        ["Dentist check-up", "TUE 9:30", true],
+        ["Pay the water bill", "28 JUN", false],
+      ];
+      const mini = (y: number, title: string, chip: string, recurring: boolean) => {
+        const cw = chip.length * 18 + 44;
+        const cx = 880 - cw;
+        const fill = recurring ? C.green : C.amber;
+        return (
+          `<rect x="200" y="${y}" width="680" height="100" rx="16" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>` +
+          `<circle cx="248" cy="${y + 50}" r="18" fill="none" stroke="${C.green}" stroke-width="4"/>` +
+          check(248, y + 50, C.green) +
+          `<text x="288" y="${y + 62}" font-size="32" font-weight="800" fill="${C.text}">${esc(title)}</text>` +
+          `<rect x="${cx}" y="${y + 26}" width="${cw}" height="48" rx="12" fill="${fill}"/>` +
+          `<text x="${cx + cw / 2}" y="${y + 59}" font-size="24" font-weight="800" fill="${recurring ? C.white : C.navy}" text-anchor="middle">${esc(chip)}</text>`
+        );
       };
+      const cards = sorted.map(([t, chip, rec], i) => mini(972 + i * 116, t, chip, rec)).join("");
+      return { chaos, resolved: arrowDown(540, 884, st.accent) + cards };
     }
     case "screenshot-graveyard": {
       const cells = [];
@@ -364,7 +381,7 @@ const DAYS: Day[] = [
     hook: ["Things my brain", "refuses to remember:"],
     input: {
       title: "MY HEAD, 9PM",
-      lines: ["Bin day (which bin?)", "Dentist — Tuesday?", "Mum's birthday soon", "That bill. Which bill."],
+      lines: ["Bin day — which bin??", "Mum's birthday… next month?", "Dentist — some Tuesday?", "That bill. Which bill?"],
       hint: "too much to hold.",
     },
     header: "✨ Now they live in Nudge",
