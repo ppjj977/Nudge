@@ -101,6 +101,49 @@ icon's nudge-lines clip under TikTok's circle crop; this one doesn't).
 
 ---
 
+## Stories layer (every day, alongside the feed post)
+
+Stories are the **casual, interactive** counterpart to the polished daily post:
+9:16, gone in 24h, and they carry the **interactive stickers + clickable link**
+where engagement and waitlist sign-ups actually happen. Most days it's just
+**that day's clip/cover + one sticker** — ~30 seconds of extra work, big payoff.
+
+**Where (important):** Instagram & Facebook Stories give a **clickable link
+sticker to everyone** — lean on these for the `nudgelive.co.uk` link. TikTok
+Stories are region-patchy and the link often isn't tappable below ~1k followers,
+so post there when you can but treat **IG/FB Stories as the reliable link driver**.
+Cross-post the same frame to all three.
+
+**The daily move:** reshare the day's post/clip to your Story → add the **link
+sticker** (always) → add **one** interactive sticker:
+- **Poll** — "Which do you forget more? 🗑 Bins / 🎂 Birthdays"
+- **Question** — "What's the ONE thing you always forget?" (gold for replies + Day 7 UGC)
+- **Countdown** — pin a "nudge opens" countdown; reuse it the whole campaign
+- **Emoji slider** — "How many unread screenshots? 😬" drag-to-rate
+- **Quiz** — "Free-for-life spots left: 3 / 7 / 10?" (ties to the promo)
+
+**Urgency drops (2–3×/week):** plain text story "⏳ [N] free-for-life spots left
+→" + link sticker. Pull [N] from `/admin`.
+**Behind-the-scenes (1–2×/week):** raw face-to-camera or screen-record ("building
+nudge — why" / "watch it read this email"). Stories are where unpolished wins.
+
+### Week 1 story prompts (post after each day's main post)
+- **Day 1:** reshare the school-letter clip + **Poll** "Lost a school letter this term? 😅 Yes / Never" + link.
+- **Day 2:** **Question** sticker "What does your brain refuse to remember?" + link.
+- **Day 3:** **Emoji slider** "How many unread screenshots? 😬" + link.
+- **Day 4:** reshare mental-load clip + text "tag someone who needs this 🫶" + link.
+- **Day 5 (promo):** **pin a Countdown** ("nudge opens") + text "⏳ [N] free-for-life spots left" + link.
+- **Day 6:** raw screen-record forwarding a real email → task ("watch this") + link.
+- **Day 7:** **Question** sticker "Your ONE forgotten thing 👇" (feeds the post) + link.
+
+### Weeks 2–4 story rhythm (repeatable, no need to script all 30)
+Every day: **reshare the post + link sticker.** Then by weekday:
+- **Mon** Poll · **Tue** BTS/founder · **Wed** spots-left + countdown ·
+  **Thu** Question · **Fri** reshare the promo + countdown · **Weekend** repost
+  reactions/UGC & reply to question-sticker answers on-screen.
+
+---
+
 ## Week 1 — Tease the problem & the promo (build the list)
 
 **Day 1 — TikTok + 🅵**
