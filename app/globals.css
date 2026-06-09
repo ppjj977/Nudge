@@ -2512,3 +2512,24 @@ button.link.danger { color: var(--danger); }
 }
 
 .share-toast { margin-top: 8px; font-size: 13px; }
+
+/* ---- calendar month/week toggle + week view ---- */
+.cal-toggle { display: inline-flex; gap: 2px; background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 3px; margin: 4px 0 12px; }
+.cal-toggle-btn { padding: 6px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; color: var(--muted); text-decoration: none; }
+.cal-toggle-btn.active { background: var(--navy); color: #fff; }
+.cal-weekview { display: flex; flex-direction: column; gap: 10px; }
+.cal-dayblock { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+.cal-dayblock.today { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(123,170,148,0.18); }
+.cal-dayblock-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.cal-dayblock-head .dow { font-weight: 800; color: var(--navy); }
+.cal-dayblock-head .dom { color: var(--muted); font-size: 13px; }
+.cal-today-chip { margin-left: auto; background: var(--mint); color: #2f5a45; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+.cal-dayblock-empty { color: var(--faint, #9aa4ae); font-size: 13px; }
+.cal-dayblock-tasks { display: flex; flex-direction: column; gap: 6px; }
+.cal-dayblock-task { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; background: var(--bg); border-radius: 10px; text-decoration: none; color: var(--navy); }
+.cal-dayblock-task .t-time { flex: 0 0 46px; font-weight: 800; font-size: 13px; color: var(--teal); padding-top: 1px; }
+.cal-dayblock-task .t-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cal-dayblock-task .t-title { font-weight: 700; font-size: 14px; }
+.cal-dayblock-task .t-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cal-dayblock-task .t-amount { font-size: 12px; font-weight: 700; color: var(--navy); }
+.cal-dayblock-task .t-where { font-size: 12px; color: var(--muted); }

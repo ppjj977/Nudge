@@ -46,6 +46,9 @@ Android (remote WebView, `server.url = https://nudgelive.co.uk`), hosted on Rend
   shared only) push+FCMs the other household members ("X shared a task with the
   family"); the tap deep-links to `/?task=<id>`, which `Timeline.tsx` opens on the
   right tab and scroll-flashes (`.task-flash`). Calendar/ICS already include shared tasks.
+- **Calendar** has a Month/Week toggle (`/calendar?view=week&w=<date>`): week view
+  (`CalendarWeek.tsx`) = 7 tall day blocks listing each task's time/title/chips, tap
+  deep-links to `/?task=<id>`. Month = `CalendarMonth.tsx`.
 
 ## Privacy / data (kept TRUE — Play Data Safety depends on it)
 - Raw captures purged after `RAW_RETENTION_DAYS` (30) — `purgeExpiredRawCaptures()`
