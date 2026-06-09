@@ -37,6 +37,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
       { href: "/family", label: "Family" },
       { href: "/profile", label: "Profile" },
       { href: "/settings", label: "Settings" },
+      { href: "/guides", label: "How-to guides" },
       { href: "/help", label: "Categories & help" },
       { href: "/feedback", label: "Send feedback" },
     ],
