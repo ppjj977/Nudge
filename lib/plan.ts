@@ -161,6 +161,37 @@ export async function redeemCode(userId: string, codeRaw: string): Promise<Redee
   return "ok";
 }
 
+/* ----------------------------- admin: users ------------------------------- */
+
+export interface AdminUserRow {
+  id: string;
+  email: string;
+  name: string | null;
+  plan: string | null;
+  plan_until: string | null;
+  plan_source: string | null;
+  created_at: string;
+  pro: boolean;
+}
+
+/** All users (newest first) with a computed live-Pro flag, for the admin table. */
+export async function listUsersForAdmin(limit = 500): Promise<AdminUserRow[]> {
+  const r = await db.execute({
+    sql: `SELECT id, email, name, plan, plan_until, plan_source, created_at
+          FROM users ORDER BY created_at DESC LIMIT ?`,
+    args: [limit],
+  });
+  return (r.rows as unknown as Omit<AdminUserRow, "pro">[]).map((u) => ({
+    ...u,
+    pro: isPro(u),
+  }));
+}
+
+/** Set a user's plan directly by id (admin comp / revoke). */
+export async function setPlanById(userId: string, pro: boolean): Promise<void> {
+  await setPlan(userId, pro ? "pro" : "free", null, pro ? "comp" : "admin-revoke");
+}
+
 /* ----------------------------- admin stats -------------------------------- */
 
 export interface PlanStats {
