@@ -1,41 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Inter, Arial, sans-serif">
-  <!-- Nudge — Day 4 (mental-load) static cover. Facebook image / TikTok thumbnail. -->
-  <rect width="1080" height="1920" fill="#F8F7F4"/>
-  <rect x="378" y="70" width="60" height="60" rx="17" fill="#7BAA94"/>
-  <text x="408" y="114" font-size="38" font-weight="800" fill="#FFFFFF" text-anchor="middle">n</text>
-  <text x="456" y="114" font-size="36" font-weight="800" fill="#232A32">nudge</text>
-
-  <text x="540" y="210" font-size="50" font-weight="800" fill="#232A32" text-anchor="middle">The mental load is</text>
-  <text x="540" y="272" font-size="50" font-weight="800" fill="#232A32" text-anchor="middle">invisible — until you</text>
-  <text x="540" y="334" font-size="50" font-weight="800" fill="#232A32" text-anchor="middle">write it ALL down</text>
-
-  <g transform="rotate(-3 540 640)">
-    <rect x="290" y="450" width="500" height="380" rx="14" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
-    <rect x="290" y="450" width="500" height="76" rx="14" fill="#EDF2EF"/>
-    <text x="320" y="500" font-size="26" font-weight="800" fill="#3C5A4C">EVERYTHING IN YOUR HEAD</text>
-    <text x="320" y="540" font-size="26" fill="#232A32">School trip form</text>
-    <text x="320" y="586" font-size="26" fill="#232A32">Call the dentist</text>
-    <text x="320" y="632" font-size="26" fill="#232A32">Pay the gas bill</text>
-    <text x="320" y="678" font-size="26" fill="#232A32">Renew the car tax</text>
-    
-  </g>
-
-  <text x="540" y="910" font-size="40" font-weight="800" fill="#7BAA94" text-anchor="middle">Nudge sorts it ↓</text>
-  
-  <rect x="120" y="970" width="840" height="170" rx="20" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
-  <text x="160" y="1056" font-size="40" font-weight="800" fill="#232A32">School trip form</text>
-  <text x="160" y="1104" font-size="27" fill="#667085">Hand it in</text>
-  <rect x="770" y="1020" width="140" height="70" rx="14" fill="#7BAA94"/>
-  <text x="840" y="1067" font-size="30" font-weight="800" fill="#FFFFFF" text-anchor="middle">FRI</text>
-  <rect x="120" y="1170" width="840" height="170" rx="20" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
-  <text x="160" y="1256" font-size="40" font-weight="800" fill="#232A32">Renew car tax</text>
-  <text x="160" y="1304" font-size="27" fill="#667085">Before month end</text>
-  <rect x="770" y="1220" width="140" height="70" rx="14" fill="#E8A24A"/>
-  <text x="840" y="1267" font-size="30" font-weight="800" fill="#FFFFFF" text-anchor="middle">30</text>
-  
-  <rect x="90" y="1470" width="900" height="300" rx="26" fill="#232A32"/>
-  <text x="540" y="1556" font-size="30" font-weight="700" fill="#9FD3BD" text-anchor="middle" letter-spacing="2">LAUNCH OFFER</text>
-  <text x="540" y="1622" font-size="40" font-weight="800" fill="#FFFFFF" text-anchor="middle">First 10 to register interest</text>
-  <text x="540" y="1680" font-size="44" font-weight="800" fill="#9FD3BD" text-anchor="middle">get Nudge Pro FREE for life</text>
-  <text x="540" y="1742" font-size="34" font-weight="700" fill="#FFFFFF" text-anchor="middle">nudgelive.co.uk · link in bio</text>
+  <!-- Nudge — Day 4 (mental-load) cover. Distinct bg + concept motif per day. -->
+  <rect width="1080" height="1920" fill="#9FD3BD"/>
+  <g transform="translate(475.0,67.0) scale(0.499)"><path d="M 16 16 L 50 16 A 34 34 0 0 1 84 50 L 84 84 L 50 84 A 34 34 0 0 1 16 50 Z" fill="none" stroke="#7BAA94" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/><text x="45" y="64" font-size="44" font-weight="700" fill="#232A32" text-anchor="middle">n</text><circle cx="64" cy="59" r="5.5" fill="#F5B52E"/></g><text x="540" y="104" font-size="34" font-weight="800" fill="#232A32">nudge</text>
+  <text x="540" y="240" font-size="58" font-weight="800" fill="#232A32" text-anchor="middle">The mental load is</text>
+  <text x="540" y="312" font-size="58" font-weight="800" fill="#232A32" text-anchor="middle">invisible — until you</text>
+  <text x="540" y="384" font-size="58" font-weight="800" fill="#232A32" text-anchor="middle">write it ALL down</text>
+  <g transform="rotate(-3 510 786)"><rect x="330" y="760" width="360" height="52" rx="12" fill="#3C5A4C" stroke="#0000001a" stroke-width="2"/><text x="350" y="795" font-size="24" font-weight="700" fill="#232A32">School trip form</text></g><g transform="rotate(3 510 716)"><rect x="345" y="690" width="330" height="52" rx="12" fill="#FFFFFF" stroke="#0000001a" stroke-width="2"/><text x="365" y="725" font-size="24" font-weight="700" fill="#232A32">Call the dentist</text></g><g transform="rotate(-3 510 646)"><rect x="360" y="620" width="300" height="52" rx="12" fill="#FFFFFF" stroke="#0000001a" stroke-width="2"/><text x="380" y="655" font-size="24" font-weight="700" fill="#232A32">Pay the gas bill</text></g><g transform="rotate(3 510 576)"><rect x="375" y="550" width="270" height="52" rx="12" fill="#FFFFFF" stroke="#0000001a" stroke-width="2"/><text x="395" y="585" font-size="24" font-weight="700" fill="#232A32">Renew the car tax</text></g><circle cx="540" cy="900" r="78" fill="none" stroke="#232A32" stroke-width="9"/><path d="M 470 1010 q 70 -70 140 0" fill="none" stroke="#232A32" stroke-width="9" stroke-linecap="round"/><path d="M 540 1080 l 0 60 M 518 1116 l 22 26 l 22 -26" fill="none" stroke="#3C5A4C" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><text x="540" y="1200" font-size="34" font-weight="800" fill="#3C5A4C" text-anchor="middle">…now it's all held for you</text>
+  <rect x="90" y="1640" width="900" height="210" rx="28" fill="#232A32"/><text x="540" y="1716" font-size="33" font-weight="800" fill="#ECE6D6" text-anchor="middle">First 10 to register = Pro free for life</text><text x="540" y="1772" font-size="29" font-weight="700" fill="#9FD3BD" text-anchor="middle">then 3 months free for everyone else</text><text x="540" y="1822" font-size="31" font-weight="800" fill="#E8A24A" text-anchor="middle">nudgelive.co.uk</text>
 </svg>

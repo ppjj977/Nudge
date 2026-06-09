@@ -1,35 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Inter, Arial, sans-serif">
-  <!-- Nudge — Day 6 (forward-email) static cover. Facebook image / TikTok thumbnail. -->
+  <!-- Nudge — Day 6 (forward-email) cover. Distinct bg + concept motif per day. -->
   <rect width="1080" height="1920" fill="#F8F7F4"/>
-  <rect x="378" y="70" width="60" height="60" rx="17" fill="#7BAA94"/>
-  <text x="408" y="114" font-size="38" font-weight="800" fill="#FFFFFF" text-anchor="middle">n</text>
-  <text x="456" y="114" font-size="36" font-weight="800" fill="#232A32">nudge</text>
-
-  <text x="540" y="246" font-size="56" font-weight="800" fill="#232A32" text-anchor="middle">Forward your chaos</text>
-  <text x="540" y="314" font-size="56" font-weight="800" fill="#232A32" text-anchor="middle">to a robot. Watch.</text>
-
-  <g transform="rotate(-3 540 640)">
-    <rect x="290" y="450" width="500" height="380" rx="14" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
-    <rect x="290" y="450" width="500" height="76" rx="14" fill="#EDF2EF"/>
-    <text x="320" y="500" font-size="26" font-weight="800" fill="#3C5A4C">FWD: Booking confirmed</text>
-    <text x="320" y="540" font-size="26" fill="#232A32">Your table for 4 is booked</text>
-    <text x="320" y="586" font-size="26" fill="#232A32">Fri 20 June, 7:30pm</text>
-    <text x="320" y="632" font-size="26" fill="#232A32">The Brasserie, High St</text>
-    <text x="320" y="678" font-size="26" fill="#232A32">Ref: BR-8821</text>
-    <text x="320" y="748" font-size="24" fill="#9AA4AE" font-style="italic">forward it to Nudge →</text>
-  </g>
-
-  <text x="540" y="910" font-size="40" font-weight="800" fill="#7BAA94" text-anchor="middle">Nudge reads it ↓</text>
-  
-  <rect x="120" y="970" width="840" height="170" rx="20" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="2"/>
-  <text x="160" y="1056" font-size="40" font-weight="800" fill="#232A32">Dinner — table for 4</text>
-  <text x="160" y="1104" font-size="27" fill="#667085">The Brasserie, 7:30pm</text>
-  <rect x="770" y="1020" width="140" height="70" rx="14" fill="#7BAA94"/>
-  <text x="840" y="1067" font-size="30" font-weight="800" fill="#FFFFFF" text-anchor="middle">FRI</text>
-  
-  <rect x="90" y="1470" width="900" height="300" rx="26" fill="#232A32"/>
-  <text x="540" y="1556" font-size="30" font-weight="700" fill="#9FD3BD" text-anchor="middle" letter-spacing="2">LAUNCH OFFER</text>
-  <text x="540" y="1622" font-size="40" font-weight="800" fill="#FFFFFF" text-anchor="middle">First 10 to register interest</text>
-  <text x="540" y="1680" font-size="44" font-weight="800" fill="#9FD3BD" text-anchor="middle">get Nudge Pro FREE for life</text>
-  <text x="540" y="1742" font-size="34" font-weight="700" fill="#FFFFFF" text-anchor="middle">nudgelive.co.uk · link in bio</text>
+  <g transform="translate(475.0,67.0) scale(0.499)"><path d="M 16 16 L 50 16 A 34 34 0 0 1 84 50 L 84 84 L 50 84 A 34 34 0 0 1 16 50 Z" fill="none" stroke="#7BAA94" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/><text x="45" y="64" font-size="44" font-weight="700" fill="#232A32" text-anchor="middle">n</text><circle cx="64" cy="59" r="5.5" fill="#F5B52E"/></g><text x="540" y="104" font-size="34" font-weight="800" fill="#232A32">nudge</text>
+  <text x="540" y="280" font-size="66" font-weight="800" fill="#232A32" text-anchor="middle">Forward your chaos</text>
+  <text x="540" y="360" font-size="66" font-weight="800" fill="#232A32" text-anchor="middle">to a robot. Watch.</text>
+  <rect x="150" y="700" width="300" height="200" rx="16" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="3"/><path d="M 150 716 L 300 820 L 450 716" fill="none" stroke="#7BAA94" stroke-width="6"/><text x="300" y="880" font-size="24" font-weight="700" fill="#667085" text-anchor="middle">FWD: booking</text><path d="M 478 800 l 70 0 M 522 778 l 28 22 l -28 22" fill="none" stroke="#7BAA94" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><rect x="630" y="700" width="300" height="200" rx="16" fill="#FFFFFF" stroke="#E9E9E3" stroke-width="3"/><circle cx="690" cy="770" r="22" fill="none" stroke="#7BAA94" stroke-width="5"/><path d="M 676 770 l 9 11 l 19 -23" fill="none" stroke="#7BAA94" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><text x="724" y="782" font-size="28" font-weight="800" fill="#232A32">Dinner</text><text x="660" y="850" font-size="24" fill="#667085">Fri · 7:30pm</text><text x="540" y="1120" font-size="34" font-weight="800" fill="#7BAA94" text-anchor="middle">the what, when &amp; where — pulled out</text>
+  <rect x="90" y="1640" width="900" height="210" rx="28" fill="#232A32"/><text x="540" y="1716" font-size="33" font-weight="800" fill="#ECE6D6" text-anchor="middle">First 10 to register = Pro free for life</text><text x="540" y="1772" font-size="29" font-weight="700" fill="#9FD3BD" text-anchor="middle">then 3 months free for everyone else</text><text x="540" y="1822" font-size="31" font-weight="800" fill="#E8A24A" text-anchor="middle">nudgelive.co.uk</text>
 </svg>
