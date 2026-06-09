@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { exchangeGoogleCode, fetchGoogleProfile } from "@/lib/oauth-google";
-import { provisionUser, createSession, RegistrationClosedError } from "@/lib/auth";
+import { provisionUser, createSession, signupAllowed, RegistrationClosedError } from "@/lib/auth";
 import { config } from "@/lib/config";
 
 export const runtime = "nodejs";
@@ -24,10 +24,11 @@ export async function GET(req: Request) {
   try {
     const accessToken = await exchangeGoogleCode(code);
     const profile = await fetchGoogleProfile(accessToken);
-    const user = await provisionUser(profile.email, {
-      name: profile.name,
-      image: profile.picture,
-    });
+    const user = await provisionUser(
+      profile.email,
+      { name: profile.name, image: profile.picture },
+      { allowSignup: await signupAllowed() },
+    );
     await createSession(user.id);
     return NextResponse.redirect(`${base}/`, 303);
   } catch (e) {

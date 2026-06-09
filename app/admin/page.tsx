@@ -47,6 +47,37 @@ export default async function AdminPage() {
       </section>
 
       <section className="panel">
+        <h2 className="section">Tester invite links</h2>
+        <p className="note">
+          Public sign-up stays closed (everyone else sees register-interest). Share
+          a link below to let a specific tester create an account — any sign-in
+          method works, and the access lasts 14 days in their browser.
+        </p>
+        {config.signupInviteCodes.length === 0 ? (
+          <p className="note">
+            None set. Add <code>SIGNUP_INVITE_CODES</code> (comma-separated, e.g.{" "}
+            <code>TESTERS26,FAMILY</code>) to your environment, redeploy, then reload.
+          </p>
+        ) : (
+          <ul className="code-list">
+            {config.signupInviteCodes.map((c) => (
+              <li key={c}>
+                <b>{c}</b>
+                <span>
+                  {(config.appBaseUrl ?? "https://nudgelive.co.uk").replace(/\/$/, "")}
+                  /api/invite?code={encodeURIComponent(c)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="note">
+          After a tester signs up, make them Pro (no payment) with{" "}
+          <strong>Grant Pro to someone</strong> below.
+        </p>
+      </section>
+
+      <section className="panel">
         <h2 className="section">Waitlist · register interest ({interest.length})</h2>
         {interest.length === 0 ? (
           <p className="note">No sign-ups yet. Share the /register-interest link.</p>

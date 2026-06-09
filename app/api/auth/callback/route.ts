@@ -3,6 +3,7 @@ import {
   consumeMagicToken,
   provisionUser,
   createSession,
+  signupAllowed,
   RegistrationClosedError,
 } from "@/lib/auth";
 import { config } from "@/lib/config";
@@ -20,7 +21,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`${base}/login?error=expired`, 303);
   }
   try {
-    const user = await provisionUser(email);
+    const user = await provisionUser(email, {}, { allowSignup: await signupAllowed() });
     await createSession(user.id);
     return NextResponse.redirect(`${base}/`, 303);
   } catch (e) {

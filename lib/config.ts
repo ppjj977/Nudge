@@ -50,6 +50,13 @@ export const config = {
   adminEmail: env("ADMIN_EMAIL")?.toLowerCase() ?? null,
   /** When false (default), public sign-up is closed — show register-interest. */
   registrationOpen: env("REGISTRATION_OPEN") === "true",
+  /** Invite codes that let specific testers create an account while public
+   *  sign-up stays closed. Comma-separated in SIGNUP_INVITE_CODES. Share the
+   *  link /api/invite?code=<code> with testers. */
+  signupInviteCodes: (env("SIGNUP_INVITE_CODES") ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
   /** Optional webhook (Slack/Discord/etc.) to alert on server errors. */
   errorWebhook: env("ERROR_WEBHOOK_URL"),
   /** RevenueCat: webhook auth header value + the entitlement that = Pro. */

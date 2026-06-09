@@ -6,15 +6,15 @@ import {
   getPasswordHash,
   updateUserName,
   createSession,
+  signupAllowed,
 } from "@/lib/auth";
 import { rateLimited, clientIp } from "@/lib/rate-limit";
-import { config } from "@/lib/config";
 
 export const runtime = "nodejs";
 
 /** POST /api/auth/register { name?, email, password } */
 export async function POST(req: Request) {
-  if (!config.registrationOpen) {
+  if (!(await signupAllowed())) {
     return NextResponse.json(
       { error: "Sign-ups aren’t open yet — register your interest.", closed: true },
       { status: 403 },
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const user = await provisionUser(email, { name: cleanName });
+  const user = await provisionUser(email, { name: cleanName }, { allowSignup: true });
   await setUserPassword(user.id, password);
   await createSession(user.id);
   return NextResponse.json({ ok: true });
