@@ -182,6 +182,65 @@ const guides: Record<string, string> = {
       taskCard(470, "Pay £15 trip", "due 15 Jun", "15 JUN", C.amber) +
       caption(3, "Every action becomes a task"),
   ]),
+
+  // ---- Mark done / undo ----
+  "mark-done": build([
+    wrapCard(220, 240,
+      `<text x="72" y="300" font-size="32" font-weight="800" fill="${C.navy}">Pay water bill</text>` +
+      `<text x="72" y="346" font-size="26" fill="${C.muted}">£42 · Fri</text>` +
+      `<rect x="72" y="384" width="150" height="58" rx="13" fill="${C.green}"/><text x="147" y="422" font-size="24" font-weight="800" fill="${C.white}" text-anchor="middle">Done</text>` +
+      `<rect x="236" y="384" width="170" height="58" rx="13" fill="${C.white}" stroke="${C.border}" stroke-width="2"/><text x="321" y="422" font-size="24" font-weight="800" fill="${C.navy}" text-anchor="middle">Snooze</text>` +
+      `<rect x="420" y="384" width="140" height="58" rx="13" fill="${C.white}" stroke="${C.border}" stroke-width="2"/><text x="490" y="422" font-size="24" font-weight="800" fill="${C.navy}" text-anchor="middle">Edit</text>`) +
+      tap(147, 413) + caption(1, "Tap Done when it's handled"),
+    `<rect x="40" y="280" width="640" height="150" rx="20" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>` +
+      `<circle cx="86" cy="336" r="20" fill="${C.green}"/>` + check(86, 336, C.white) +
+      `<text x="124" y="346" font-size="32" font-weight="800" fill="${C.faint}">Pay water bill</text>` +
+      `<line x1="124" y1="336" x2="356" y2="336" stroke="${C.faint}" stroke-width="3"/>` +
+      `<rect x="498" y="318" width="142" height="52" rx="13" fill="none" stroke="${C.amber}" stroke-width="2"/><text x="569" y="352" font-size="24" font-weight="800" fill="${C.amber}" text-anchor="middle">Undo</text>` +
+      caption(2, "It's marked done in a tap"),
+    `<text x="360" y="380" font-size="30" font-weight="800" fill="${C.navy}" text-anchor="middle">Find it under “Closed nudges”</text>` +
+      `<text x="360" y="428" font-size="26" fill="${C.muted}" text-anchor="middle">(in the menu) — Undo anytime</text>` +
+      caption(3, "Changed your mind? Undo anytime"),
+  ]),
+
+  // ---- Edit a task's date ----
+  "edit-date": build([
+    wrapCard(220, 210,
+      `<text x="72" y="300" font-size="32" font-weight="800" fill="${C.navy}">Dentist check-up</text>` +
+      `<text x="72" y="346" font-size="26" fill="${C.muted}">Tue 9:30</text>` +
+      `<rect x="468" y="372" width="142" height="58" rx="13" fill="${C.white}" stroke="${C.border}" stroke-width="2"/><text x="539" y="410" font-size="24" font-weight="800" fill="${C.navy}" text-anchor="middle">Edit</text>`) +
+      tap(539, 401) + caption(1, "Tap Edit on any task"),
+    wrapCard(200, 430,
+      `<text x="72" y="258" font-size="24" font-weight="700" fill="${C.muted}">Name</text>` +
+      `<rect x="72" y="276" width="576" height="58" rx="12" fill="${C.bg}"/><text x="92" y="314" font-size="26" font-weight="700" fill="${C.navy}">Dentist check-up</text>` +
+      `<text x="72" y="388" font-size="24" font-weight="700" fill="${C.muted}">Date</text>` +
+      `<rect x="72" y="406" width="280" height="60" rx="12" fill="${C.white}" stroke="${C.green}" stroke-width="3"/><text x="92" y="446" font-size="26" font-weight="700" fill="${C.navy}">Wed 11 Jun</text>` +
+      `<text x="372" y="388" font-size="24" font-weight="700" fill="${C.muted}">Time</text>` +
+      `<rect x="372" y="406" width="180" height="60" rx="12" fill="${C.white}" stroke="${C.border}" stroke-width="2"/><text x="392" y="446" font-size="26" font-weight="700" fill="${C.navy}">14:00</text>` +
+      `<rect x="72" y="512" width="200" height="64" rx="14" fill="${C.green}"/><text x="172" y="554" font-size="26" font-weight="800" fill="${C.white}" text-anchor="middle">Save</text>`) +
+      tap(172, 544) + caption(2, "Change the name, date or time"),
+    taskCard(320, "Dentist check-up", "moved to Wed 14:00", "WED", C.green) +
+      caption(3, "Saved — its reminders update too"),
+  ]),
+
+  // ---- Share with family ----
+  "share-family": build([
+    wrapCard(200, 320,
+      `<text x="72" y="262" font-size="24" font-weight="800" fill="${C.muted}" letter-spacing="1">THE PEARCES</text>` +
+      `<rect x="72" y="286" width="576" height="62" rx="12" fill="${C.bg}"/><text x="96" y="326" font-size="26" font-weight="800" fill="${C.navy}">Adam (you)</text>` +
+      `<rect x="72" y="362" width="576" height="62" rx="12" fill="${C.bg}"/><text x="96" y="402" font-size="26" font-weight="800" fill="${C.navy}">Bev</text>` +
+      `<rect x="408" y="452" width="240" height="58" rx="14" fill="${C.green}"/><text x="528" y="490" font-size="24" font-weight="800" fill="${C.white}" text-anchor="middle">Invite someone</text>`) +
+      caption(1, "Invite your household to Family"),
+    wrapCard(240, 220,
+      `<text x="72" y="312" font-size="32" font-weight="800" fill="${C.navy}">Pay nursery fees</text>` +
+      `<text x="72" y="358" font-size="26" fill="${C.muted}">£120 · Fri</text>` +
+      `<text x="378" y="314" font-size="24" fill="${C.muted}">Assigned to</text>` +
+      `<rect x="378" y="332" width="200" height="60" rx="13" fill="${C.bg}"/><text x="402" y="372" font-size="26" font-weight="800" fill="${C.navy}">Bev ▾</text>`) +
+      tap(478, 362) + caption(2, "Assign who's doing it"),
+    taskCard(320, "Pay nursery fees", "shared · for Bev", "FRI", C.amber) +
+      `<text x="360" y="520" font-size="26" fill="${C.muted}" text-anchor="middle">Everyone in the family gets the nudge.</text>` +
+      caption(3, "The whole household stays in sync"),
+  ]),
 };
 
 const out = join(process.cwd(), "public", "guides");
