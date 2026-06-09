@@ -122,6 +122,7 @@ export default function TaskCard({
   const [editing, setEditing] = useState(false);
   const [snoozing, setSnoozing] = useState(false);
   const [breaking, setBreaking] = useState(false);
+  const [shareMsg, setShareMsg] = useState<string | null>(null);
   const mode: Mode = done ? "done" : review ? "review" : "active";
 
   async function call(url: string, method: string, body?: object, terminal = false) {
@@ -145,8 +146,27 @@ export default function TaskCard({
     );
   const dismiss = () => call(`/api/tasks/${task.id}`, "DELETE", undefined, true);
   const confirm = () => call(`/api/tasks/${task.id}/confirm`, "POST", undefined, true);
-  const toggleShare = () =>
-    call(`/api/tasks/${task.id}/share`, "POST", { share: !task.household_id });
+  const toggleShare = async () => {
+    const sharing = !task.household_id;
+    const res = await fetch(`/api/tasks/${task.id}/share`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ share: sharing }),
+    });
+    const d = (await res.json().catch(() => ({}))) as {
+      notified?: { members: number; devices: number };
+    };
+    if (sharing && d.notified) {
+      const { members, devices } = d.notified;
+      setShareMsg(
+        devices > 0
+          ? `Shared — notified ${members} family member${members === 1 ? "" : "s"} on ${devices} device${devices === 1 ? "" : "s"}.`
+          : "Shared — but no family member has notifications turned on yet, so none were pinged.",
+      );
+      setTimeout(() => setShareMsg(null), 7000);
+    }
+    startTransition(() => router.refresh());
+  };
   const assign = (assignee_id: string) =>
     call(`/api/tasks/${task.id}`, "PATCH", { assignee_id: assignee_id || null });
   const assigneeName =
@@ -343,6 +363,7 @@ export default function TaskCard({
                   {task.household_id ? "✓ Shared" : "Share with family"}
                 </button>
               )}
+              {shareMsg && <div className="toast share-toast">{shareMsg}</div>}
               <button onClick={() => setEditing(true)} disabled={pending}>
                 Edit
               </button>
