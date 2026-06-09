@@ -127,14 +127,38 @@ sticker** (always) → add **one** interactive sticker:
 **Behind-the-scenes (1–2×/week):** raw face-to-camera or screen-record ("building
 nudge — why" / "watch it read this email"). Stories are where unpolished wins.
 
-### Week 1 story prompts (post after each day's main post)
-- **Day 1:** reshare the school-letter clip + **Poll** "Lost a school letter this term? 😅 Yes / Never" + link.
-- **Day 2:** **Question** sticker "What does your brain refuse to remember?" + link.
-- **Day 3:** **Emoji slider** "How many unread screenshots? 😬" + link.
-- **Day 4:** reshare mental-load clip + text "tag someone who needs this 🫶" + link.
-- **Day 5 (promo):** **pin a Countdown** ("nudge opens") + text "⏳ [N] free-for-life spots left" + link.
-- **Day 6:** raw screen-record forwarding a real email → task ("watch this") + link.
-- **Day 7:** **Question** sticker "Your ONE forgotten thing 👇" (feeds the post) + link.
+### Story templates (live — drop the native sticker on top)
+
+Branded 9:16 frames with a dashed "drop your sticker here" zone + a link-sticker
+reminder, so the native sticker has a tidy home. Regenerate via
+`npx tsx scripts/gen-stories.ts`.
+
+| Template | URL | Use with |
+|---|---|---|
+| Poll | https://nudgelive.co.uk/social/story-poll.png | native **Poll** sticker |
+| Question | https://nudgelive.co.uk/social/story-question.png | native **Question** sticker |
+| Slider | https://nudgelive.co.uk/social/story-slider.png | native **Emoji slider** |
+| Countdown | https://nudgelive.co.uk/social/story-countdown.png | pinned **Countdown** sticker |
+| Spots left | https://nudgelive.co.uk/social/story-spots.png | type the live **[N]** over the circle |
+
+**How:** save the template → set as Story background → place the native sticker in
+the dashed zone → add the **link sticker** (`nudgelive.co.uk`) at the bottom hint.
+
+### Week 1 story design (2 frames/day: reshare + interactive)
+
+Each day = **Frame 1:** reshare that day's clip/cover + link sticker · **Frame 2:**
+the interactive template below.
+
+- **Day 1** — F2: `story-poll`, poll "Lost a school letter this term? Yes 😅 / Never".
+- **Day 2** — F2: `story-question`, "What does your brain refuse to remember?" (reuse the replies as future post ideas).
+- **Day 3** — F2: `story-slider`, "How many unread screenshots?" emoji slider.
+- **Day 4** — F2: plain reshare of the mental-load clip + text "tag someone who needs this 🫶".
+- **Day 5 (promo)** — F2: `story-countdown` with a **pinned** countdown (reuse all campaign); F3: `story-spots` with the live `[N]`.
+- **Day 6** — F2: raw screen-record forwarding a real email → task ("watch this"), link sticker.
+- **Day 7** — F2: `story-question`, "Your ONE forgotten thing 👇" (drives the post's comments).
+
+> The **countdown** (Day 5) and **spots-left** (run 2–3×/week) frames are your
+> urgency engine — pin the countdown to your profile's Story highlights too.
 
 ### Weeks 2–4 story rhythm (repeatable, no need to script all 30)
 Every day: **reshare the post + link sticker.** Then by weekday:
