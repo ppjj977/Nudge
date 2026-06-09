@@ -42,6 +42,30 @@ sign-up is closed and the goal is **register-interest sign-ups**.
 capture flow on the phone. Film the messy input (a school letter / a bill /
 a voice note) → the tasks appearing → a reminder firing. 9–15s is plenty.
 
+## Direct asset URLs (live on the site)
+
+Everything in `public/social/` is served at `https://nudgelive.co.uk/social/<file>`.
+On a phone: open a **cover** URL → long-press → Save image; open a **clip** URL
+full-screen → screen-record it (loops every 14s) for the TikTok/Reel.
+
+| Day | Animated clip (screen-record) | Cover (save image) |
+|---|---|---|
+| 1 | https://nudgelive.co.uk/social/day01-school-letter.svg | https://nudgelive.co.uk/social/day01-cover.png |
+| 2 | https://nudgelive.co.uk/social/day02-brain-forgets.svg | https://nudgelive.co.uk/social/day02-cover.png |
+| 3 | https://nudgelive.co.uk/social/day03-screenshot-graveyard.svg | https://nudgelive.co.uk/social/day03-cover.png |
+| 4 | https://nudgelive.co.uk/social/day04-mental-load.svg | https://nudgelive.co.uk/social/day04-cover.png |
+| 5 | https://nudgelive.co.uk/social/day05-promo.svg | https://nudgelive.co.uk/social/day05-cover.png |
+| 6 | https://nudgelive.co.uk/social/day06-forward-email.svg | https://nudgelive.co.uk/social/day06-cover.png |
+| 7 | https://nudgelive.co.uk/social/day07-one-thing.svg | https://nudgelive.co.uk/social/day07-cover.png |
+
+Other assets:
+- TikTok avatar (profile pic): https://nudgelive.co.uk/social/tiktok-avatar.png
+- Demo "school email → tasks" clip: https://nudgelive.co.uk/social/demo-school-email.svg
+- Demo cover: https://nudgelive.co.uk/social/demo-school-email-cover.png
+
+> The `dayNN-cover.svg` files are intermediates — post the **`.png`** covers.
+> Days 8–30 aren't pre-rendered yet; regenerate/extend via `scripts/gen-social.ts`.
+
 ## Channel setup (do this once)
 
 **Profile picture:** `public/social/tiktok-avatar.png` (circle-safe — the app
