@@ -35,6 +35,13 @@ Android (remote WebView, `server.url = https://nudgelive.co.uk`), hosted on Rend
   `REVENUECAT_WEBHOOK_AUTH` (Render), `REVENUECAT_ENTITLEMENT` (default `pro`).
 - Also: promo codes + admin comps (`lib/plan.ts`), pre-launch waitlist
   (`lib/interest.ts`, "first 10 free for life") shown while `REGISTRATION_OPEN!=true`.
+- **Admin portal `/admin`** (gated by `ADMIN_EMAIL`): subscriber stats, **Grant Pro to
+  someone** (comp by email, no payment), promo codes, demo-account button, tester
+  invite links, waitlist.
+- **Tester sign-up while closed:** set `SIGNUP_INVITE_CODES` (comma-separated). Link
+  `…/api/invite?code=<code>` drops an invite cookie → `/signup` works for that browser
+  (password / magic-link / Google) via `signupAllowed()` in `lib/auth.ts`. Public still
+  sees register-interest. Then grant them Pro in `/admin`.
 
 ## Privacy / data (kept TRUE — Play Data Safety depends on it)
 - Raw captures purged after `RAW_RETENTION_DAYS` (30) — `purgeExpiredRawCaptures()`

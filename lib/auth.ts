@@ -10,6 +10,26 @@ import type { User } from "./users";
 const SESSION_COOKIE = "nudge_session";
 const SESSION_DAYS = 60;
 
+/** Cookie carrying a valid tester invite code (set by /api/invite). */
+export const INVITE_COOKIE = "nudge_invite";
+
+/** Is this one of the configured tester invite codes? */
+export function inviteValid(code: string | null | undefined): boolean {
+  return !!code && config.signupInviteCodes.includes(code);
+}
+
+/**
+ * May a NEW account be created right now? True if public sign-up is open, or a
+ * valid tester invite is present (passed explicitly or in the invite cookie).
+ * Existing users signing in are never affected by this.
+ */
+export async function signupAllowed(explicit?: string | null): Promise<boolean> {
+  if (config.registrationOpen) return true;
+  if (inviteValid(explicit)) return true;
+  const c = (await cookies()).get(INVITE_COOKIE)?.value;
+  return inviteValid(c);
+}
+
 /** Thrown by provisionUser when sign-up is closed and the user doesn't exist. */
 export class RegistrationClosedError extends Error {
   constructor() {
@@ -61,6 +81,7 @@ export async function findUserByEmail(email: string): Promise<User | null> {
 export async function provisionUser(
   email: string,
   extra: { name?: string | null; image?: string | null } = {},
+  opts: { allowSignup?: boolean } = {},
 ): Promise<User> {
   await ensureSchema();
   const normalized = email.toLowerCase().trim();
@@ -75,8 +96,9 @@ export async function provisionUser(
     }
     return (await findUserByEmail(normalized))!;
   }
-  // No existing account: block creation while sign-up is closed (pre-launch).
-  if (!config.registrationOpen) {
+  // No existing account: block creation while sign-up is closed (pre-launch),
+  // unless a valid tester invite allows it.
+  if (!config.registrationOpen && !opts.allowSignup) {
     throw new RegistrationClosedError();
   }
   const id = newId("usr");
