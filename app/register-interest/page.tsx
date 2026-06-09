@@ -49,8 +49,8 @@ export default async function RegisterInterestPage({
           </>
         ) : (
           <>
-            🎁 The free-for-life spots are gone — but everyone who registers now gets{" "}
-            <b>3 months of Pro free</b> at launch.
+            🎁 The <b>free-for-life</b> spots are gone — register now and we’ll let you
+            know the moment Nudge opens.
           </>
         )}
       </div>

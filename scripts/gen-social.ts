@@ -133,12 +133,11 @@ function coverWordmark(st: CStyle): string {
 function ctaBand(st: CStyle): string {
   const fill = st.dark ? st.accent : C.navy;
   const ink = st.dark ? C.navy : CREAM;
-  const accent = st.dark ? C.navy : C.amber;
+  const link = st.dark ? C.navy : C.amber;
   return (
-    `<rect x="90" y="1640" width="900" height="210" rx="28" fill="${fill}"/>` +
-    `<text x="540" y="1716" font-size="33" font-weight="800" fill="${ink}" text-anchor="middle">First 10 to register = Pro free for life</text>` +
-    `<text x="540" y="1772" font-size="29" font-weight="700" fill="${st.dark ? "#1c232b" : C.mint}" text-anchor="middle">then 3 months free for everyone else</text>` +
-    `<text x="540" y="1822" font-size="31" font-weight="800" fill="${accent === C.navy ? C.navy : C.amber}" text-anchor="middle">nudgelive.co.uk</text>`
+    `<rect x="90" y="1670" width="900" height="150" rx="28" fill="${fill}"/>` +
+    `<text x="540" y="1734" font-size="34" font-weight="800" fill="${ink}" text-anchor="middle">First 10 to register = Pro free for life</text>` +
+    `<text x="540" y="1790" font-size="32" font-weight="800" fill="${link}" text-anchor="middle">nudgelive.co.uk</text>`
   );
 }
 
@@ -325,8 +324,8 @@ function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
           `<text x="540" y="780" font-size="34" font-weight="800" fill="${C.navy}" text-anchor="middle">FREE</text>` +
           `<text x="540" y="822" font-size="30" font-weight="700" fill="${C.navy}" text-anchor="middle">for life</text>`,
         resolved:
-          `<text x="540" y="1230" font-size="40" font-weight="800" fill="${st.ink}" text-anchor="middle">First 10 to register interest</text>` +
-          `<text x="540" y="1290" font-size="32" font-weight="700" fill="${st.sub}" text-anchor="middle">everyone else → 3 months free</text>`,
+          `<text x="540" y="1240" font-size="42" font-weight="800" fill="${st.ink}" text-anchor="middle">First 10 to register interest</text>` +
+          `<text x="540" y="1300" font-size="40" font-weight="800" fill="${st.accent}" text-anchor="middle">= Pro free for life</text>`,
       };
     }
     case "forward-email": {
@@ -456,7 +455,7 @@ const DAYS: Day[] = [
     transition: "Get in early ↓",
     tasks: [
       { emoji: "🎁", title: "First 10 to register", sub: "Nudge Pro — free for LIFE", chip: "10", chipFill: A },
-      { emoji: "⭐", title: "Everyone else who joins", sub: "3 months of Pro, free", chip: "3MO", chipFill: G },
+      { emoji: "⭐", title: "Be one of the first 10", sub: "Pro free for life", chip: "10", chipFill: G },
     ],
     footnote: ["The first-10 spots close soon.", "nudgelive.co.uk"],
   },

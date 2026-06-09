@@ -11,9 +11,9 @@ sign-up is closed and the goal is **register-interest sign-ups**.
 
 ## The launch promo (the hook for every post)
 
-- **First 10 to register interest → Nudge Pro free for life.** 🎁
-- After the first 10 → **3 months of Pro free** at launch for anyone who
-  registers interest.
+- **First 10 to register interest → Nudge Pro free for life.** 🎁 (the only offer
+  to shout about) — everyone else just gets the standard 7-day Pro trial at launch;
+  don't promote it.
 - Single CTA everywhere: **register your interest at nudgelive.co.uk**
   (the homepage CTA + footer already point to `/register-interest`).
 
@@ -22,8 +22,8 @@ sign-up is closed and the goal is **register-interest sign-ups**.
   are flagged 🎁 in **/admin**.
 - When you open sign-up, create a promo code in /admin — e.g.
   `FOUNDERS` with **Days = blank (forever)** and **Max uses = 10** — and email
-  it to positions #1–#10. For the wider cohort create `EARLY90` with
-  **Days = 90**, no max. Codes are redeemed at `/upgrade` once they have an account.
+  it to positions #1–#10. That's the only code needed; the code is redeemed at
+  `/upgrade` once they have an account.
 
 ## Assets you already have (drop these straight in)
 
@@ -201,7 +201,7 @@ Every day: **reshare the post + link sticker.** Then by weekday:
 - Caption: *"The mental load isn't lazy — it's invisible. Nudge holds it so your brain doesn't have to. First 10 to register = Pro free for life → nudgelive.co.uk #mentalload #momlife #adhdtok"*
 
 **Day 5 — TikTok + 🅵**
-- Promo spotlight: "We're opening Nudge soon. First 10 = Pro free for LIFE; everyone else who joins now = 3 months free."
+- Promo spotlight: "We're opening Nudge soon. The first 10 to register interest get Pro free for LIFE — don't miss the cut."
 - Assets: `day05-promo.svg` · `day05-cover.png` (update "[N] spots left" from /admin)
 - Caption: *"⏳ Only [N] free-for-life spots left. Nudge opens soon — register your interest now → nudgelive.co.uk #nudge #lifeadmin #earlybird"*
 
@@ -238,7 +238,7 @@ Every day: **reshare the post + link sticker.** Then by weekday:
 - Caption: *"Stitch this with the most UNHINGED thing in your notes app 📝 I'll show you the Nudge for it. Go. nudgelive.co.uk #notesapp #adhdtok #stitch"*
 
 **Day 14 — TikTok + 🅵** — Promo check-in: "Only [N] free-for-life spots left." Countdown urgency. `day05-cover.png`.
-- Caption: *"⏳ Only [N] free-for-life spots left. First 10 to register interest get Nudge Pro free FOREVER — after that it's 3 months free. nudgelive.co.uk #earlybird #nudge #lifeadmin"*
+- Caption: *"⏳ Only [N] free-for-life spots left. First 10 to register interest get Nudge Pro free FOREVER. Don't miss it → nudgelive.co.uk #earlybird #nudge #lifeadmin"*
 
 ---
 
@@ -278,8 +278,8 @@ Every day: **reshare the post + link sticker.** Then by weekday:
 **Day 24 — TikTok + 🅵** — Behind the scenes / founder: why I built it (the real life-admin story). Authentic, face-to-camera.
 - Caption: *"I built Nudge because my wife has ADHD and our family admin lived in 6 different places. So I made one that just… catches it all. 🫶 Register your interest → nudgelive.co.uk #buildinpublic #founder #adhd #lifeadmin"*
 
-**Day 25 — TikTok** — "Last chance for free-for-life" if any of the 10 spots remain; else "3 months free for everyone who joins now."
-- Caption: *"🚨 LAST few free-for-life spots. First 10 to register interest get Nudge Pro free FOREVER. After that, 3 months free at launch. Don't sleep on it. nudgelive.co.uk #lastchance #earlybird #nudge"*
+**Day 25 — TikTok** — "Last chance for free-for-life" while any of the 10 spots remain.
+- Caption: *"🚨 LAST few free-for-life spots. First 10 to register interest get Nudge Pro free FOREVER. Don't sleep on it. nudgelive.co.uk #lastchance #earlybird #nudge"*
 
 **Day 26 — TikTok + 🅵** — Feature montage set to trending audio: capture → extract → review → remind. Fast cuts.
 - Caption: *"Everything Nudge does in 12 seconds ⚡ Capture → it extracts the task → you review → it reminds you. That's it. That's the magic. nudgelive.co.uk #app #productivity #lifeadmin #organised"*
@@ -316,7 +316,7 @@ Every day: **reshare the post + link sticker.** Then by weekday:
 **Promo/urgency:**
 > ⏳ [N] free-for-life spots left.
 > Nudge Pro, free forever, for the first 10 people on the waitlist.
-> After that: 3 months free at launch.
+> Once they're gone, they're gone.
 > Link in bio 👆 #nudge #lifeadmin #adhd
 
 ## Notes for whoever runs this
