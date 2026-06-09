@@ -105,12 +105,49 @@ const PROMO_SCENE = `
     <text x="540" y="1560" font-size="28" fill="${C.faint}" text-anchor="middle">📱 Coming soon to Google Play</text>
   </g>`;
 
-const PROMO_STRIP = `
-  <rect x="90" y="1470" width="900" height="300" rx="26" fill="${C.navy}"/>
-  <text x="540" y="1556" font-size="30" font-weight="700" fill="${C.mint}" text-anchor="middle" letter-spacing="2">LAUNCH OFFER</text>
-  <text x="540" y="1622" font-size="40" font-weight="800" fill="${C.white}" text-anchor="middle">First 10 to register interest</text>
-  <text x="540" y="1680" font-size="44" font-weight="800" fill="${C.mint}" text-anchor="middle">get Nudge Pro FREE for life</text>
-  <text x="540" y="1742" font-size="34" font-weight="700" fill="${C.white}" text-anchor="middle">nudgelive.co.uk · link in bio</text>`;
+/* ---- per-day cover styling + concept motifs (bold, varied, on-brand) ---- */
+const CREAM = "#ECE6D6";
+const NAVY_DK = "#161B21";
+type CStyle = { bg: string; ink: string; sub: string; accent: string; dark: boolean };
+function coverStyle(slug: string): CStyle {
+  const map: Record<string, CStyle> = {
+    "brain-forgets": { bg: C.bg, ink: C.text, sub: C.muted, accent: C.green, dark: false },
+    "screenshot-graveyard": { bg: C.navy, ink: CREAM, sub: "#AEB6BE", accent: C.amber, dark: true },
+    "mental-load": { bg: C.mint, ink: C.navy, sub: "#46584E", accent: C.greenDk, dark: false },
+    promo: { bg: NAVY_DK, ink: CREAM, sub: "#AEB6BE", accent: C.amber, dark: true },
+    "forward-email": { bg: C.bg, ink: C.text, sub: C.muted, accent: C.green, dark: false },
+    "one-thing": { bg: C.navy, ink: CREAM, sub: "#AEB6BE", accent: C.amber, dark: true },
+  };
+  return map[slug] ?? map["brain-forgets"];
+}
+
+/** Small brand wordmark (leaf + "nudge"), centred, tinted for the background. */
+function coverWordmark(st: CStyle): string {
+  return (
+    leafMark(500, 92, 13, st.ink) +
+    `<text x="540" y="104" font-size="34" font-weight="800" fill="${st.ink}">nudge</text>`
+  );
+}
+
+/** Consistent bottom CTA band — fill flips for light vs dark backgrounds. */
+function ctaBand(st: CStyle): string {
+  const fill = st.dark ? st.accent : C.navy;
+  const ink = st.dark ? C.navy : CREAM;
+  const accent = st.dark ? C.navy : C.amber;
+  return (
+    `<rect x="90" y="1640" width="900" height="210" rx="28" fill="${fill}"/>` +
+    `<text x="540" y="1716" font-size="33" font-weight="800" fill="${ink}" text-anchor="middle">First 10 to register = Pro free for life</text>` +
+    `<text x="540" y="1772" font-size="29" font-weight="700" fill="${st.dark ? "#1c232b" : C.mint}" text-anchor="middle">then 3 months free for everyone else</text>` +
+    `<text x="540" y="1822" font-size="31" font-weight="800" fill="${accent === C.navy ? C.navy : C.amber}" text-anchor="middle">nudgelive.co.uk</text>`
+  );
+}
+
+const arrowDown = (cx: number, y: number, c: string) =>
+  `<path d="M ${cx} ${y} l 0 60 M ${cx - 22} ${y + 36} l 22 26 l 22 -26" fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`;
+const arrowRight = (x: number, cy: number, c: string) =>
+  `<path d="M ${x} ${cy} l 70 0 M ${x + 44} ${cy - 22} l 28 22 l -28 22" fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`;
+const check = (cx: number, cy: number, c: string) =>
+  `<path d="M ${cx - 14} ${cy} l 9 11 l 19 -23" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`;
 
 function hookLines(lines: string[], size: number, startY: number, fill = C.text): string {
   const lh = size + 14;
@@ -202,59 +239,150 @@ function buildAnimated(d: Day): string {
 }
 
 /* ------------------------------- cover SVG -------------------------------- */
+/** A "messy note" — tilted rounded card with a line of text. */
+function note(x: number, y: number, rot: number, w: number, fill: string, txt: string, ink: string): string {
+  return (
+    `<g transform="rotate(${rot} ${x + w / 2} ${y + 45})">` +
+    `<rect x="${x}" y="${y}" width="${w}" height="90" rx="14" fill="${fill}" stroke="#00000014" stroke-width="2"/>` +
+    `<text x="${x + 24}" y="${y + 56}" font-size="30" font-weight="700" fill="${ink}">${esc(txt)}</text></g>`
+  );
+}
+/** A clean nudge task card with a check + accent date chip. */
+function taskCard(x: number, y: number, w: number, title: string, chip: string, st: CStyle): string {
+  return (
+    `<rect x="${x}" y="${y}" width="${w}" height="120" rx="18" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>` +
+    `<circle cx="${x + 44}" cy="${y + 60}" r="22" fill="none" stroke="${C.green}" stroke-width="5"/>` +
+    check(x + 44, y + 60, C.green) +
+    `<text x="${x + 86}" y="${y + 72}" font-size="34" font-weight="800" fill="${C.text}">${esc(title)}</text>` +
+    `<rect x="${x + w - 132}" y="${y + 32}" width="108" height="56" rx="14" fill="${st.accent}"/>` +
+    `<text x="${x + w - 78}" y="${y + 70}" font-size="28" font-weight="800" fill="${st.dark ? C.navy : C.white}" text-anchor="middle">${esc(chip)}</text>`
+  );
+}
+
+function motif(d: Day, st: CStyle): string {
+  switch (d.slug) {
+    case "brain-forgets": {
+      // Messy pile of sticky notes → one tidy nudge card.
+      const fills = [C.mint, "#FBE7BD", CREAM, "#D9E7DF"];
+      const notes = d.input.lines
+        .slice(0, 4)
+        .map((l, i) =>
+          note(250 + (i % 2) * 60, 470 + i * 120, i % 2 ? 5 : -6, 520, fills[i % fills.length], l, C.navy),
+        )
+        .join("");
+      return (
+        notes +
+        arrowDown(540, 1000, st.accent) +
+        taskCard(240, 1110, 600, "Dentist — Tue 9:30", "TUE", st)
+      );
+    }
+    case "screenshot-graveyard": {
+      // Phone full of unread screenshots + a big "237" badge.
+      const cells = [];
+      for (let i = 0; i < 9; i++) {
+        const cx = 430 + (i % 3) * 80,
+          cy = 560 + Math.floor(i / 3) * 150;
+        cells.push(
+          `<rect x="${cx}" y="${cy}" width="64" height="120" rx="10" fill="#2E3741"/>` +
+            `<rect x="${cx + 8}" y="${cy + 10}" width="48" height="40" rx="6" fill="${i % 3 === 0 ? st.accent : "#46535F"}"/>`,
+        );
+      }
+      return (
+        `<rect x="390" y="490" width="300" height="640" rx="40" fill="#1C232B" stroke="#3A4650" stroke-width="4"/>` +
+        cells.join("") +
+        `<circle cx="720" cy="540" r="90" fill="${st.accent}"/>` +
+        `<text x="720" y="540" font-size="60" font-weight="800" fill="${C.navy}" text-anchor="middle">237</text>` +
+        `<text x="720" y="585" font-size="22" font-weight="700" fill="${C.navy}" text-anchor="middle">UNREAD</text>` +
+        arrowDown(540, 1190, st.accent) +
+        taskCard(240, 1290, 600, "Move car — 6pm", "6PM", st)
+      );
+    }
+    case "mental-load": {
+      // A head carrying a teetering tower of tasks → calm checklist.
+      const tower = d.input.lines
+        .slice(0, 4)
+        .map((l, i) => {
+          const w = 360 - i * 30,
+            x = 360 - (360 - i * 30 - 300) / 2 + i * 0,
+            y = 760 - i * 70,
+            rot = i % 2 ? 3 : -3;
+          return (
+            `<g transform="rotate(${rot} ${x + w / 2} ${y + 26})">` +
+            `<rect x="${x}" y="${y}" width="${w}" height="52" rx="12" fill="${i === 0 ? st.accent : C.white}" stroke="#0000001a" stroke-width="2"/>` +
+            `<text x="${x + 20}" y="${y + 35}" font-size="24" font-weight="700" fill="${C.navy}">${esc(l)}</text></g>`
+          );
+        })
+        .join("");
+      const head =
+        `<circle cx="540" cy="900" r="78" fill="none" stroke="${C.navy}" stroke-width="9"/>` +
+        `<path d="M 470 1010 q 70 -70 140 0" fill="none" stroke="${C.navy}" stroke-width="9" stroke-linecap="round"/>`;
+      return tower + head + arrowDown(540, 1080, st.accent) +
+        `<text x="540" y="1200" font-size="34" font-weight="800" fill="${st.accent}" text-anchor="middle">…now it's all held for you</text>`;
+    }
+    case "promo": {
+      // Big rosette badge: PRO FREE FOR LIFE.
+      const ray = Array.from({ length: 24 }, (_, i) => {
+        const a = (i / 24) * 2 * Math.PI;
+        return `<line x1="${540 + 150 * Math.cos(a)}" y1="${760 + 150 * Math.sin(a)}" x2="${540 + 185 * Math.cos(a)}" y2="${760 + 185 * Math.sin(a)}"/>`;
+      }).join("");
+      return (
+        `<path d="M 470 880 l -30 240 l 100 -60 z" fill="${C.green}"/>` +
+        `<path d="M 610 880 l 30 240 l -100 -60 z" fill="${C.green}"/>` +
+        `<g stroke="${st.accent}" stroke-width="10" stroke-linecap="round">${ray}</g>` +
+        `<circle cx="540" cy="760" r="150" fill="${st.accent}"/>` +
+        `<text x="540" y="730" font-size="40" font-weight="800" fill="${C.navy}" text-anchor="middle">PRO</text>` +
+        `<text x="540" y="780" font-size="34" font-weight="800" fill="${C.navy}" text-anchor="middle">FREE</text>` +
+        `<text x="540" y="822" font-size="30" font-weight="700" fill="${C.navy}" text-anchor="middle">for life</text>` +
+        `<text x="540" y="1230" font-size="40" font-weight="800" fill="${st.ink}" text-anchor="middle">First 10 to register interest</text>` +
+        `<text x="540" y="1290" font-size="32" font-weight="700" fill="${st.sub}" text-anchor="middle">everyone else → 3 months free</text>`
+      );
+    }
+    case "forward-email": {
+      // Envelope → arrow → task card (horizontal flow).
+      const env =
+        `<rect x="150" y="700" width="300" height="200" rx="16" fill="${C.white}" stroke="${C.border}" stroke-width="3"/>` +
+        `<path d="M 150 716 L 300 820 L 450 716" fill="none" stroke="${C.green}" stroke-width="6"/>` +
+        `<text x="300" y="880" font-size="24" font-weight="700" fill="${C.muted}" text-anchor="middle">FWD: booking</text>`;
+      const card =
+        `<rect x="630" y="700" width="300" height="200" rx="16" fill="${C.white}" stroke="${C.border}" stroke-width="3"/>` +
+        `<circle cx="690" cy="770" r="22" fill="none" stroke="${C.green}" stroke-width="5"/>` +
+        check(690, 770, C.green) +
+        `<text x="724" y="782" font-size="28" font-weight="800" fill="${C.text}">Dinner</text>` +
+        `<text x="660" y="850" font-size="24" fill="${C.muted}">Fri · 7:30pm</text>`;
+      return env + arrowRight(478, 800, st.accent) + card +
+        `<text x="540" y="1120" font-size="34" font-weight="800" fill="${st.accent}" text-anchor="middle">the what, when &amp; where — pulled out</text>`;
+    }
+    case "one-thing": {
+      // Giant question mark + bubbles.
+      const bubble = (x: number, y: number, w: number, t: string) =>
+        `<rect x="${x}" y="${y}" width="${w}" height="80" rx="40" fill="${C.white}"/>` +
+        `<text x="${x + w / 2}" y="${y + 52}" font-size="30" font-weight="700" fill="${C.navy}" text-anchor="middle">${esc(t)}</text>`;
+      return (
+        `<text x="540" y="930" font-size="420" font-weight="800" fill="${st.accent}" text-anchor="middle">?</text>` +
+        bubble(160, 540, 300, "bin day?") +
+        bubble(640, 640, 360, "that 'starred' email?") +
+        bubble(250, 1040, 340, "renew the car tax?") +
+        `<text x="540" y="1230" font-size="34" font-weight="800" fill="${st.ink}" text-anchor="middle">comment yours 👇</text>`.replace(" 👇", "")
+      );
+    }
+    default:
+      return "";
+  }
+}
+
 function buildCover(d: Day): string {
-  const hookSize = d.hook.length >= 3 ? 50 : 56;
-  const hookY = d.hook.length >= 3 ? 210 : 246;
-  const lh = hookSize + 12;
-
-  const inLines = d.input.lines
-    .slice(0, 5)
-    .map((l, i) => `<text x="320" y="${540 + i * 46}" font-size="26" fill="${C.text}">${rich(l)}</text>`)
-    .join("\n    ");
-  const hint = d.input.hint
-    ? `<text x="320" y="${540 + Math.min(d.input.lines.length, 5) * 46 + 24}" font-size="24" fill="${C.faint}" font-style="italic">${esc(d.input.hint)}</text>`
-    : "";
-
-  const n = Math.min(d.tasks.length, 3);
-  const startY = 970,
-    pitch = 200,
-    h = 170;
-  const cards = d.tasks
-    .slice(0, 3)
-    .map((t, i) => {
-      const y = startY + i * pitch;
-      const cw = Math.max(140, t.chip.length * 28 + 56);
-      const cx = 910 - cw;
-      return `
-  <rect x="120" y="${y}" width="840" height="${h}" rx="20" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>
-  <text x="160" y="${y + 86}" font-size="40" font-weight="800" fill="${C.text}">${esc(t.title)}</text>
-  <text x="160" y="${y + 134}" font-size="27" fill="${C.muted}">${esc(t.sub)}</text>
-  <rect x="${cx}" y="${y + 50}" width="${cw}" height="70" rx="14" fill="${t.chipFill}"/>
-  <text x="${cx + cw / 2}" y="${y + 97}" font-size="30" font-weight="800" fill="${C.white}" text-anchor="middle">${esc(t.chip)}</text>`;
-    })
-    .join("");
-  const stripY = Math.max(1470, startY + n * pitch + 60);
-
+  const st = coverStyle(d.slug);
+  const big = d.hook.length >= 3;
+  const hookSize = big ? 58 : 66;
+  const hookY = big ? 240 : 280;
+  const lh = hookSize + 14;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Inter, Arial, sans-serif">
-  <!-- Nudge — Day ${d.n} (${d.slug}) static cover. Facebook image / TikTok thumbnail. -->
-  <rect width="1080" height="1920" fill="${C.bg}"/>
-  <rect x="378" y="70" width="60" height="60" rx="17" fill="${C.green}"/>
-  <text x="408" y="114" font-size="38" font-weight="800" fill="${C.white}" text-anchor="middle">n</text>
-  <text x="456" y="114" font-size="36" font-weight="800" fill="${C.text}">nudge</text>
-
-  ${d.hook.map((l, i) => `<text x="540" y="${hookY + i * lh}" font-size="${hookSize}" font-weight="800" fill="${C.text}" text-anchor="middle">${rich(l)}</text>`).join("\n  ")}
-
-  <g transform="rotate(-3 540 640)">
-    <rect x="290" y="450" width="500" height="380" rx="14" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>
-    <rect x="290" y="450" width="500" height="76" rx="14" fill="${C.greenTint}"/>
-    <text x="320" y="500" font-size="26" font-weight="800" fill="${C.greenDk}">${esc(d.input.title)}</text>
-    ${inLines}
-    ${hint}
-  </g>
-
-  <text x="540" y="910" font-size="40" font-weight="800" fill="${C.green}" text-anchor="middle">${esc(d.transition)}</text>
-  ${cards}
-  ${PROMO_STRIP.replace('y="1470"', `y="${stripY}"`).replace(/y="1556"/, `y="${stripY + 86}"`).replace(/y="1622"/, `y="${stripY + 152}"`).replace(/y="1680"/, `y="${stripY + 210}"`).replace(/y="1742"/, `y="${stripY + 272}"`)}
+  <!-- Nudge — Day ${d.n} (${d.slug}) cover. Distinct bg + concept motif per day. -->
+  <rect width="1080" height="1920" fill="${st.bg}"/>
+  ${coverWordmark(st)}
+  ${d.hook.map((l, i) => `<text x="540" y="${hookY + i * lh}" font-size="${hookSize}" font-weight="800" fill="${st.ink}" text-anchor="middle">${rich(l)}</text>`).join("\n  ")}
+  ${motif(d, st)}
+  ${ctaBand(st)}
 </svg>
 `;
 }
