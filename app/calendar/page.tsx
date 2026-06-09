@@ -131,6 +131,7 @@ export default async function CalendarPage({
           lifeAreas={getUserLifeAreas(user)}
           categories={[...ACTION_CATEGORIES]}
           initialSelected={days.some((d) => d.today && !d.out) ? todayKey : null}
+          inHousehold={Boolean(membership)}
         />
       )}
     </>

@@ -84,11 +84,13 @@ export default function CalendarMonth({
   lifeAreas,
   categories,
   initialSelected,
+  inHousehold = false,
 }: {
   days: CalDay[];
   lifeAreas: string[];
   categories: string[];
   initialSelected: string | null;
+  inHousehold?: boolean;
 }) {
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -202,7 +204,7 @@ export default function CalendarMonth({
             <div className="empty">Nothing scheduled.</div>
           ) : (
             selectedDay.tasks.map((t) => (
-              <TaskCard key={t.id} task={t} lifeAreas={lifeAreas} />
+              <TaskCard key={t.id} task={t} lifeAreas={lifeAreas} inHousehold={inHousehold} />
             ))
           )}
 

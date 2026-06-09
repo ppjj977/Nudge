@@ -121,7 +121,6 @@ export default function TaskCard({
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState(false);
   const [snoozing, setSnoozing] = useState(false);
-  const [breaking, setBreaking] = useState(false);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
   const mode: Mode = done ? "done" : review ? "review" : "active";
 
@@ -176,13 +175,6 @@ export default function TaskCard({
         null)
       : null;
   const undo = () => call(`/api/tasks/${task.id}`, "PATCH", { status: "active" });
-
-  const breakdown = async () => {
-    setBreaking(true);
-    await fetch(`/api/tasks/${task.id}/breakdown`, { method: "POST" }).catch(() => {});
-    setBreaking(false);
-    startTransition(() => router.refresh());
-  };
 
   const toggleItem = (index: number) => {
     if (!task.checklist) return;
@@ -347,11 +339,6 @@ export default function TaskCard({
                   disabled={pending}
                 >
                   {snoozedUntil ? "💤 Snoozed" : "Snooze"}
-                </button>
-              )}
-              {mode === "active" && !isFyi && (
-                <button onClick={breakdown} disabled={pending || breaking}>
-                  {breaking ? "Thinking…" : "✨ Break it down"}
                 </button>
               )}
               {mode === "active" && inHousehold && (
