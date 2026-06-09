@@ -19,7 +19,9 @@ Android (remote WebView, `server.url = https://nudgelive.co.uk`), hosted on Rend
   Ratios Navy 60 / White 20 / Green 15 / Amber 5.
 - **Typeface:** Inter (app, emails, generated assets).
 - Regenerate assets: `npx tsx scripts/gen-brand.ts && npx tsx scripts/gen-icons.ts`;
-  social `gen-social.ts`; landing screenshots `gen-screenshots.ts`.
+  social `gen-social.ts`; landing screenshots `gen-screenshots.ts`; story templates
+  `gen-stories.ts`; in-app how-to guides `gen-guides.ts` → `public/guides/*.svg`
+  (animated SVG "videos" shown on `/guides`, linked from the menu → Account).
 
 ## Pricing / monetization
 - **Free** (forever): 10 AI captures/month + in-app reminders (`FREE_MONTHLY_CAPTURES`).
