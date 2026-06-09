@@ -53,6 +53,39 @@ const GUIDES: Guide[] = [
       "Each thing to do becomes a dated task.",
     ],
   },
+  {
+    slug: "mark-done",
+    title: "Mark done & undo",
+    blurb:
+      "Ticked it off in real life? Mark it done in a tap — and undo if you change your mind.",
+    steps: [
+      "Tap Done on the task (for bills, this reads as “Paid”).",
+      "It's marked complete straight away.",
+      "Find it under Closed nudges in the menu — with Undo anytime.",
+    ],
+  },
+  {
+    slug: "edit-date",
+    title: "Edit a task's date",
+    blurb:
+      "Got the day wrong, or need to move something? Edit the name, date or time and the reminders follow.",
+    steps: [
+      "Tap Edit on any task.",
+      "Change the name, date or time.",
+      "Save — its reminders reschedule automatically.",
+    ],
+  },
+  {
+    slug: "share-family",
+    title: "Share with family",
+    blurb:
+      "Run the household together — invite your family, then share or assign tasks so nothing falls between you.",
+    steps: [
+      "Invite your household from Family (in the menu).",
+      "Assign a task to whoever's doing it.",
+      "Everyone sees it and gets the nudge.",
+    ],
+  },
 ];
 
 export default function GuidesPage() {
