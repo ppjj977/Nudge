@@ -52,7 +52,7 @@ full-screen → screen-record it (loops every 14s) for the TikTok/Reel.
 |---|---|---|
 | 1 | https://nudgelive.co.uk/social/day01-school-letter.svg | https://nudgelive.co.uk/social/day01-cover.png |
 | 2 | https://nudgelive.co.uk/social/day02-brain-forgets.svg | https://nudgelive.co.uk/social/day02-cover.png |
-| 3 | https://nudgelive.co.uk/social/day03-screenshot-graveyard.svg | https://nudgelive.co.uk/social/day03-cover.png |
+| 3 | https://nudgelive.co.uk/social/day03-free-trial.svg | https://nudgelive.co.uk/social/day03-cover.png |
 | 4 | https://nudgelive.co.uk/social/day04-mental-load.svg | https://nudgelive.co.uk/social/day04-cover.png |
 | 5 | https://nudgelive.co.uk/social/day05-promo.svg | https://nudgelive.co.uk/social/day05-cover.png |
 | 6 | https://nudgelive.co.uk/social/day06-forward-email.svg | https://nudgelive.co.uk/social/day06-cover.png |
@@ -190,10 +190,12 @@ Every day: **reshare the post + link sticker.** Then by weekday:
 - Assets: `day02-brain-forgets.svg` · `day02-cover.png`
 - Caption: *"Want peace of mind? It starts with getting it ALL out of your head. Brain-dump the chaos and Nudge turns each one into a reminder — even the recurring stuff 🔁 (bin day every Thursday, sorted). 🎁 First 10 to register interest = Pro free for life → nudgelive.co.uk #peaceofmind #findpeaceofmind #mentalload #adhdtok #lifeadmin"*
 
-**Day 3 — TikTok + 🅵**
-- Hook: "Your camera roll is a to-do list in disguise." Screenshots → Nudge reads them.
-- Assets: `day03-screenshot-graveyard.svg` · `day03-cover.png` (FB: carousel screenshot → task → reminder)
-- Caption: *"237 screenshots I'll 'deal with later' 📵 Nudge actually reads them and turns them into reminders. Register your interest → nudgelive.co.uk #screenshot #adhd #organised"*
+**Day 3 — TikTok + 🅵** — the forgotten-free-trial / sneaky auto-renewal money trap.
+- Hook (on-screen): "The 'free' trial you forgot to cancel." → −£79 charge → Nudge reminds you 2 days before it renews.
+- Film: screen-record `day03-free-trial.svg`, or stage it — show a bank "−£79" charge, then add a "cancel trial" nudge with a heads-up reminder.
+- Assets: `day03-free-trial.svg` · `day03-cover.png` (FB: single image or 3-card carousel: charge → set reminder → never caught again)
+- Caption: *"That 'free' trial you forgot to cancel? It just became a £79 charge 🙃 Nudge reminds you to cancel BEFORE it renews — so you're never caught out again. Register → nudgelive.co.uk #money #adulting #lifeadmin #organised #adhdtok"*
+- Story: reshare + **Poll** (`story-poll.png`) "Been stung by a sneaky auto-renewal? 😩 Yes / All the time" + link.
 
 **Day 4 — TikTok**
 - Hook: "The mental load is invisible until you write it ALL down." Soft, relatable, sad-to-relieved audio.
