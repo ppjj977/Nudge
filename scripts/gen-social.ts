@@ -113,6 +113,7 @@ function coverStyle(slug: string): CStyle {
   const map: Record<string, CStyle> = {
     "brain-forgets": { bg: C.bg, ink: C.text, sub: C.muted, accent: C.green, dark: false },
     "screenshot-graveyard": { bg: C.navy, ink: CREAM, sub: "#AEB6BE", accent: C.amber, dark: true },
+    "free-trial": { bg: C.navy, ink: CREAM, sub: "#AEB6BE", accent: C.amber, dark: true },
     "mental-load": { bg: C.mint, ink: C.navy, sub: "#46584E", accent: C.greenDk, dark: false },
     promo: { bg: NAVY_DK, ink: CREAM, sub: "#AEB6BE", accent: C.amber, dark: true },
     "forward-email": { bg: C.bg, ink: C.text, sub: C.muted, accent: C.green, dark: false },
@@ -264,25 +265,29 @@ function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
       const cards = sorted.map(([t, chip, g], i) => mini(1010 + i * 76, t, chip, g)).join("");
       return { chaos, resolved: arrowDown(540, 936, st.accent) + cards };
     }
-    case "screenshot-graveyard": {
-      const cells = [];
-      for (let i = 0; i < 9; i++) {
-        const cx = 430 + (i % 3) * 80,
-          cy = 560 + Math.floor(i / 3) * 150;
-        cells.push(
-          `<rect x="${cx}" y="${cy}" width="64" height="120" rx="10" fill="#2E3741"/>` +
-            `<rect x="${cx + 8}" y="${cy + 10}" width="48" height="40" rx="6" fill="${i % 3 === 0 ? st.accent : "#46535F"}"/>`,
-        );
-      }
-      return {
-        chaos:
-          `<rect x="390" y="490" width="300" height="640" rx="40" fill="#1C232B" stroke="#3A4650" stroke-width="4"/>` +
-          cells.join("") +
-          `<circle cx="720" cy="540" r="90" fill="${st.accent}"/>` +
-          `<text x="720" y="540" font-size="60" font-weight="800" fill="${C.navy}" text-anchor="middle">237</text>` +
-          `<text x="720" y="585" font-size="22" font-weight="700" fill="${C.navy}" text-anchor="middle">UNREAD</text>`,
-        resolved: arrowDown(540, 1190, st.accent) + taskCard(240, 1290, 600, "Move car — 6pm", "6PM", st),
-      };
+    case "free-trial": {
+      const RED = "#E5484D";
+      // The nasty surprise: a bank charge for a trial you forgot to cancel.
+      const chaos =
+        `<rect x="150" y="470" width="780" height="300" rx="26" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>` +
+        `<circle cx="220" cy="540" r="30" fill="#FBE0E1"/>` +
+        `<text x="220" y="553" font-size="34" font-weight="800" fill="${RED}" text-anchor="middle">£</text>` +
+        `<text x="276" y="532" font-size="24" font-weight="800" fill="${RED}" letter-spacing="1">PAYMENT TAKEN</text>` +
+        `<text x="276" y="566" font-size="24" fill="${C.muted}">ACME Pro · annual renewal</text>` +
+        `<text x="190" y="680" font-size="92" font-weight="800" fill="${RED}">– £79.00</text>` +
+        `<text x="190" y="732" font-size="25" fill="${C.muted}">…the 7-day trial you forgot to cancel</text>`;
+      // The fix: nudge reminds you before it renews.
+      const resolved =
+        arrowDown(540, 800, st.accent) +
+        `<rect x="150" y="900" width="780" height="200" rx="26" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>` +
+        `<circle cx="210" cy="972" r="22" fill="none" stroke="${C.green}" stroke-width="5"/>` +
+        check(210, 972, C.green) +
+        `<text x="250" y="984" font-size="34" font-weight="800" fill="${C.navy}">Cancel free trial</text>` +
+        `<text x="190" y="1046" font-size="25" fill="${C.muted}">nudge reminds you 2 days before it renews</text>` +
+        `<rect x="700" y="934" width="200" height="54" rx="14" fill="${st.accent}"/>` +
+        `<text x="800" y="971" font-size="22" font-weight="800" fill="${C.navy}" text-anchor="middle">HEADS-UP</text>` +
+        `<text x="540" y="1190" font-size="34" font-weight="800" fill="${st.accent}" text-anchor="middle">Never auto-charged again.</text>`;
+      return { chaos, resolved };
     }
     case "mental-load": {
       const tower = d.input.lines
@@ -411,20 +416,19 @@ const DAYS: Day[] = [
   },
   {
     n: 3,
-    slug: "screenshot-graveyard",
-    hook: ["Your camera roll is a", "to-do list in disguise"],
+    slug: "free-trial",
+    hook: ["The “free” trial you", "forgot to cancel."],
     input: {
-      title: "SCREENSHOTS, UNREAD",
-      lines: ["Appointment confirmation", "Parking reminder", "Event poster", "…and 237 more"],
-      hint: "just share them to Nudge",
+      title: "FREE TRIAL ENDS",
+      lines: ["Charges £79/yr after 7 days", "…and you'll forget", "every single time"],
+      hint: "let Nudge catch it",
     },
-    header: "✨ Nudge actually reads them",
-    transition: "Nudge reads them ↓",
+    header: "✨ Nudge reminds you in time",
+    transition: "Nudge catches it ↓",
     tasks: [
-      { emoji: "🅿️", title: "Move the car", sub: "From your parking shot", chip: "6PM", chipFill: G },
-      { emoji: "🎟️", title: "Gig — doors 7:30", sub: "From the poster", chip: "SAT", chipFill: G },
+      { emoji: "🔁", title: "Cancel free trial", sub: "2 days before it renews", chip: "HEADS-UP", chipFill: A },
     ],
-    footnote: ["Stop hoarding screenshots.", "Let Nudge turn them into reminders."],
+    footnote: ["Never auto-charged again.", "Nudge nudges you before it renews."],
   },
   {
     n: 4,
