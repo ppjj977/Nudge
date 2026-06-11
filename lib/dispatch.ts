@@ -98,6 +98,27 @@ export interface DispatchResult {
 }
 
 /**
+ * Human "when it's due" line for a reminder, relative to `now` (both in the
+ * user's timezone): "Due now", "Due today at 09:00", "Due tomorrow at 09:00",
+ * "Due Fri 12 Jun at 09:00", or date-only variants. Used as the push body so
+ * every reminder says when the thing is actually due.
+ */
+function duePhrase(task: Task, now: DateTime, tz: string): string {
+  if (!task.due_at || task.due_type === "none") return "Tap to open nudge";
+  const due = DateTime.fromISO(task.due_at, { zone: tz });
+  if (!due.isValid) return "Tap to open nudge";
+  const hasTime = task.due_type === "datetime";
+  const time = due.toFormat("HH:mm");
+  if (hasTime && due <= now.plus({ minutes: 2 })) return "Due now";
+  const dayDiff = Math.round(due.startOf("day").diff(now.startOf("day"), "days").days);
+  if (dayDiff < 0) return hasTime ? `Overdue — was due ${time}` : "Overdue";
+  if (dayDiff === 0) return hasTime ? `Due today at ${time}` : "Due today";
+  if (dayDiff === 1) return hasTime ? `Due tomorrow at ${time}` : "Due tomorrow";
+  const datestr = due.toFormat("ccc d LLL");
+  return hasTime ? `Due ${datestr} at ${time}` : `Due ${datestr}`;
+}
+
+/**
  * How far ahead each tick looks for reminders. Set to the (primary) cron
  * cadence so a reminder due any time before the next tick is sent on this one —
  * i.e. it arrives at or slightly before its due time, never after. The primary
@@ -153,9 +174,10 @@ export async function runDispatch(
         await sendEmail({ to: user.email, ...msg });
       }
       if (channels.push) {
+        const nowTz = now.setZone(user.timezone);
         const payload = {
           title: `⏰ ${task.title}`,
-          body: task.detail ?? "Tap to open nudge",
+          body: duePhrase(task, nowTz, user.timezone),
           // Relative path: the tap stays inside the app/PWA origin. An absolute
           // URL (esp. the raw Render host) would open the system browser instead.
           url: "/",
