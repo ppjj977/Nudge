@@ -402,7 +402,7 @@ function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
       };
       const cards = (
         [
-          ["Kick-off — England", "21:00 WED", true],
+          ["Kick-off — England", "WED 21:00", true],
           ["Pay the sweepstake", "£5", false],
           ["Book the pub table", "TODAY", true],
           ["Snacks run", "WED", true],
