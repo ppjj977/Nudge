@@ -384,7 +384,7 @@ function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
         `<rect x="200" y="430" width="680" height="96" rx="18" fill="#0E3D22"/>` +
         ball(258, 478, 34) +
         `<text x="320" y="468" font-size="26" font-weight="800" fill="#fff">MATCH DAY</text>` +
-        `<text x="320" y="502" font-size="24" fill="#CBE3D3">Tue · 20:00 kick-off</text>` +
+        `<text x="320" y="502" font-size="24" fill="#CBE3D3">Wed · 21:00 kick-off</text>` +
         note2(250, 580, -6, 520, "£5 sweepstake?") +
         note2(290, 678, 5, 500, "book the pub!!") +
         note2(240, 776, -4, 520, "snacks?? set alarm");
@@ -402,10 +402,10 @@ function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
       };
       const cards = (
         [
-          ["Kick-off — England", "19:45 TUE", true],
+          ["Kick-off — England", "21:00 WED", true],
           ["Pay the sweepstake", "£5", false],
           ["Book the pub table", "TODAY", true],
-          ["Snacks run", "TUE", true],
+          ["Snacks run", "WED", true],
         ] as [string, string, boolean][]
       )
         .map(([t, c, g], i) => mini(992 + i * 92, t, c, g))
