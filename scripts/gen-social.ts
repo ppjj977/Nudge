@@ -118,6 +118,7 @@ function coverStyle(slug: string): CStyle {
     promo: { bg: NAVY_DK, ink: CREAM, sub: "#AEB6BE", accent: C.amber, dark: true },
     "forward-email": { bg: C.bg, ink: C.text, sub: C.muted, accent: C.green, dark: false },
     "one-thing": { bg: C.navy, ink: CREAM, sub: "#AEB6BE", accent: C.amber, dark: true },
+    football: { bg: "#15723E", ink: "#FFFFFF", sub: "#CBE3D3", accent: C.amber, dark: true },
   };
   return map[slug] ?? map["brain-forgets"];
 }
@@ -362,6 +363,55 @@ function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
         resolved: `<text x="540" y="1230" font-size="34" font-weight="800" fill="${st.ink}" text-anchor="middle">comment yours</text>`,
       };
     }
+    case "football": {
+      // Football icon (white ball + a few black patches) at (cx,cy) radius r.
+      const ball = (cx: number, cy: number, r: number) => {
+        const pent = Array.from({ length: 5 }, (_, i) => {
+          const a = (-90 + i * 72) * (Math.PI / 180);
+          return `${(cx + r * 0.42 * Math.cos(a)).toFixed(1)},${(cy + r * 0.42 * Math.sin(a)).toFixed(1)}`;
+        }).join(" ");
+        return (
+          `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#fff" stroke="#111827" stroke-width="${(r * 0.1).toFixed(1)}"/>` +
+          `<polygon points="${pent}" fill="#111827"/>`
+        );
+      };
+      const note2 = (x: number, y: number, rot: number, w: number, t: string) =>
+        `<g transform="rotate(${rot} ${x + w / 2} ${y + 38})">` +
+        `<rect x="${x}" y="${y}" width="${w}" height="76" rx="12" fill="#FBE7BD" stroke="#00000014" stroke-width="2"/>` +
+        `<text x="${x + 22}" y="${y + 50}" font-size="30" font-weight="700" fill="${C.navy}">${esc(t)}</text></g>`;
+      const chaos =
+        `<circle cx="540" cy="700" r="250" fill="none" stroke="#ffffff22" stroke-width="4"/>` +
+        `<rect x="200" y="430" width="680" height="96" rx="18" fill="#0E3D22"/>` +
+        ball(258, 478, 34) +
+        `<text x="320" y="468" font-size="26" font-weight="800" fill="#fff">MATCH DAY</text>` +
+        `<text x="320" y="502" font-size="24" fill="#CBE3D3">Tue · 20:00 kick-off</text>` +
+        note2(250, 580, -6, 520, "£5 sweepstake?") +
+        note2(290, 678, 5, 500, "book the pub!!") +
+        note2(240, 776, -4, 520, "snacks?? set alarm");
+      const mini = (y: number, title: string, chip: string, green: boolean) => {
+        const cw = chip.length * 15 + 36;
+        const cx = 886 - cw;
+        return (
+          `<rect x="170" y="${y}" width="716" height="76" rx="14" fill="${C.white}"/>` +
+          `<circle cx="214" cy="${y + 38}" r="16" fill="none" stroke="${C.green}" stroke-width="4"/>` +
+          check(214, y + 38, C.green) +
+          `<text x="250" y="${y + 48}" font-size="30" font-weight="800" fill="${C.navy}">${esc(title)}</text>` +
+          `<rect x="${cx}" y="${y + 18}" width="${cw}" height="40" rx="10" fill="${green ? C.green : C.amber}"/>` +
+          `<text x="${cx + cw / 2}" y="${y + 45}" font-size="21" font-weight="800" fill="${green ? C.white : C.navy}" text-anchor="middle">${esc(chip)}</text>`
+        );
+      };
+      const cards = (
+        [
+          ["Kick-off — England", "19:45 TUE", true],
+          ["Pay the sweepstake", "£5", false],
+          ["Book the pub table", "TODAY", true],
+          ["Snacks run", "TUE", true],
+        ] as [string, string, boolean][]
+      )
+        .map(([t, c, g], i) => mini(992 + i * 92, t, c, g))
+        .join("");
+      return { chaos, resolved: arrowDown(540, 906, st.accent) + cards };
+    }
     default:
       return { chaos: "", resolved: "" };
   }
@@ -507,4 +557,21 @@ for (const d of DAYS) {
   writeFileSync(join(outDir, `day${nn}-cover.png`), png);
   console.log(`  day ${nn}: ${animName} + day${nn}-cover.png`);
 }
+// One-off topical post: World Cup / "It's coming home" (football admin).
+const footballDay: Day = {
+  n: 0,
+  slug: "football",
+  hook: ["It's coming home.", "So is the admin."],
+  input: { title: "MATCH DAY", lines: [] },
+  header: "",
+  transition: "",
+  tasks: [],
+  footnote: ["", ""],
+};
+writeFileSync(join(outDir, "football.svg"), buildAnimated(footballDay));
+const footballCover = buildCover(footballDay);
+const footballPng = new Resvg(footballCover, { fitTo: { mode: "width", value: 1080 } }).render().asPng();
+writeFileSync(join(outDir, "football-cover.png"), footballPng);
+console.log("  football: football.svg + football-cover.png");
+
 console.log("Done → public/social/");
