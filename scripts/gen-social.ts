@@ -542,6 +542,54 @@ const DAYS: Day[] = [
   },
 ];
 
+/** Bespoke, livelier clip for the World Cup one-off: waving bunting + a
+ *  bouncing, spinning football over the standard reveal beats. */
+function buildFootballClip(d: Day): string {
+  const st = coverStyle("football");
+  const m = motif(d, st);
+  const big = d.hook.length >= 3;
+  const hookSize = big ? 58 : 66;
+  const hookY = big ? 240 : 280;
+  const lh = hookSize + 14;
+  const hook = d.hook
+    .map((l, i) => `<text x="540" y="${hookY + i * lh}" font-size="${hookSize}" font-weight="800" fill="${st.ink}" text-anchor="middle">${rich(l)}</text>`)
+    .join("\n  ");
+
+  // Bunting that gently sways.
+  let tris = "";
+  for (let i = 0; i < 9; i++) {
+    const x = 70 + i * 112;
+    tris += `<polygon points="${x},150 ${x + 92},150 ${x + 46},212" fill="${i % 2 ? "#FFFFFF" : "#E5484D"}" stroke="#0E3D22" stroke-width="2"/>`;
+  }
+  const bunting =
+    `<g><animateTransform attributeName="transform" type="rotate" values="-1.5 540 150;1.5 540 150;-1.5 540 150" dur="3.2s" repeatCount="indefinite"/>` +
+    `<line x1="40" y1="150" x2="1040" y2="150" stroke="#0E3D22" stroke-width="4"/>${tris}</g>`;
+
+  // A football bouncing + spinning across the pitch band near the bottom.
+  const pent = Array.from({ length: 5 }, (_, i) => {
+    const a = (-90 + i * 72) * (Math.PI / 180);
+    return `${(36 * 0.42 * Math.cos(a)).toFixed(1)},${(36 * 0.42 * Math.sin(a)).toFixed(1)}`;
+  }).join(" ");
+  const ball =
+    `<g><animateMotion dur="4.6s" repeatCount="indefinite" path="M -120 1560 Q 160 1390 440 1560 T 980 1560 T 1560 1560"/>` +
+    `<g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="0.9s" repeatCount="indefinite"/>` +
+    `<circle cx="0" cy="0" r="36" fill="#FFFFFF" stroke="#111827" stroke-width="4"/><polygon points="${pent}" fill="#111827"/></g></g>`;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" font-family="Inter, Arial, sans-serif">
+  <!-- Nudge — World Cup one-off, animated 9:16, loops 14s. -->
+  <rect width="1080" height="1920" fill="${st.bg}"/>
+  ${bunting}
+  ${ball}
+  ${coverWordmark(st)}
+  ${reveal(hook, 0.03, 0.07)}
+  ${reveal(m.chaos, 0.1, 0.18)}
+  ${reveal(m.resolved, 0.42, 0.5)}
+  ${reveal(ctaBand(st), 0.8, 0.86)}
+  <rect x="0" y="1900" width="0" height="20" fill="${st.accent}"><animate attributeName="width" values="0;1080" dur="14s" repeatCount="indefinite"/></rect>
+</svg>
+`;
+}
+
 /* -------------------------------- render ---------------------------------- */
 const outDir = join(process.cwd(), "public", "social");
 mkdirSync(outDir, { recursive: true });
@@ -568,7 +616,7 @@ const footballDay: Day = {
   tasks: [],
   footnote: ["", ""],
 };
-writeFileSync(join(outDir, "football.svg"), buildAnimated(footballDay));
+writeFileSync(join(outDir, "football.svg"), buildFootballClip(footballDay));
 const footballCover = buildCover(footballDay);
 const footballPng = new Resvg(footballCover, { fitTo: { mode: "width", value: 1080 } }).render().asPng();
 writeFileSync(join(outDir, "football-cover.png"), footballPng);
