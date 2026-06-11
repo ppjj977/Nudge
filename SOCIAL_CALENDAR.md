@@ -62,6 +62,15 @@ Other assets:
 - TikTok avatar (profile pic): https://nudgelive.co.uk/social/tiktok-avatar.png
 - Demo "school email → tasks" clip: https://nudgelive.co.uk/social/demo-school-email.svg
 - Demo cover: https://nudgelive.co.uk/social/demo-school-email-cover.png
+- **Topical — World Cup / "It's coming home":** clip
+  https://nudgelive.co.uk/social/football.svg · cover
+  https://nudgelive.co.uk/social/football-cover.png
+  Caption: *"It's coming home ⚽🏴󠁧󠁢󠁥󠁮󠁧󠁿 …but so is the admin: kick-off times, the
+  sweepstake, booking the pub, the snacks run. Dump it in Nudge and get a nudge before
+  every match (and before you owe Dave a fiver 👀). Register → nudgelive.co.uk
+  #FootballsComingHome #WorldCup #lifeadmin #organised #adhdtok"*
+  Story: Poll "Who's lifting the trophy? 🏆" (`story-poll.png`) + link. Regenerate via
+  `scripts/gen-social.ts` (the `football` slug, a one-off after the DAYS loop).
 
 > The `dayNN-cover.svg` files are intermediates — post the **`.png`** covers.
 > Days 8–30 aren't pre-rendered yet; regenerate/extend via `scripts/gen-social.ts`.
