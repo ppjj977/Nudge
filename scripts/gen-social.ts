@@ -119,6 +119,7 @@ function coverStyle(slug: string): CStyle {
     "forward-email": { bg: C.bg, ink: C.text, sub: C.muted, accent: C.green, dark: false },
     "one-thing": { bg: C.navy, ink: CREAM, sub: "#AEB6BE", accent: C.amber, dark: true },
     football: { bg: "#15723E", ink: "#FFFFFF", sub: "#CBE3D3", accent: C.amber, dark: true },
+    "reset-mind": { bg: C.mint, ink: C.navy, sub: "#46584E", accent: C.greenDk, dark: false },
   };
   return map[slug] ?? map["brain-forgets"];
 }
@@ -418,6 +419,40 @@ function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
         .join("");
       return { chaos, resolved: arrowDown(540, 906, st.accent) + cards };
     }
+    case "reset-mind": {
+      // Racing mind: a thought bubble crammed with worries.
+      const worry = (x: number, y: number, rot: number, w: number, t: string) =>
+        `<g transform="rotate(${rot} ${x + w / 2} ${y + 34})">` +
+        `<rect x="${x}" y="${y}" width="${w}" height="68" rx="14" fill="${C.white}" stroke="#0000001a" stroke-width="2"/>` +
+        `<text x="${x + 22}" y="${y + 44}" font-size="28" font-weight="700" fill="${C.navy}">${esc(t)}</text></g>`;
+      const chaos =
+        `<rect x="150" y="450" width="780" height="380" rx="44" fill="#FFFFFF" opacity="0.5"/>` +
+        `<circle cx="250" cy="868" r="26" fill="#FFFFFF" opacity="0.5"/>` +
+        `<circle cx="198" cy="912" r="15" fill="#FFFFFF" opacity="0.5"/>` +
+        worry(212, 498, -7, 360, "the gas bill") +
+        worry(458, 556, 5, 420, "reply to Sam") +
+        worry(214, 636, 4, 400, "bins Thursday") +
+        worry(440, 716, -5, 430, "mum's birthday?");
+      const mini = (y: number, title: string, chip: string, green: boolean) => {
+        const cw = chip.length * 15 + 36;
+        const cx = 886 - cw;
+        return (
+          `<rect x="170" y="${y}" width="716" height="76" rx="14" fill="${C.white}"/>` +
+          `<circle cx="214" cy="${y + 38}" r="16" fill="none" stroke="${C.green}" stroke-width="4"/>` +
+          check(214, y + 38, C.green) +
+          `<text x="250" y="${y + 48}" font-size="30" font-weight="800" fill="${C.navy}">${esc(title)}</text>` +
+          `<rect x="${cx}" y="${y + 18}" width="${cw}" height="40" rx="10" fill="${green ? C.green : C.amber}"/>` +
+          `<text x="${cx + cw / 2}" y="${y + 45}" font-size="21" font-weight="800" fill="${green ? C.white : C.navy}" text-anchor="middle">${esc(chip)}</text>`
+        );
+      };
+      const resolved =
+        arrowDown(540, 868, st.accent) +
+        mini(962, "Pay the gas bill", "FRI", false) +
+        mini(1054, "Reply to Sam", "TODAY", true) +
+        mini(1146, "Put the bins out", "THU", true) +
+        `<text x="540" y="1300" font-size="38" font-weight="800" fill="${st.accent}" text-anchor="middle">Out of your head. That's the reset.</text>`;
+      return { chaos, resolved };
+    }
     default:
       return { chaos: "", resolved: "" };
   }
@@ -627,5 +662,22 @@ const footballCover = buildCover(footballDay);
 const footballPng = new Resvg(footballCover, { fitTo: { mode: "width", value: 1080 } }).render().asPng();
 writeFileSync(join(outDir, "football-cover.png"), footballPng);
 console.log("  football: football.svg + football-cover.png");
+
+// One-off content-gap post: "how to reset your mind" (TikTok search surging).
+const resetDay: Day = {
+  n: 0,
+  slug: "reset-mind",
+  hook: ["How to reset your mind", "(in 2 minutes)"],
+  input: { title: "", lines: [] },
+  header: "",
+  transition: "",
+  tasks: [],
+  footnote: ["", ""],
+};
+writeFileSync(join(outDir, "reset-mind.svg"), buildAnimated(resetDay));
+const resetCover = buildCover(resetDay);
+const resetPng = new Resvg(resetCover, { fitTo: { mode: "width", value: 1080 } }).render().asPng();
+writeFileSync(join(outDir, "reset-mind-cover.png"), resetPng);
+console.log("  reset-mind: reset-mind.svg + reset-mind-cover.png");
 
 console.log("Done → public/social/");

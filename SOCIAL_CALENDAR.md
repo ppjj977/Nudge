@@ -74,7 +74,19 @@ Other assets:
   "world cup 2026" in the on-screen text/caption ("opening world cup 2026" was +172%).
   Story: Poll "Who's lifting the trophy? 🏆" (`story-poll.png`) + link. Regenerate via
   `scripts/gen-social.ts` (the `football` slug, a one-off after the DAYS loop).
-
+- **Content gap — "how to reset your mind":** clip
+  https://nudgelive.co.uk/social/reset-mind.svg · cover
+  https://nudgelive.co.uk/social/reset-mind-cover.png
+  (Creator Search Insights content gap: "how to reset your mind" +1000%, low
+  competition — and a genuine nudge answer.) Hook on-screen = the exact search term.
+  Caption: *"How to reset your mind: stop carrying it all. Brain-dump every loose
+  thread into Nudge and let it remind you at the right time — that's the reset 🧠
+  Register → nudgelive.co.uk #howtoresetyourmind #mentalload #peaceofmind #adhdtok
+  #lifeadmin"*
+  Story: Question "What's living rent-free in your head right now? 👀"
+  (`story-question.png`) + link. Sibling content-gap angles to reuse the visual:
+  "focus on improving yourself not proving yourself" (+248%), "quotes to make
+  someone feel better" (+139%). Regenerate via `scripts/gen-social.ts` (`reset-mind`).
 > The `dayNN-cover.svg` files are intermediates — post the **`.png`** covers.
 > Days 8–30 aren't pre-rendered yet; regenerate/extend via `scripts/gen-social.ts`.
 
