@@ -68,7 +68,10 @@ Other assets:
   Caption: *"It's coming home ⚽🏴󠁧󠁢󠁥󠁮󠁧󠁿 …but so is the admin: kick-off times, the
   sweepstake, booking the pub, the snacks run. Dump it in Nudge and get a nudge before
   every match (and before you owe Dave a fiver 👀). Register → nudgelive.co.uk
-  #FootballsComingHome #WorldCup #lifeadmin #organised #adhdtok"*
+  #FootballsComingHome #WorldCup2026 #WorldCup #lifeadmin #organised"*
+  Trending sound (Creator Search Insights, 15 Jun): use **Shakira – "Waka Waka"** or
+  **"Dai Dai" (Shakira & Burna Boy)** — both resurging with the World Cup. Keep
+  "world cup 2026" in the on-screen text/caption ("opening world cup 2026" was +172%).
   Story: Poll "Who's lifting the trophy? 🏆" (`story-poll.png`) + link. Regenerate via
   `scripts/gen-social.ts` (the `football` slug, a one-off after the DAYS loop).
 
