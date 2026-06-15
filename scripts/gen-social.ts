@@ -316,22 +316,28 @@ function motif(d: Day, st: CStyle): { chaos: string; resolved: string } {
       };
     }
     case "promo": {
-      const ray = Array.from({ length: 24 }, (_, i) => {
-        const a = (i / 24) * 2 * Math.PI;
-        return `<line x1="${540 + 150 * Math.cos(a)}" y1="${760 + 150 * Math.sin(a)}" x2="${540 + 185 * Math.cos(a)}" y2="${760 + 185 * Math.sin(a)}"/>`;
-      }).join("");
+      // Scarcity: 10 founder spots, 7 taken, 3 left.
+      const taken = 7;
+      let seats = "";
+      for (let i = 0; i < 10; i++) {
+        const cx = 180 + (i % 5) * 180;
+        const cy = 620 + Math.floor(i / 5) * 150;
+        if (i < taken) {
+          seats += `<circle cx="${cx}" cy="${cy}" r="52" fill="${st.accent}"/>` + check(cx, cy, C.navy);
+        } else {
+          seats +=
+            `<circle cx="${cx}" cy="${cy}" r="52" fill="none" stroke="${CREAM}" stroke-width="4" stroke-dasharray="9 9" opacity="0.8"/>` +
+            `<text x="${cx}" y="${cy + 12}" font-size="34" font-weight="800" fill="${CREAM}" text-anchor="middle" opacity="0.8">?</text>`;
+        }
+      }
       return {
         chaos:
-          `<path d="M 470 880 l -30 240 l 100 -60 z" fill="${C.green}"/>` +
-          `<path d="M 610 880 l 30 240 l -100 -60 z" fill="${C.green}"/>` +
-          `<g stroke="${st.accent}" stroke-width="10" stroke-linecap="round">${ray}</g>` +
-          `<circle cx="540" cy="760" r="150" fill="${st.accent}"/>` +
-          `<text x="540" y="730" font-size="40" font-weight="800" fill="${C.navy}" text-anchor="middle">PRO</text>` +
-          `<text x="540" y="780" font-size="34" font-weight="800" fill="${C.navy}" text-anchor="middle">FREE</text>` +
-          `<text x="540" y="822" font-size="30" font-weight="700" fill="${C.navy}" text-anchor="middle">for life</text>`,
+          `<text x="540" y="540" font-size="30" font-weight="800" fill="${st.sub}" text-anchor="middle" letter-spacing="2">FOUNDER SPOTS · FIRST 10 ONLY</text>` +
+          seats +
+          `<text x="540" y="900" font-size="40" font-weight="800" fill="${st.accent}" text-anchor="middle">7 gone · 3 left</text>`,
         resolved:
-          `<text x="540" y="1240" font-size="42" font-weight="800" fill="${st.ink}" text-anchor="middle">First 10 to register interest</text>` +
-          `<text x="540" y="1300" font-size="40" font-weight="800" fill="${st.accent}" text-anchor="middle">= Pro free for life</text>`,
+          `<text x="540" y="1230" font-size="58" font-weight="800" fill="${st.ink}" text-anchor="middle">Pro. Free. For life.</text>` +
+          `<text x="540" y="1296" font-size="32" font-weight="700" fill="${st.sub}" text-anchor="middle">register before they're gone</text>`,
       };
     }
     case "forward-email": {
